@@ -23,11 +23,11 @@ import org.apache.rocketmq.store.ConsumeQueue;
 public class MessageStoreConfig {
     //The root directory in which the log data is kept
     @ImportantField
-    private String storePathRootDir = System.getProperty("user.home") + File.separator + "store";
+    private String storePathRootDir = System.getProperty("user.dir") + File.separator + "workdir" + File.separator + "store";
 
     //The directory in which the commitlog is kept
     @ImportantField
-    private String storePathCommitLog = System.getProperty("user.home") + File.separator + "store"
+    private String storePathCommitLog = System.getProperty("user.dir") + File.separator + "workdir" + File.separator + "store"
         + File.separator + "commitlog";
 
     // CommitLog file size,default is 1G

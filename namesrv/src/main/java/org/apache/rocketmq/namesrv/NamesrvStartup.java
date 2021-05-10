@@ -19,10 +19,9 @@ package org.apache.rocketmq.namesrv;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.*;
+import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import org.apache.commons.cli.CommandLine;
@@ -52,8 +51,11 @@ public class NamesrvStartup {
     }
 
     public static NamesrvController main0(String[] args) {
-
         try {
+            System.setProperty(MixAll.ROCKETMQ_HOME_PROPERTY, System.getProperty("user.dir").concat("\\workdir"));
+            System.setProperty("user.home", System.getProperty("user.dir"));
+
+
             NamesrvController controller = createNamesrvController(args);
             start(controller);
             String tip = "The Name Server boot success. serializeType=" + RemotingCommand.getSerializeTypeConfigInThisServer();
