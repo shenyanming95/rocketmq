@@ -16,19 +16,16 @@
  */
 package org.apache.rocketmq.common.message;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
+import org.apache.rocketmq.common.UtilAll;
+import org.apache.rocketmq.common.sysflag.MessageSysFlag;
+
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.rocketmq.common.UtilAll;
-import org.apache.rocketmq.common.sysflag.MessageSysFlag;
 
 public class MessageDecoder {
 //    public final static int MSG_ID_LENGTH = 8 + 8;

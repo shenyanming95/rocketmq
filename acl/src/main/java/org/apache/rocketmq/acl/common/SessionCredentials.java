@@ -16,11 +16,12 @@
  */
 package org.apache.rocketmq.acl.common;
 
+import org.apache.rocketmq.common.MixAll;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Properties;
-import org.apache.rocketmq.common.MixAll;
 
 public class SessionCredentials {
     public static final Charset CHARSET = Charset.forName("UTF-8");

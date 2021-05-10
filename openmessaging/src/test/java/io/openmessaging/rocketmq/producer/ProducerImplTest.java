@@ -20,7 +20,6 @@ import io.openmessaging.MessagingAccessPoint;
 import io.openmessaging.OMS;
 import io.openmessaging.exception.OMSRuntimeException;
 import io.openmessaging.producer.Producer;
-import java.lang.reflect.Field;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -33,6 +32,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.failBecauseExceptionWasNotThrown;

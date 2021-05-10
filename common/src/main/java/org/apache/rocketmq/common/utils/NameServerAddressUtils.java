@@ -12,9 +12,10 @@
  */
 package org.apache.rocketmq.common.utils;
 
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.common.MixAll;
+
+import java.util.regex.Pattern;
 
 public class NameServerAddressUtils {
     public static final String INSTANCE_PREFIX = "MQ_INST_";

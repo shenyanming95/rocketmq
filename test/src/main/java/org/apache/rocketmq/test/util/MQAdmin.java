@@ -17,9 +17,6 @@
 
 package org.apache.rocketmq.test.util;
 
-import java.util.HashMap;
-import java.util.Set;
-import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.apache.rocketmq.common.admin.TopicStatsTable;
 import org.apache.rocketmq.common.protocol.body.ClusterInfo;
@@ -27,6 +24,10 @@ import org.apache.rocketmq.common.protocol.route.BrokerData;
 import org.apache.rocketmq.common.subscription.SubscriptionGroupConfig;
 import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
 import org.apache.rocketmq.tools.command.CommandUtil;
+
+import java.util.HashMap;
+import java.util.Set;
+import java.util.UUID;
 
 public class MQAdmin {
     private static Logger log = Logger.getLogger(MQAdmin.class);

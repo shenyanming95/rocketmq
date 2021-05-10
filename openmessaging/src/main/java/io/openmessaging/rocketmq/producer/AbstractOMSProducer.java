@@ -16,12 +16,7 @@
  */
 package io.openmessaging.rocketmq.producer;
 
-import io.openmessaging.BytesMessage;
-import io.openmessaging.KeyValue;
-import io.openmessaging.Message;
-import io.openmessaging.MessageFactory;
-import io.openmessaging.OMSBuiltinKeys;
-import io.openmessaging.ServiceLifecycle;
+import io.openmessaging.*;
 import io.openmessaging.exception.OMSMessageFormatException;
 import io.openmessaging.exception.OMSNotSupportedException;
 import io.openmessaging.exception.OMSRuntimeException;
@@ -33,8 +28,8 @@ import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.log.ClientLogger;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
-import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.common.protocol.ResponseCode;
+import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.remoting.exception.RemotingConnectException;
 import org.apache.rocketmq.remoting.exception.RemotingTimeoutException;
 import org.apache.rocketmq.remoting.protocol.LanguageCode;

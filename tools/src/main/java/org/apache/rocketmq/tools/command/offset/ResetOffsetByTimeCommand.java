@@ -17,8 +17,6 @@
 
 package org.apache.rocketmq.tools.command.offset;
 
-import java.util.Iterator;
-import java.util.Map;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -30,6 +28,9 @@ import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
 import org.apache.rocketmq.tools.command.SubCommand;
 import org.apache.rocketmq.tools.command.SubCommandException;
+
+import java.util.Iterator;
+import java.util.Map;
 
 public class ResetOffsetByTimeCommand implements SubCommand {
 

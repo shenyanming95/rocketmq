@@ -17,14 +17,15 @@
 
 package org.apache.rocketmq.test.clientinterface;
 
+import org.apache.rocketmq.test.util.RandomUtil;
+import org.apache.rocketmq.test.util.data.collect.DataCollector;
+import org.apache.rocketmq.test.util.data.collect.DataCollectorManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.rocketmq.test.util.RandomUtil;
-import org.apache.rocketmq.test.util.data.collect.DataCollector;
-import org.apache.rocketmq.test.util.data.collect.DataCollectorManager;
 
 public abstract class MQCollector {
     protected DataCollector msgBodys = null;

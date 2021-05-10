@@ -17,12 +17,13 @@
 
 package org.apache.rocketmq.common.protocol.body;
 
+import org.apache.rocketmq.common.protocol.route.BrokerData;
+import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import org.apache.rocketmq.common.protocol.route.BrokerData;
-import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
 
 public class ClusterInfo extends RemotingSerializable {
     private HashMap<String/* brokerName */, BrokerData> brokerAddrTable;

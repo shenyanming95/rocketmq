@@ -16,22 +16,18 @@
  */
 package org.apache.rocketmq.logappender.log4j2;
 
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.ErrorHandler;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.*;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
-import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.logappender.common.ProducerInstance;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.apache.logging.log4j.core.layout.SerializedLayout;
 import org.apache.rocketmq.client.producer.MQProducer;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.logappender.common.ProducerInstance;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;

@@ -17,10 +17,11 @@
 
 package org.apache.rocketmq.common;
 
+import org.junit.Test;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;

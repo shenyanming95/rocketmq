@@ -16,8 +16,9 @@
  */
 package org.apache.rocketmq.remoting.protocol;
 
-import java.util.HashMap;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

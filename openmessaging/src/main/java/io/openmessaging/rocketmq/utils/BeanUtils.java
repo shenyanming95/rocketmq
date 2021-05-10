@@ -17,15 +17,16 @@
 package io.openmessaging.rocketmq.utils;
 
 import io.openmessaging.KeyValue;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.client.log.ClientLogger;
+import org.apache.rocketmq.logging.InternalLogger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.rocketmq.client.log.ClientLogger;
-import org.apache.rocketmq.logging.InternalLogger;
 
 public final class BeanUtils {
     final static InternalLogger log = ClientLogger.getLog();

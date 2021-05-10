@@ -17,9 +17,10 @@
 
 package org.apache.rocketmq.broker.plugin;
 
+import org.apache.rocketmq.store.MessageStore;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import org.apache.rocketmq.store.MessageStore;
 
 public final class MessageStoreFactory {
     public final static MessageStore build(MessageStorePluginContext context, MessageStore messageStore)

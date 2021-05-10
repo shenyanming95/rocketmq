@@ -16,9 +16,10 @@
  */
 package org.apache.rocketmq.client.impl.consumer;
 
+import org.apache.rocketmq.common.message.MessageQueue;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.apache.rocketmq.common.message.MessageQueue;
 
 /**
  * Message lock,strictly ensure the single queue only one thread at a time consuming

@@ -16,11 +16,12 @@
  */
 package org.apache.rocketmq.common.message;
 
+import org.apache.rocketmq.common.UtilAll;
+
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.rocketmq.common.UtilAll;
 
 public class MessageClientIDSetter {
     private static final String TOPIC_KEY_SPLITTER = "#";

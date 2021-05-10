@@ -16,13 +16,10 @@
  */
 package org.apache.rocketmq.example.openmessaging;
 
-import io.openmessaging.Future;
-import io.openmessaging.FutureListener;
-import io.openmessaging.Message;
-import io.openmessaging.MessagingAccessPoint;
-import io.openmessaging.OMS;
+import io.openmessaging.*;
 import io.openmessaging.producer.Producer;
 import io.openmessaging.producer.SendResult;
+
 import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 

@@ -29,7 +29,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import static org.apache.rocketmq.common.protocol.heartbeat.ConsumeType.CONSUME_ACTIVELY;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConsumerRunningInfoTest {

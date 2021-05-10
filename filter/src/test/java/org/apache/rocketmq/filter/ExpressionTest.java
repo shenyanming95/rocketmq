@@ -17,12 +17,7 @@
 
 package org.apache.rocketmq.filter;
 
-import org.apache.rocketmq.filter.expression.ComparisonExpression;
-import org.apache.rocketmq.filter.expression.ConstantExpression;
-import org.apache.rocketmq.filter.expression.EvaluationContext;
-import org.apache.rocketmq.filter.expression.Expression;
-import org.apache.rocketmq.filter.expression.MQFilterException;
-import org.apache.rocketmq.filter.expression.PropertyExpression;
+import org.apache.rocketmq.filter.expression.*;
 import org.apache.rocketmq.filter.parser.SelectorParser;
 import org.junit.Test;
 

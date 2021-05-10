@@ -16,13 +16,13 @@
  */
 package org.apache.rocketmq.logappender.log4j;
 
-import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.logappender.common.ProducerInstance;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.rocketmq.client.producer.MQProducer;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.logappender.common.ProducerInstance;
 
 /**
  * Log4j Appender Component

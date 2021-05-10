@@ -17,11 +17,6 @@
 
 package org.apache.rocketmq.remoting;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import org.apache.rocketmq.remoting.common.TlsMode;
 import org.apache.rocketmq.remoting.exception.RemotingSendRequestException;
 import org.apache.rocketmq.remoting.netty.NettyClientConfig;
@@ -38,31 +33,9 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_CLIENT_AUTHSERVER;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_CLIENT_CERTPATH;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_CLIENT_KEYPASSWORD;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_CLIENT_KEYPATH;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_CLIENT_TRUSTCERTPATH;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_SERVER_AUTHCLIENT;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_SERVER_CERTPATH;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_SERVER_KEYPASSWORD;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_SERVER_KEYPATH;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_SERVER_NEED_CLIENT_AUTH;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.TLS_SERVER_TRUSTCERTPATH;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsClientAuthServer;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsClientCertPath;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsClientKeyPassword;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsClientKeyPath;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsClientTrustCertPath;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsConfigFile;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsMode;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsServerAuthClient;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsServerCertPath;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsServerKeyPassword;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsServerKeyPath;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsServerNeedClientAuth;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsServerTrustCertPath;
-import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.tlsTestModeEnable;
+import java.io.*;
+
+import static org.apache.rocketmq.remoting.netty.TlsSystemConfig.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.junit.Assert.assertTrue;

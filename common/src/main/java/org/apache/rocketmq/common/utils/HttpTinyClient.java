@@ -17,6 +17,9 @@
 
 package org.apache.rocketmq.common.utils;
 
+import org.apache.rocketmq.common.MQVersion;
+import org.apache.rocketmq.common.MixAll;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -24,8 +27,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.rocketmq.common.MQVersion;
-import org.apache.rocketmq.common.MixAll;
 
 public class HttpTinyClient {
 

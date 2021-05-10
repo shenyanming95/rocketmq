@@ -19,18 +19,14 @@ package org.apache.rocketmq.client.trace.hook;
 import org.apache.rocketmq.client.consumer.listener.ConsumeReturnType;
 import org.apache.rocketmq.client.hook.ConsumeMessageContext;
 import org.apache.rocketmq.client.hook.ConsumeMessageHook;
-import org.apache.rocketmq.client.trace.AsyncTraceDispatcher;
-import org.apache.rocketmq.client.trace.TraceContext;
-import org.apache.rocketmq.client.trace.TraceDispatcher;
-import org.apache.rocketmq.client.trace.TraceBean;
-import org.apache.rocketmq.client.trace.TraceType;
+import org.apache.rocketmq.client.trace.*;
 import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.apache.rocketmq.common.protocol.NamespaceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.rocketmq.common.protocol.NamespaceUtil;
 
 public class ConsumeMessageTraceHookImpl implements ConsumeMessageHook {
 

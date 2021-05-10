@@ -16,8 +16,9 @@
  */
 package org.apache.rocketmq.common.filter;
 
-import java.net.URL;
 import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
+
+import java.net.URL;
 
 public class FilterAPI {
     public static URL classFile(final String className) {

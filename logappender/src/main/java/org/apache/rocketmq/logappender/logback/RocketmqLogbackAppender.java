@@ -22,9 +22,9 @@ import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.spi.PreSerializationTransformer;
 import ch.qos.logback.core.status.ErrorStatus;
+import org.apache.rocketmq.client.producer.MQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.logappender.common.ProducerInstance;
-import org.apache.rocketmq.client.producer.MQProducer;
 
 /**
  * Logback Appender Component

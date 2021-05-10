@@ -19,9 +19,6 @@ package org.apache.rocketmq.common.utils;
 
 import org.apache.rocketmq.common.UtilAll;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
-
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +26,9 @@ import org.junit.Test;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class IOTinyUtilsTest {
 

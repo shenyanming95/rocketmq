@@ -16,17 +16,13 @@
  */
 package org.apache.rocketmq.client.consumer.rebalance;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
 import org.apache.rocketmq.client.consumer.AllocateMessageQueueStrategy;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.*;
 
 public class AllocateMessageQueueConsitentHashTest {
 

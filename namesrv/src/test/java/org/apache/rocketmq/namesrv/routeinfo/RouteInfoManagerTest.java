@@ -17,8 +17,6 @@
 package org.apache.rocketmq.namesrv.routeinfo;
 
 import io.netty.channel.Channel;
-import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.namesrv.RegisterBrokerResult;
 import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
@@ -27,6 +25,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

@@ -17,26 +17,12 @@
 
 package org.apache.rocketmq.client.consumer;
 
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.util.*;
-
 import org.apache.rocketmq.client.ClientConfig;
 import org.apache.rocketmq.client.consumer.store.OffsetStore;
 import org.apache.rocketmq.client.consumer.store.ReadOffsetType;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.client.impl.CommunicationMode;
-import org.apache.rocketmq.client.impl.FindBrokerResult;
-import org.apache.rocketmq.client.impl.MQAdminImpl;
-import org.apache.rocketmq.client.impl.MQClientAPIImpl;
-import org.apache.rocketmq.client.impl.MQClientManager;
-import org.apache.rocketmq.client.impl.consumer.AssignedMessageQueue;
-import org.apache.rocketmq.client.impl.consumer.DefaultLitePullConsumerImpl;
-import org.apache.rocketmq.client.impl.consumer.PullAPIWrapper;
-import org.apache.rocketmq.client.impl.consumer.PullResultExt;
-import org.apache.rocketmq.client.impl.consumer.RebalanceImpl;
-import org.apache.rocketmq.client.impl.consumer.RebalanceService;
+import org.apache.rocketmq.client.impl.*;
+import org.apache.rocketmq.client.impl.consumer.*;
 import org.apache.rocketmq.client.impl.factory.MQClientInstance;
 import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
@@ -57,17 +43,16 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
+import java.util.*;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.failBecauseExceptionWasNotThrown;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(DefaultLitePullConsumerImpl.class)

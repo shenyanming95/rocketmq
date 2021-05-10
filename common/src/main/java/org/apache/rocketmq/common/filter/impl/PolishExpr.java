@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import static org.apache.rocketmq.common.filter.impl.Operator.LEFTPARENTHESIS;
-import static org.apache.rocketmq.common.filter.impl.Operator.RIGHTPARENTHESIS;
-import static org.apache.rocketmq.common.filter.impl.Operator.createOperator;
+import static org.apache.rocketmq.common.filter.impl.Operator.*;
 
 public class PolishExpr {
 

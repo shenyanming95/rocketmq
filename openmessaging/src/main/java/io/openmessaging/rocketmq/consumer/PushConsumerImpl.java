@@ -28,11 +28,6 @@ import io.openmessaging.rocketmq.config.ClientConfig;
 import io.openmessaging.rocketmq.domain.NonStandardKeys;
 import io.openmessaging.rocketmq.utils.BeanUtils;
 import io.openmessaging.rocketmq.utils.OMSUtil;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -40,6 +35,12 @@ import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.remoting.protocol.LanguageCode;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class PushConsumerImpl implements PushConsumer {
     private final DefaultMQPushConsumer rocketmqPushConsumer;

@@ -16,14 +16,6 @@
  */
 package org.apache.rocketmq.tools.command;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.protocol.body.ClusterInfo;
@@ -32,6 +24,8 @@ import org.apache.rocketmq.remoting.exception.RemotingConnectException;
 import org.apache.rocketmq.remoting.exception.RemotingSendRequestException;
 import org.apache.rocketmq.remoting.exception.RemotingTimeoutException;
 import org.apache.rocketmq.tools.admin.MQAdminExt;
+
+import java.util.*;
 
 public class CommandUtil {
 

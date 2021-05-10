@@ -16,10 +16,11 @@
  */
 package org.apache.rocketmq.client.impl.consumer;
 
-import java.util.List;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.common.protocol.body.ConsumeMessageDirectlyResult;
+
+import java.util.List;
 
 public interface ConsumeMessageService {
     void start();

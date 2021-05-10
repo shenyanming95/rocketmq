@@ -17,15 +17,16 @@
 
 package org.apache.rocketmq.common.protocol.body;
 
+import org.apache.rocketmq.common.message.MessageQueue;
+import org.apache.rocketmq.common.protocol.heartbeat.ConsumeType;
+import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
+import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
+
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import org.apache.rocketmq.common.message.MessageQueue;
-import org.apache.rocketmq.common.protocol.heartbeat.ConsumeType;
-import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
-import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
 
 public class ConsumerRunningInfo extends RemotingSerializable {
     public static final String PROP_NAMESERVER_ADDR = "PROP_NAMESERVER_ADDR";

@@ -16,13 +16,14 @@
  */
 package org.apache.rocketmq.common.message;
 
+import org.apache.rocketmq.common.TopicFilterType;
+import org.apache.rocketmq.common.sysflag.MessageSysFlag;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import org.apache.rocketmq.common.TopicFilterType;
-import org.apache.rocketmq.common.sysflag.MessageSysFlag;
 
 public class MessageExt extends Message {
     private static final long serialVersionUID = 5720810158625748049L;

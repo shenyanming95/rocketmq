@@ -16,8 +16,6 @@
  */
 package org.apache.rocketmq.example.ordermessage;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -28,6 +26,9 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.exception.RemotingException;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 public class Producer {
     public static void main(String[] args) throws UnsupportedEncodingException {

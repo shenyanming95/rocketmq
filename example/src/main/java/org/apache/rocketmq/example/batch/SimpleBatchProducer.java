@@ -17,10 +17,11 @@
 
 package org.apache.rocketmq.example.batch;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.common.message.Message;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleBatchProducer {
 

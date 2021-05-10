@@ -16,9 +16,10 @@
  */
 package org.apache.rocketmq.store.config;
 
-import java.io.File;
 import org.apache.rocketmq.common.annotation.ImportantField;
 import org.apache.rocketmq.store.ConsumeQueue;
+
+import java.io.File;
 
 public class MessageStoreConfig {
     //The root directory in which the log data is kept

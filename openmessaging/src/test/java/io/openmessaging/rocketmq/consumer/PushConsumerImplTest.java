@@ -16,16 +16,10 @@
  */
 package io.openmessaging.rocketmq.consumer;
 
-import io.openmessaging.BytesMessage;
-import io.openmessaging.Message;
-import io.openmessaging.OMSBuiltinKeys;
+import io.openmessaging.*;
 import io.openmessaging.consumer.MessageListener;
-import io.openmessaging.MessagingAccessPoint;
-import io.openmessaging.OMS;
 import io.openmessaging.consumer.PushConsumer;
 import io.openmessaging.rocketmq.domain.NonStandardKeys;
-import java.lang.reflect.Field;
-import java.util.Collections;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
@@ -34,6 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.Field;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;

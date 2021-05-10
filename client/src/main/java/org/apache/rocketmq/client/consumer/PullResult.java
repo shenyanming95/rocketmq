@@ -16,8 +16,9 @@
  */
 package org.apache.rocketmq.client.consumer;
 
-import java.util.List;
 import org.apache.rocketmq.common.message.MessageExt;
+
+import java.util.List;
 
 public class PullResult {
     private final PullStatus pullStatus;

@@ -16,15 +16,10 @@
  */
 package io.openmessaging.rocketmq.consumer;
 
-import io.openmessaging.BytesMessage;
-import io.openmessaging.Message;
-import io.openmessaging.MessagingAccessPoint;
-import io.openmessaging.OMS;
-import io.openmessaging.OMSBuiltinKeys;
+import io.openmessaging.*;
 import io.openmessaging.consumer.PullConsumer;
 import io.openmessaging.rocketmq.config.ClientConfig;
 import io.openmessaging.rocketmq.domain.NonStandardKeys;
-import java.lang.reflect.Field;
 import org.apache.rocketmq.client.consumer.DefaultMQPullConsumer;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.junit.Before;
@@ -32,6 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;

@@ -17,13 +17,13 @@
 
 package org.apache.rocketmq.client.stat;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import org.apache.rocketmq.client.log.ClientLogger;
-import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.common.protocol.body.ConsumeStatus;
 import org.apache.rocketmq.common.stats.StatsItemSet;
 import org.apache.rocketmq.common.stats.StatsSnapshot;
+import org.apache.rocketmq.logging.InternalLogger;
+
+import java.util.concurrent.ScheduledExecutorService;
 
 public class ConsumerStatsManager {
     private static final InternalLogger log = ClientLogger.getLog();

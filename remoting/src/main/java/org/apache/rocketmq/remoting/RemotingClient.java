@@ -16,14 +16,15 @@
  */
 package org.apache.rocketmq.remoting;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 import org.apache.rocketmq.remoting.exception.RemotingConnectException;
 import org.apache.rocketmq.remoting.exception.RemotingSendRequestException;
 import org.apache.rocketmq.remoting.exception.RemotingTimeoutException;
 import org.apache.rocketmq.remoting.exception.RemotingTooMuchRequestException;
 import org.apache.rocketmq.remoting.netty.NettyRequestProcessor;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public interface RemotingClient extends RemotingService {
 

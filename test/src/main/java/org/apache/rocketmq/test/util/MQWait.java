@@ -17,11 +17,12 @@
 
 package org.apache.rocketmq.test.util;
 
+import org.apache.log4j.Logger;
+import org.apache.rocketmq.test.listener.AbstractListener;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import org.apache.log4j.Logger;
-import org.apache.rocketmq.test.listener.AbstractListener;
 
 import static com.google.common.truth.Truth.assertThat;
 

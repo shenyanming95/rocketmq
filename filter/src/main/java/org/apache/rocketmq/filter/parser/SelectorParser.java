@@ -20,15 +20,7 @@ package org.apache.rocketmq.filter.parser;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.apache.rocketmq.filter.expression.BooleanConstantExpression;
-import org.apache.rocketmq.filter.expression.BooleanExpression;
-import org.apache.rocketmq.filter.expression.ComparisonExpression;
-import org.apache.rocketmq.filter.expression.ConstantExpression;
-import org.apache.rocketmq.filter.expression.Expression;
-import org.apache.rocketmq.filter.expression.LogicExpression;
-import org.apache.rocketmq.filter.expression.MQFilterException;
-import org.apache.rocketmq.filter.expression.PropertyExpression;
-import org.apache.rocketmq.filter.expression.UnaryExpression;
+import org.apache.rocketmq.filter.expression.*;
 
 import java.io.StringReader;
 import java.util.ArrayList;

@@ -16,13 +16,14 @@
  */
 package org.apache.rocketmq.acl.common;
 
-import java.nio.charset.Charset;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.Charset;
 
 public class AclSigner {
     public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");

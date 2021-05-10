@@ -16,8 +16,9 @@
  */
 package org.apache.rocketmq.client.consumer.listener;
 
-import java.util.List;
 import org.apache.rocketmq.common.message.MessageExt;
+
+import java.util.List;
 
 /**
  * A MessageListenerOrderly object is used to receive messages orderly. One queue by one thread

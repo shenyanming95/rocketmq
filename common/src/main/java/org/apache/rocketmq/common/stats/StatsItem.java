@@ -17,12 +17,13 @@
 
 package org.apache.rocketmq.common.stats;
 
+import org.apache.rocketmq.common.UtilAll;
+import org.apache.rocketmq.logging.InternalLogger;
+
 import java.util.LinkedList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.rocketmq.common.UtilAll;
-import org.apache.rocketmq.logging.InternalLogger;
 
 public class StatsItem {
 

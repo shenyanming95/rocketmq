@@ -17,13 +17,15 @@
 
 package org.apache.rocketmq.common;
 
+import org.apache.rocketmq.common.protocol.body.RegisterBrokerBody;
+import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.apache.rocketmq.common.protocol.body.RegisterBrokerBody;
-import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
+
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
 
 public class RegisterBrokerBodyTest {
     @Test

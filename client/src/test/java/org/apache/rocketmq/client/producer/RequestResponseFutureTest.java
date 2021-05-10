@@ -17,10 +17,11 @@
 
 package org.apache.rocketmq.client.producer;
 
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.rocketmq.common.message.Message;
 import org.junit.Test;
+
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

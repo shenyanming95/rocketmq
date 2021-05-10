@@ -17,15 +17,6 @@
 package org.apache.rocketmq.acl.common;
 
 import com.alibaba.fastjson.JSONObject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.SortedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.logging.InternalLogger;
@@ -33,6 +24,11 @@ import org.apache.rocketmq.logging.InternalLoggerFactory;
 import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import org.yaml.snakeyaml.Yaml;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.SortedMap;
 
 import static org.apache.rocketmq.acl.common.SessionCredentials.CHARSET;
 

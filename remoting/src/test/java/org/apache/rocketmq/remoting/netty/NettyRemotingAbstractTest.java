@@ -16,7 +16,6 @@
  */
 package org.apache.rocketmq.remoting.netty;
 
-import java.util.concurrent.Semaphore;
 import org.apache.rocketmq.remoting.InvokeCallback;
 import org.apache.rocketmq.remoting.common.SemaphoreReleaseOnlyOnce;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
@@ -25,10 +24,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.concurrent.Semaphore;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)

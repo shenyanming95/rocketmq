@@ -17,6 +17,7 @@
 package org.apache.rocketmq.remoting.protocol;
 
 import com.alibaba.fastjson.JSON;
+
 import java.nio.charset.Charset;
 
 public abstract class RemotingSerializable {

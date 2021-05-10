@@ -17,18 +17,17 @@
 package org.apache.rocketmq.logappender;
 
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
-
-import org.apache.rocketmq.common.message.*;
+import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.logappender.common.ProducerInstance;
 import org.junit.Before;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static org.mockito.Mockito.*;
-
 import java.lang.reflect.Field;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Basic test rocketmq broker and name server init

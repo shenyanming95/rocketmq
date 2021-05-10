@@ -16,13 +16,13 @@
  */
 package org.apache.rocketmq.example.namespace;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.rocketmq.client.consumer.DefaultMQPullConsumer;
 import org.apache.rocketmq.client.consumer.PullResult;
 import org.apache.rocketmq.common.message.MessageQueue;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class PullConsumerWithNamespace {
     private static final Map<MessageQueue, Long> OFFSE_TABLE = new HashMap<MessageQueue, Long>();

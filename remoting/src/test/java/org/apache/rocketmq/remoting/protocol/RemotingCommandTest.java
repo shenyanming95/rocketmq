@@ -16,13 +16,14 @@
  */
 package org.apache.rocketmq.remoting.protocol;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
 import org.apache.rocketmq.remoting.CommandCustomHeader;
 import org.apache.rocketmq.remoting.annotation.CFNotNull;
 import org.apache.rocketmq.remoting.exception.RemotingCommandException;
 import org.junit.Test;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

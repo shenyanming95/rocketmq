@@ -16,11 +16,12 @@
  */
 package org.apache.rocketmq.client.consumer.rebalance;
 
+import org.apache.rocketmq.client.consumer.AllocateMessageQueueStrategy;
+import org.apache.rocketmq.common.message.MessageQueue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.apache.rocketmq.client.consumer.AllocateMessageQueueStrategy;
-import org.apache.rocketmq.common.message.MessageQueue;
 
 /**
  * Computer room Hashing queue algorithm, such as Alipay logic room

@@ -20,9 +20,10 @@
  */
 package org.apache.rocketmq.common.protocol.heartbeat;
 
+import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
+
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
 
 public class HeartbeatData extends RemotingSerializable {
     private String clientID;

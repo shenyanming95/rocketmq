@@ -17,10 +17,11 @@
 
 package org.apache.rocketmq.test.util.data.collect;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.rocketmq.test.util.data.collect.impl.ListDataCollectorImpl;
 import org.apache.rocketmq.test.util.data.collect.impl.MapDataCollectorImpl;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public final class DataCollectorManager {
     private static DataCollectorManager instance = new DataCollectorManager();
