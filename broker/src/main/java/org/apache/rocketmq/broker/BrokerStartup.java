@@ -41,6 +41,7 @@ import org.apache.rocketmq.store.config.MessageStoreConfig;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
@@ -55,7 +56,7 @@ public class BrokerStartup {
     public static InternalLogger log;
 
     public static void main(String[] args) {
-        System.setProperty(MixAll.ROCKETMQ_HOME_PROPERTY, System.getProperty("user.dir").concat("\\workdir"));
+        System.setProperty(MixAll.ROCKETMQ_HOME_PROPERTY, System.getProperty("user.dir").concat(File.separator).concat("workdir"));
 
 
 

@@ -36,6 +36,8 @@ import org.apache.rocketmq.srvutil.ShutdownHookThread;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +56,7 @@ public class NamesrvStartup {
 
     public static NamesrvController main0(String[] args) {
         try {
-            System.setProperty(MixAll.ROCKETMQ_HOME_PROPERTY, System.getProperty("user.dir").concat("\\workdir"));
+            System.setProperty(MixAll.ROCKETMQ_HOME_PROPERTY, System.getProperty("user.dir").concat(File.separator).concat("workdir"));
             System.setProperty("user.home", System.getProperty("user.dir"));
 
 
