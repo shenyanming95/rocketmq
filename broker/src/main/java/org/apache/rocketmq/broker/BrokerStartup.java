@@ -57,9 +57,8 @@ public class BrokerStartup {
 
     public static void main(String[] args) {
         System.setProperty(MixAll.ROCKETMQ_HOME_PROPERTY, System.getProperty("user.dir").concat(File.separator).concat("workdir"));
-
-
-
+        // 也可以配置启动参数：-n 127.0.0.1:9876 autoCreateTopicEnable=true
+        args = new String[]{"-n", "127.0.0.1:9876"};
         start(createBrokerController(args));
     }
 
