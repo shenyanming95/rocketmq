@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.tools.command.message;
 
 import org.apache.commons.cli.CommandLine;
@@ -42,97 +26,81 @@ public class QueryMsgByUniqueKeySubCommand implements SubCommand {
 
     private DefaultMQAdminExt defaultMQAdminExt;
 
-    private DefaultMQAdminExt createMQAdminExt(RPCHook rpcHook) throws SubCommandException {
-        if (this.defaultMQAdminExt != null) {
-            return defaultMQAdminExt;
-        } else {
-            defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
-            defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
-            try {
-                defaultMQAdminExt.start();
-            }
-            catch (Exception e) {
-                throw new SubCommandException(this.getClass().getSimpleName() + " command failed", e);
-            }
-            return defaultMQAdminExt;
-        }
-    }
-
     public static void queryById(final DefaultMQAdminExt admin, final String topic,
-        final String msgId) throws MQClientException,
-        RemotingException, MQBrokerException, InterruptedException, IOException {
+                                 final String msgId) throws MQClientException,
+            RemotingException, MQBrokerException, InterruptedException, IOException {
         MessageExt msg = admin.viewMessage(topic, msgId);
 
         String bodyTmpFilePath = createBodyFile(msg);
 
         System.out.printf("%-20s %s%n",
-            "Topic:",
-            msg.getTopic()
+                "Topic:",
+                msg.getTopic()
         );
 
         System.out.printf("%-20s %s%n",
-            "Tags:",
-            "[" + msg.getTags() + "]"
+                "Tags:",
+                "[" + msg.getTags() + "]"
         );
 
         System.out.printf("%-20s %s%n",
-            "Keys:",
-            "[" + msg.getKeys() + "]"
+                "Keys:",
+                "[" + msg.getKeys() + "]"
         );
 
         System.out.printf("%-20s %d%n",
-            "Queue ID:",
-            msg.getQueueId()
+                "Queue ID:",
+                msg.getQueueId()
         );
 
         System.out.printf("%-20s %d%n",
-            "Queue Offset:",
-            msg.getQueueOffset()
+                "Queue Offset:",
+                msg.getQueueOffset()
         );
 
         System.out.printf("%-20s %d%n",
-            "CommitLog Offset:",
-            msg.getCommitLogOffset()
+                "CommitLog Offset:",
+                msg.getCommitLogOffset()
         );
 
         System.out.printf("%-20s %d%n",
-            "Reconsume Times:",
-            msg.getReconsumeTimes()
+                "Reconsume Times:",
+                msg.getReconsumeTimes()
         );
 
         System.out.printf("%-20s %s%n",
-            "Born Timestamp:",
-            UtilAll.timeMillisToHumanString2(msg.getBornTimestamp())
+                "Born Timestamp:",
+                UtilAll.timeMillisToHumanString2(msg.getBornTimestamp())
         );
 
         System.out.printf("%-20s %s%n",
-            "Store Timestamp:",
-            UtilAll.timeMillisToHumanString2(msg.getStoreTimestamp())
+                "Store Timestamp:",
+                UtilAll.timeMillisToHumanString2(msg.getStoreTimestamp())
         );
 
         System.out.printf("%-20s %s%n",
-            "Born Host:",
-            RemotingHelper.parseSocketAddressAddr(msg.getBornHost())
+                "Born Host:",
+                RemotingHelper.parseSocketAddressAddr(msg.getBornHost())
         );
 
         System.out.printf("%-20s %s%n",
-            "Store Host:",
-            RemotingHelper.parseSocketAddressAddr(msg.getStoreHost())
+                "Store Host:",
+                RemotingHelper.parseSocketAddressAddr(msg.getStoreHost())
         );
 
         System.out.printf("%-20s %d%n",
-            "System Flag:",
-            msg.getSysFlag()
+                "System Flag:",
+                msg.getSysFlag()
         );
 
         System.out.printf("%-20s %s%n",
-            "Properties:",
-            msg.getProperties() != null ? msg.getProperties().toString() : ""
+                "Properties:",
+                msg.getProperties() != null ? msg.getProperties().toString() : ""
         );
 
         System.out.printf("%-20s %s%n",
-            "Message Body Path:",
-            bodyTmpFilePath
+                "Message Body Path:",
+                bodyTmpFilePath
         );
 
         try {
@@ -165,6 +133,21 @@ public class QueryMsgByUniqueKeySubCommand implements SubCommand {
         } finally {
             if (dos != null)
                 dos.close();
+        }
+    }
+
+    private DefaultMQAdminExt createMQAdminExt(RPCHook rpcHook) throws SubCommandException {
+        if (this.defaultMQAdminExt != null) {
+            return defaultMQAdminExt;
+        } else {
+            defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
+            defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
+            try {
+                defaultMQAdminExt.start();
+            } catch (Exception e) {
+                throw new SubCommandException(this.getClass().getSimpleName() + " command failed", e);
+            }
+            return defaultMQAdminExt;
         }
     }
 
@@ -204,7 +187,7 @@ public class QueryMsgByUniqueKeySubCommand implements SubCommand {
 
         try {
 
-            defaultMQAdminExt =  createMQAdminExt(rpcHook);
+            defaultMQAdminExt = createMQAdminExt(rpcHook);
 
             final String msgId = commandLine.getOptionValue('i').trim();
             final String topic = commandLine.getOptionValue('t').trim();
@@ -212,7 +195,7 @@ public class QueryMsgByUniqueKeySubCommand implements SubCommand {
                 final String consumerGroup = commandLine.getOptionValue('g').trim();
                 final String clientId = commandLine.getOptionValue('d').trim();
                 ConsumeMessageDirectlyResult result =
-                    defaultMQAdminExt.consumeMessageDirectly(consumerGroup, clientId, topic, msgId);
+                        defaultMQAdminExt.consumeMessageDirectly(consumerGroup, clientId, topic, msgId);
                 System.out.printf("%s", result);
             } else {
                 queryById(defaultMQAdminExt, topic, msgId);

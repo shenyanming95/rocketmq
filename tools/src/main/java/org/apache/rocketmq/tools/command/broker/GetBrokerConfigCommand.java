@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.tools.command.broker;
 
 import org.apache.commons.cli.CommandLine;
@@ -62,7 +45,7 @@ public class GetBrokerConfigCommand implements SubCommand {
 
     @Override
     public void execute(final CommandLine commandLine, final Options options,
-        final RPCHook rpcHook) throws SubCommandException {
+                        final RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
 
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -74,29 +57,29 @@ public class GetBrokerConfigCommand implements SubCommand {
                 defaultMQAdminExt.start();
 
                 getAndPrint(defaultMQAdminExt,
-                    String.format("============%s============\n", brokerAddr),
-                    brokerAddr);
+                        String.format("============%s============\n", brokerAddr),
+                        brokerAddr);
 
             } else if (commandLine.hasOption('c')) {
                 String clusterName = commandLine.getOptionValue('c').trim();
                 defaultMQAdminExt.start();
 
                 Map<String, List<String>> masterAndSlaveMap
-                    = CommandUtil.fetchMasterAndSlaveDistinguish(defaultMQAdminExt, clusterName);
+                        = CommandUtil.fetchMasterAndSlaveDistinguish(defaultMQAdminExt, clusterName);
 
                 for (String masterAddr : masterAndSlaveMap.keySet()) {
 
                     getAndPrint(
-                        defaultMQAdminExt,
-                        String.format("============Master: %s============\n", masterAddr),
-                        masterAddr
+                            defaultMQAdminExt,
+                            String.format("============Master: %s============\n", masterAddr),
+                            masterAddr
                     );
                     for (String slaveAddr : masterAndSlaveMap.get(masterAddr)) {
 
                         getAndPrint(
-                            defaultMQAdminExt,
-                            String.format("============My Master: %s=====Slave: %s============\n", masterAddr, slaveAddr),
-                            slaveAddr
+                                defaultMQAdminExt,
+                                String.format("============My Master: %s=====Slave: %s============\n", masterAddr, slaveAddr),
+                                slaveAddr
                         );
                     }
                 }
@@ -110,9 +93,9 @@ public class GetBrokerConfigCommand implements SubCommand {
     }
 
     protected void getAndPrint(final MQAdminExt defaultMQAdminExt, final String printPrefix, final String addr)
-        throws InterruptedException, RemotingConnectException,
-        UnsupportedEncodingException, RemotingTimeoutException,
-        MQBrokerException, RemotingSendRequestException {
+            throws InterruptedException, RemotingConnectException,
+            UnsupportedEncodingException, RemotingTimeoutException,
+            MQBrokerException, RemotingSendRequestException {
 
         System.out.print(printPrefix);
 

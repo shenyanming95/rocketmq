@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.tools.command.offset;
 
 import org.apache.commons.cli.CommandLine;
@@ -71,15 +54,15 @@ public class GetConsumerStatusCommand implements SubCommand {
             defaultMQAdminExt.start();
 
             Map<String, Map<MessageQueue, Long>> consumerStatusTable =
-                defaultMQAdminExt.getConsumeStatus(topic, group, originClientId);
+                    defaultMQAdminExt.getConsumeStatus(topic, group, originClientId);
             System.out.printf("get consumer status from client. group=%s, topic=%s, originClientId=%s%n",
-                group, topic, originClientId);
+                    group, topic, originClientId);
 
             System.out.printf("%-50s  %-15s  %-15s  %-20s%n",
-                "#clientId",
-                "#brokerName",
-                "#queueId",
-                "#offset");
+                    "#clientId",
+                    "#brokerName",
+                    "#queueId",
+                    "#offset");
 
             for (Map.Entry<String, Map<MessageQueue, Long>> entry : consumerStatusTable.entrySet()) {
                 String clientId = entry.getKey();
@@ -87,10 +70,10 @@ public class GetConsumerStatusCommand implements SubCommand {
                 for (Map.Entry<MessageQueue, Long> entry1 : mqTable.entrySet()) {
                     MessageQueue mq = entry1.getKey();
                     System.out.printf("%-50s  %-15s  %-15d  %-20d%n",
-                        UtilAll.frontStringAtLeast(clientId, 50),
-                        mq.getBrokerName(),
-                        mq.getQueueId(),
-                        mqTable.get(mq));
+                            UtilAll.frontStringAtLeast(clientId, 50),
+                            mq.getBrokerName(),
+                            mq.getQueueId(),
+                            mqTable.get(mq));
                 }
             }
         } catch (Exception e) {

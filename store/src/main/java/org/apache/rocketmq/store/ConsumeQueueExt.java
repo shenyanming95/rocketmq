@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.store;
 
 import org.apache.rocketmq.common.constant.LoggerName;
@@ -37,38 +20,34 @@ import java.util.List;
  * <li>4. Pls keep this file small.</li>
  */
 public class ConsumeQueueExt {
-    private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
-
-    private final MappedFileQueue mappedFileQueue;
-    private final String topic;
-    private final int queueId;
-
-    private final String storePath;
-    private final int mappedFileSize;
-    private ByteBuffer tempContainer;
-
     public static final int END_BLANK_DATA_LENGTH = 4;
-
     /**
      * Addr can not exceed this value.For compatible.
      */
     public static final long MAX_ADDR = Integer.MIN_VALUE - 1L;
     public static final long MAX_REAL_OFFSET = MAX_ADDR - Long.MIN_VALUE;
+    private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
+    private final MappedFileQueue mappedFileQueue;
+    private final String topic;
+    private final int queueId;
+    private final String storePath;
+    private final int mappedFileSize;
+    private ByteBuffer tempContainer;
 
     /**
      * Constructor.
      *
-     * @param topic topic
-     * @param queueId id of queue
-     * @param storePath root dir of files to store.
+     * @param topic          topic
+     * @param queueId        id of queue
+     * @param storePath      root dir of files to store.
      * @param mappedFileSize file size
-     * @param bitMapLength bit map length.
+     * @param bitMapLength   bit map length.
      */
     public ConsumeQueueExt(final String topic,
-        final int queueId,
-        final String storePath,
-        final int mappedFileSize,
-        final int bitMapLength) {
+                           final int queueId,
+                           final String storePath,
+                           final int mappedFileSize,
+                           final int bitMapLength) {
 
         this.storePath = storePath;
         this.mappedFileSize = mappedFileSize;
@@ -77,14 +56,14 @@ public class ConsumeQueueExt {
         this.queueId = queueId;
 
         String queueDir = this.storePath
-            + File.separator + topic
-            + File.separator + queueId;
+                + File.separator + topic
+                + File.separator + queueId;
 
         this.mappedFileQueue = new MappedFileQueue(queueDir, mappedFileSize, null);
 
         if (bitMapLength > 0) {
             this.tempContainer = ByteBuffer.allocate(
-                bitMapLength / Byte.SIZE
+                    bitMapLength / Byte.SIZE
             );
         }
     }
@@ -221,7 +200,7 @@ public class ConsumeQueueExt {
                 if (size > blankSize) {
                     fullFillToEnd(mappedFile, wrotePosition);
                     log.info("No enough space(need:{}, has:{}) of file {}, so fill to end",
-                        size, blankSize, mappedFile.getFileName());
+                            size, blankSize, mappedFile.getFileName());
                     continue;
                 }
 
@@ -299,7 +278,7 @@ public class ConsumeQueueExt {
             }
 
             log.info("All files of consume queue extend has been recovered over, last mapped file "
-                + mappedFile.getFileName());
+                    + mappedFile.getFileName());
             break;
         }
 
@@ -331,7 +310,7 @@ public class ConsumeQueueExt {
 
             if (fileTailOffset < realOffset) {
                 log.info("Destroy consume queue ext by min: file={}, fileTailOffset={}, minOffset={}", file.getFileName(),
-                    fileTailOffset, realOffset);
+                        fileTailOffset, realOffset);
                 if (file.destroy(1000)) {
                     willRemoveFiles.add(file);
                 }
@@ -409,23 +388,11 @@ public class ConsumeQueueExt {
      */
     public static class CqExtUnit {
         public static final short MIN_EXT_UNIT_SIZE
-            = 2 * 1 // size, 32k max
-            + 8 * 2 // msg time + tagCode
-            + 2; // bitMapSize
+                = 2 * 1 // size, 32k max
+                + 8 * 2 // msg time + tagCode
+                + 2; // bitMapSize
 
         public static final int MAX_EXT_UNIT_SIZE = Short.MAX_VALUE;
-
-        public CqExtUnit() {
-        }
-
-        public CqExtUnit(Long tagsCode, long msgStoreTime, byte[] filterBitMap) {
-            this.tagsCode = tagsCode == null ? 0 : tagsCode;
-            this.msgStoreTime = msgStoreTime;
-            this.filterBitMap = filterBitMap;
-            this.bitMapSize = (short) (filterBitMap == null ? 0 : filterBitMap.length);
-            this.size = (short) (MIN_EXT_UNIT_SIZE + this.bitMapSize);
-        }
-
         /**
          * unit size
          */
@@ -446,6 +413,17 @@ public class ConsumeQueueExt {
          * filter bit map
          */
         private byte[] filterBitMap;
+
+        public CqExtUnit() {
+        }
+
+        public CqExtUnit(Long tagsCode, long msgStoreTime, byte[] filterBitMap) {
+            this.tagsCode = tagsCode == null ? 0 : tagsCode;
+            this.msgStoreTime = msgStoreTime;
+            this.filterBitMap = filterBitMap;
+            this.bitMapSize = (short) (filterBitMap == null ? 0 : filterBitMap.length);
+            this.size = (short) (MIN_EXT_UNIT_SIZE + this.bitMapSize);
+        }
 
         /**
          * build unit from buffer from current position.
@@ -605,12 +583,12 @@ public class ConsumeQueueExt {
         @Override
         public String toString() {
             return "CqExtUnit{" +
-                "size=" + size +
-                ", tagsCode=" + tagsCode +
-                ", msgStoreTime=" + msgStoreTime +
-                ", bitMapSize=" + bitMapSize +
-                ", filterBitMap=" + Arrays.toString(filterBitMap) +
-                '}';
+                    "size=" + size +
+                    ", tagsCode=" + tagsCode +
+                    ", msgStoreTime=" + msgStoreTime +
+                    ", bitMapSize=" + bitMapSize +
+                    ", filterBitMap=" + Arrays.toString(filterBitMap) +
+                    '}';
         }
     }
 }

@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.tools.command.queue;
 
 import com.alibaba.fastjson.JSON;
@@ -36,10 +19,10 @@ public class QueryConsumeQueueCommand implements SubCommand {
         QueryConsumeQueueCommand cmd = new QueryConsumeQueueCommand();
 
         Options options = ServerUtil.buildCommandlineOptions(new Options());
-        String[] subargs = new String[] {"-t TopicTest", "-q 0", "-i 6447", "-b 100.81.165.119:10911"};
+        String[] subargs = new String[]{"-t TopicTest", "-q 0", "-i 6447", "-b 100.81.165.119:10911"};
         final CommandLine commandLine =
-            ServerUtil.parseCmdLine("mqadmin " + cmd.commandName(), subargs, cmd.buildCommandlineOptions(options),
-                new PosixParser());
+                ServerUtil.parseCmdLine("mqadmin " + cmd.commandName(), subargs, cmd.buildCommandlineOptions(options),
+                        new PosixParser());
         cmd.execute(commandLine, options, null);
     }
 
@@ -108,7 +91,7 @@ public class QueryConsumeQueueCommand implements SubCommand {
                 TopicRouteData topicRouteData = defaultMQAdminExt.examineTopicRouteInfo(topic);
 
                 if (topicRouteData == null || topicRouteData.getBrokerDatas() == null
-                    || topicRouteData.getBrokerDatas().isEmpty()) {
+                        || topicRouteData.getBrokerDatas().isEmpty()) {
                     throw new Exception("No topic route data!");
                 }
 
@@ -116,7 +99,7 @@ public class QueryConsumeQueueCommand implements SubCommand {
             }
 
             QueryConsumeQueueResponseBody queryConsumeQueueResponseBody = defaultMQAdminExt.queryConsumeQueue(
-                broker, topic, queueId, index, count, consumerGroup
+                    broker, topic, queueId, index, count, consumerGroup
             );
 
             if (queryConsumeQueueResponseBody.getSubscriptionData() != null) {
@@ -130,7 +113,7 @@ public class QueryConsumeQueueCommand implements SubCommand {
             }
 
             System.out.printf("Queue data: \nmax: %d, min: %d\n", queryConsumeQueueResponseBody.getMaxQueueIndex(),
-                queryConsumeQueueResponseBody.getMinQueueIndex());
+                    queryConsumeQueueResponseBody.getMinQueueIndex());
             System.out.print("======================================\n");
 
             if (queryConsumeQueueResponseBody.getQueueData() != null) {

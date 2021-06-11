@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.tools.command.consumer;
 
 import org.apache.commons.cli.CommandLine;
@@ -92,7 +76,7 @@ public class UpdateSubGroupSubCommand implements SubCommand {
 
     @Override
     public void execute(final CommandLine commandLine, final Options options,
-        RPCHook rpcHook) throws SubCommandException {
+                        RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
 
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -108,31 +92,31 @@ public class UpdateSubGroupSubCommand implements SubCommand {
             // consumeEnable
             if (commandLine.hasOption('s')) {
                 subscriptionGroupConfig.setConsumeEnable(Boolean.parseBoolean(commandLine.getOptionValue('s')
-                    .trim()));
+                        .trim()));
             }
 
             // consumeFromMinEnable
             if (commandLine.hasOption('m')) {
                 subscriptionGroupConfig.setConsumeFromMinEnable(Boolean.parseBoolean(commandLine
-                    .getOptionValue('m').trim()));
+                        .getOptionValue('m').trim()));
             }
 
             // consumeBroadcastEnable
             if (commandLine.hasOption('d')) {
                 subscriptionGroupConfig.setConsumeBroadcastEnable(Boolean.parseBoolean(commandLine
-                    .getOptionValue('d').trim()));
+                        .getOptionValue('d').trim()));
             }
 
             // retryQueueNums
             if (commandLine.hasOption('q')) {
                 subscriptionGroupConfig.setRetryQueueNums(Integer.parseInt(commandLine.getOptionValue('q')
-                    .trim()));
+                        .trim()));
             }
 
             // retryMaxTimes
             if (commandLine.hasOption('r')) {
                 subscriptionGroupConfig.setRetryMaxTimes(Integer.parseInt(commandLine.getOptionValue('r')
-                    .trim()));
+                        .trim()));
             }
 
             // brokerId
@@ -143,13 +127,13 @@ public class UpdateSubGroupSubCommand implements SubCommand {
             // whichBrokerWhenConsumeSlowly
             if (commandLine.hasOption('w')) {
                 subscriptionGroupConfig.setWhichBrokerWhenConsumeSlowly(Long.parseLong(commandLine
-                    .getOptionValue('w').trim()));
+                        .getOptionValue('w').trim()));
             }
 
             // notifyConsumerIdsChanged
             if (commandLine.hasOption('a')) {
                 subscriptionGroupConfig.setNotifyConsumerIdsChangedEnable(Boolean.parseBoolean(commandLine
-                    .getOptionValue('a').trim()));
+                        .getOptionValue('a').trim()));
             }
 
             if (commandLine.hasOption('b')) {
@@ -167,7 +151,7 @@ public class UpdateSubGroupSubCommand implements SubCommand {
 
                 defaultMQAdminExt.start();
                 Set<String> masterSet =
-                    CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String addr : masterSet) {
                     try {
                         defaultMQAdminExt.createAndUpdateSubscriptionGroupConfig(addr, subscriptionGroupConfig);

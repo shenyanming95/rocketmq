@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.client.consumer;
 
 import org.apache.rocketmq.client.consumer.listener.MessageListener;
@@ -49,23 +33,23 @@ public interface MQPushConsumer extends MQConsumer {
      * Subscribe some topic
      *
      * @param subExpression subscription expression.it only support or operation such as "tag1 || tag2 || tag3" <br> if
-     * null or * expression,meaning subscribe
-     * all
+     *                      null or * expression,meaning subscribe
+     *                      all
      */
     void subscribe(final String topic, final String subExpression) throws MQClientException;
 
     /**
      * This method will be removed in the version 5.0.0,because filterServer was removed,and method <code>subscribe(final String topic, final MessageSelector messageSelector)</code>
      * is recommended.
-     *
+     * <p>
      * Subscribe some topic
      *
-     * @param fullClassName full class name,must extend org.apache.rocketmq.common.filter. MessageFilter
+     * @param fullClassName     full class name,must extend org.apache.rocketmq.common.filter. MessageFilter
      * @param filterClassSource class source code,used UTF-8 file encoding,must be responsible for your code safety
      */
     @Deprecated
     void subscribe(final String topic, final String fullClassName,
-        final String filterClassSource) throws MQClientException;
+                   final String filterClassSource) throws MQClientException;
 
     /**
      * Subscribe some topic with selector.

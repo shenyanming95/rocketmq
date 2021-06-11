@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.tools.command.message;
 
 import org.apache.commons.cli.CommandLine;
@@ -50,7 +34,7 @@ public class PrintMessageSubCommand implements SubCommand {
         for (MessageExt msg : msgs) {
             try {
                 System.out.printf("MSGID: %s %s BODY: %s%n", msg.getMsgId(), msg.toString(),
-                    printBody ? new String(msg.getBody(), charsetName) : "NOT PRINT BODY");
+                        printBody ? new String(msg.getBody(), charsetName) : "NOT PRINT BODY");
             } catch (UnsupportedEncodingException e) {
             }
         }
@@ -81,20 +65,20 @@ public class PrintMessageSubCommand implements SubCommand {
         options.addOption(opt);
 
         opt =
-            new Option("b", "beginTimestamp ", true,
-                "Begin timestamp[currentTimeMillis|yyyy-MM-dd#HH:mm:ss:SSS]");
+                new Option("b", "beginTimestamp ", true,
+                        "Begin timestamp[currentTimeMillis|yyyy-MM-dd#HH:mm:ss:SSS]");
         opt.setRequired(false);
         options.addOption(opt);
 
         opt =
-            new Option("e", "endTimestamp ", true,
-                "End timestamp[currentTimeMillis|yyyy-MM-dd#HH:mm:ss:SSS]");
+                new Option("e", "endTimestamp ", true,
+                        "End timestamp[currentTimeMillis|yyyy-MM-dd#HH:mm:ss:SSS]");
         opt.setRequired(false);
         options.addOption(opt);
 
         opt =
-            new Option("d", "printBody ", true,
-                "print body");
+                new Option("d", "printBody ", true,
+                        "print body");
         opt.setRequired(false);
         options.addOption(opt);
 
@@ -109,10 +93,10 @@ public class PrintMessageSubCommand implements SubCommand {
             String topic = commandLine.getOptionValue('t').trim();
 
             String charsetName =
-                !commandLine.hasOption('c') ? "UTF-8" : commandLine.getOptionValue('c').trim();
+                    !commandLine.hasOption('c') ? "UTF-8" : commandLine.getOptionValue('c').trim();
 
             String subExpression =
-                !commandLine.hasOption('s') ? "*" : commandLine.getOptionValue('s').trim();
+                    !commandLine.hasOption('s') ? "*" : commandLine.getOptionValue('s').trim();
 
             boolean printBody = !commandLine.hasOption('d') || Boolean.parseBoolean(commandLine.getOptionValue('d').trim());
 

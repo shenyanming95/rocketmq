@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.tools.command.message;
 
 import org.apache.commons.cli.CommandLine;
@@ -73,16 +57,16 @@ public class CheckMsgSendRTCommand implements SubCommand {
             boolean sendSuccess = false;
             String topic = commandLine.getOptionValue('t').trim();
             long amount = !commandLine.hasOption('a') ? 100 : Long.parseLong(commandLine
-                .getOptionValue('a').trim());
+                    .getOptionValue('a').trim());
             long msgSize = !commandLine.hasOption('s') ? 128 : Long.parseLong(commandLine
-                .getOptionValue('s').trim());
+                    .getOptionValue('s').trim());
             Message msg = new Message(topic, getStringBySize(msgSize).getBytes(MixAll.DEFAULT_CHARSET));
 
             System.out.printf("%-32s  %-4s  %-20s    %s%n",
-                "#Broker Name",
-                "#QID",
-                "#Send Result",
-                "#RT"
+                    "#Broker Name",
+                    "#QID",
+                    "#Send Result",
+                    "#RT"
             );
             for (int i = 0; i < amount; i++) {
                 start = System.currentTimeMillis();
@@ -109,10 +93,10 @@ public class CheckMsgSendRTCommand implements SubCommand {
                 }
 
                 System.out.printf("%-32s  %-4s  %-20s    %s%n",
-                    brokerName,
-                    queueId,
-                    sendSuccess,
-                    end - start
+                        brokerName,
+                        queueId,
+                        sendSuccess,
+                        end - start
                 );
             }
 

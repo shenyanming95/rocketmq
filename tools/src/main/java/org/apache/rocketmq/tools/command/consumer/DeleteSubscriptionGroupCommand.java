@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.tools.command.consumer;
 
 import org.apache.commons.cli.CommandLine;
@@ -72,7 +56,7 @@ public class DeleteSubscriptionGroupCommand implements SubCommand {
 
                 adminExt.deleteSubscriptionGroup(addr, groupName);
                 System.out.printf("delete subscription group [%s] from broker [%s] success.%n", groupName,
-                    addr);
+                        addr);
 
                 return;
             } else if (commandLine.hasOption('c')) {
@@ -83,15 +67,15 @@ public class DeleteSubscriptionGroupCommand implements SubCommand {
                 for (String master : masterSet) {
                     adminExt.deleteSubscriptionGroup(master, groupName);
                     System.out.printf(
-                        "delete subscription group [%s] from broker [%s] in cluster [%s] success.%n",
-                        groupName, master, clusterName);
+                            "delete subscription group [%s] from broker [%s] in cluster [%s] success.%n",
+                            groupName, master, clusterName);
                 }
 
                 try {
                     DeleteTopicSubCommand.deleteTopic(adminExt, clusterName, MixAll.RETRY_GROUP_TOPIC_PREFIX
-                        + groupName);
+                            + groupName);
                     DeleteTopicSubCommand.deleteTopic(adminExt, clusterName, MixAll.DLQ_GROUP_TOPIC_PREFIX
-                        + groupName);
+                            + groupName);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

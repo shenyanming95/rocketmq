@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.tools.command.broker;
 
 import org.apache.commons.cli.CommandLine;
@@ -29,7 +13,11 @@ import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
 import org.apache.rocketmq.tools.command.SubCommand;
 import org.apache.rocketmq.tools.command.SubCommandException;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class BrokerConsumeStatsSubCommad implements SubCommand {
 
@@ -43,8 +31,7 @@ public class BrokerConsumeStatsSubCommad implements SubCommand {
             defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
             try {
                 defaultMQAdminExt.start();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new SubCommandException(this.getClass().getSimpleName() + " command failed", e);
             }
             return defaultMQAdminExt;
@@ -85,7 +72,7 @@ public class BrokerConsumeStatsSubCommad implements SubCommand {
     @Override
     public void execute(CommandLine commandLine, Options options, RPCHook rpcHook) throws SubCommandException {
         try {
-            defaultMQAdminExt =  createMQAdminExt(rpcHook);
+            defaultMQAdminExt = createMQAdminExt(rpcHook);
 
             String brokerAddr = commandLine.getOptionValue('b').trim();
             boolean isOrder = false;
@@ -103,14 +90,14 @@ public class BrokerConsumeStatsSubCommad implements SubCommand {
 
             ConsumeStatsList consumeStatsList = defaultMQAdminExt.fetchConsumeStatsInBroker(brokerAddr, isOrder, timeoutMillis);
             System.out.printf("%-32s  %-32s  %-32s  %-4s  %-20s  %-20s  %-20s  %s%n",
-                "#Topic",
-                "#Group",
-                "#Broker Name",
-                "#QID",
-                "#Broker Offset",
-                "#Consumer Offset",
-                "#Diff",
-                "#LastTime");
+                    "#Topic",
+                    "#Group",
+                    "#Broker Name",
+                    "#QID",
+                    "#Broker Offset",
+                    "#Consumer Offset",
+                    "#Diff",
+                    "#LastTime");
             for (Map<String, List<ConsumeStats>> map : consumeStatsList.getConsumeStatsList()) {
                 for (Map.Entry<String, List<ConsumeStats>> entry : map.entrySet()) {
                     String group = entry.getKey();
@@ -134,14 +121,14 @@ public class BrokerConsumeStatsSubCommad implements SubCommand {
                             }
                             if (offsetWrapper.getLastTimestamp() > 0)
                                 System.out.printf("%-32s  %-32s  %-32s  %-4d  %-20d  %-20d  %-20d  %s%n",
-                                    UtilAll.frontStringAtLeast(mq.getTopic(), 32),
-                                    group,
-                                    UtilAll.frontStringAtLeast(mq.getBrokerName(), 32),
-                                    mq.getQueueId(),
-                                    offsetWrapper.getBrokerOffset(),
-                                    offsetWrapper.getConsumerOffset(),
-                                    diff,
-                                    lastTime
+                                        UtilAll.frontStringAtLeast(mq.getTopic(), 32),
+                                        group,
+                                        UtilAll.frontStringAtLeast(mq.getBrokerName(), 32),
+                                        mq.getQueueId(),
+                                        offsetWrapper.getBrokerOffset(),
+                                        offsetWrapper.getConsumerOffset(),
+                                        diff,
+                                        lastTime
                                 );
                         }
                     }

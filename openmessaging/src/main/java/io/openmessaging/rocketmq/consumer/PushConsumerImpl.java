@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.openmessaging.rocketmq.consumer;
 
 import io.openmessaging.BytesMessage;
@@ -45,9 +29,9 @@ import java.util.concurrent.TimeUnit;
 public class PushConsumerImpl implements PushConsumer {
     private final DefaultMQPushConsumer rocketmqPushConsumer;
     private final KeyValue properties;
-    private boolean started = false;
     private final Map<String, MessageListener> subscribeTable = new ConcurrentHashMap<>();
     private final ClientConfig clientConfig;
+    private boolean started = false;
 
     public PushConsumerImpl(final KeyValue properties) {
         this.rocketmqPushConsumer = new DefaultMQPushConsumer();
@@ -166,7 +150,7 @@ public class PushConsumerImpl implements PushConsumer {
 
         @Override
         public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> rmqMsgList,
-            ConsumeConcurrentlyContext contextRMQ) {
+                                                        ConsumeConcurrentlyContext contextRMQ) {
             MessageExt rmqMsg = rmqMsgList.get(0);
             BytesMessage omsMsg = OMSUtil.msgConvert(rmqMsg);
 
@@ -174,7 +158,7 @@ public class PushConsumerImpl implements PushConsumer {
 
             if (listener == null) {
                 throw new OMSRuntimeException("-1",
-                    String.format("The topic/queue %s isn't attached to this consumer", rmqMsg.getTopic()));
+                        String.format("The topic/queue %s isn't attached to this consumer", rmqMsg.getTopic()));
             }
 
             final KeyValue contextProperties = OMS.newKeyValue();
@@ -192,7 +176,7 @@ public class PushConsumerImpl implements PushConsumer {
                 public void ack() {
                     sync.countDown();
                     contextProperties.put(NonStandardKeys.MESSAGE_CONSUME_STATUS,
-                        ConsumeConcurrentlyStatus.CONSUME_SUCCESS.name());
+                            ConsumeConcurrentlyStatus.CONSUME_SUCCESS.name());
                 }
             };
             long begin = System.currentTimeMillis();

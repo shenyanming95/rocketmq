@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.logging.inner;
 
 import java.util.Enumeration;
@@ -27,23 +10,20 @@ public class Logger implements Appender.AppenderPipeline {
     private static final String FQCN = Logger.class.getName();
 
     private static final DefaultLoggerRepository REPOSITORY = new DefaultLoggerRepository(new RootLogger(Level.DEBUG));
-
-    public static LoggerRepository getRepository() {
-        return REPOSITORY;
-    }
-
+    Appender.AppenderPipelineImpl appenderPipeline;
     private String name;
 
     volatile private Level level;
 
     volatile private Logger parent;
-
-    Appender.AppenderPipelineImpl appenderPipeline;
-
     private boolean additive = true;
 
     private Logger(String name) {
         this.name = name;
+    }
+
+    public static LoggerRepository getRepository() {
+        return REPOSITORY;
     }
 
     static public Logger getLogger(String name) {
@@ -174,6 +154,9 @@ public class Logger implements Appender.AppenderPipeline {
         return this.level;
     }
 
+    public void setLevel(Level level) {
+        this.level = level;
+    }
 
     public void info(Object message) {
         if (getRepository().isDisabled(Level.INFO_INT)) {
@@ -222,10 +205,6 @@ public class Logger implements Appender.AppenderPipeline {
         this.additive = additive;
     }
 
-    public void setLevel(Level level) {
-        this.level = level;
-    }
-
     public void warn(Object message) {
         if (getRepository().isDisabled(Level.WARN_INT)) {
             return;
@@ -249,11 +228,11 @@ public class Logger implements Appender.AppenderPipeline {
 
         boolean isDisabled(int level);
 
-        void setLogLevel(Level level);
-
         void emitNoAppenderWarning(Logger cat);
 
         Level getLogLevel();
+
+        void setLogLevel(Level level);
 
         Logger getLogger(String name);
 
@@ -276,7 +255,7 @@ public class Logger implements Appender.AppenderPipeline {
 
     public static class DefaultLoggerRepository implements LoggerRepository {
 
-        final Hashtable<CategoryKey,Object> ht = new Hashtable<CategoryKey,Object>();
+        final Hashtable<CategoryKey, Object> ht = new Hashtable<CategoryKey, Object>();
         Logger root;
 
         int logLevelInt;
@@ -306,17 +285,16 @@ public class Logger implements Appender.AppenderPipeline {
             }
         }
 
+        public Level getLogLevel() {
+            return logLevel;
+        }
+
         public void setLogLevel(Level l) {
             if (l != null) {
                 logLevelInt = l.level;
                 logLevel = l;
             }
         }
-
-        public Level getLogLevel() {
-            return logLevel;
-        }
-
 
         public Logger getLogger(String name) {
             CategoryKey key = new CategoryKey(name);
@@ -354,7 +332,7 @@ public class Logger implements Appender.AppenderPipeline {
             while (elems.hasMoreElements()) {
                 Object o = elems.nextElement();
                 if (o instanceof Logger) {
-                    Logger logger = (Logger)o;
+                    Logger logger = (Logger) o;
                     loggers.addElement(logger);
                 }
             }

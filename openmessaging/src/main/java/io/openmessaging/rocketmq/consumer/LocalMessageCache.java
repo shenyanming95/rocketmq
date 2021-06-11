@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.openmessaging.rocketmq.consumer;
 
 import io.openmessaging.KeyValue;
@@ -36,18 +20,22 @@ import org.apache.rocketmq.logging.InternalLogger;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 
 class LocalMessageCache implements ServiceLifecycle {
+    private final static InternalLogger log = ClientLogger.getLog();
     private final BlockingQueue<ConsumeRequest> consumeRequestCache;
     private final Map<String, ConsumeRequest> consumedRequest;
     private final ConcurrentHashMap<MessageQueue, Long> pullOffsetTable;
     private final DefaultMQPullConsumer rocketmqPullConsumer;
     private final ClientConfig clientConfig;
     private final ScheduledExecutorService cleanExpireMsgExecutors;
-
-    private final static InternalLogger log = ClientLogger.getLog();
 
     LocalMessageCache(final DefaultMQPullConsumer rocketmqPullConsumer, final ClientConfig clientConfig) {
         consumeRequestCache = new LinkedBlockingQueue<>(clientConfig.getRmqPullMessageCacheCapacity());
@@ -56,7 +44,7 @@ class LocalMessageCache implements ServiceLifecycle {
         this.rocketmqPullConsumer = rocketmqPullConsumer;
         this.clientConfig = clientConfig;
         this.cleanExpireMsgExecutors = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
-            "OMS_CleanExpireMsgScheduledThread_"));
+                "OMS_CleanExpireMsgScheduledThread_"));
     }
 
     int nextPullBatchNums() {
@@ -67,7 +55,7 @@ class LocalMessageCache implements ServiceLifecycle {
         if (!pullOffsetTable.containsKey(remoteQueue)) {
             try {
                 pullOffsetTable.putIfAbsent(remoteQueue,
-                    rocketmqPullConsumer.fetchConsumeOffset(remoteQueue, false));
+                        rocketmqPullConsumer.fetchConsumeOffset(remoteQueue, false));
             } catch (MQClientException e) {
                 log.error("An error occurred in fetch consume offset process.", e);
             }
@@ -152,7 +140,7 @@ class LocalMessageCache implements ServiceLifecycle {
 
     private void cleanExpireMsg() {
         for (final Map.Entry<MessageQueue, ProcessQueue> next : rocketmqPullConsumer.getDefaultMQPullConsumerImpl()
-            .getRebalanceImpl().getProcessQueueTable().entrySet()) {
+                .getRebalanceImpl().getProcessQueueTable().entrySet()) {
             ProcessQueue pq = next.getValue();
             MessageQueue mq = next.getKey();
             ReadWriteLock lockTreeMap = getLockInProcessQueue(pq);
@@ -172,7 +160,7 @@ class LocalMessageCache implements ServiceLifecycle {
                         if (!msgTreeMap.isEmpty()) {
                             msg = msgTreeMap.firstEntry().getValue();
                             if (System.currentTimeMillis() - Long.parseLong(MessageAccessor.getConsumeStartTimeStamp(msg))
-                                > clientConfig.getRmqMessageConsumeTimeout() * 60 * 1000) {
+                                    > clientConfig.getRmqMessageConsumeTimeout() * 60 * 1000) {
                                 //Expired, ack and remove it.
                             } else {
                                 break;
@@ -190,7 +178,7 @@ class LocalMessageCache implements ServiceLifecycle {
                 try {
                     rocketmqPullConsumer.sendMessageBack(msg, 3);
                     log.info("Send expired msg back. topic={}, msgId={}, storeHost={}, queueId={}, queueOffset={}",
-                        msg.getTopic(), msg.getMsgId(), msg.getStoreHost(), msg.getQueueId(), msg.getQueueOffset());
+                            msg.getTopic(), msg.getMsgId(), msg.getStoreHost(), msg.getQueueId(), msg.getQueueOffset());
                     ack(mq, pq, msg);
                 } catch (Exception e) {
                     log.error("Send back expired msg exception", e);

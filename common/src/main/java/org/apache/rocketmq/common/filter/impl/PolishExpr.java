@@ -1,27 +1,12 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.common.filter.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import static org.apache.rocketmq.common.filter.impl.Operator.*;
+import static org.apache.rocketmq.common.filter.impl.Operator.LEFTPARENTHESIS;
+import static org.apache.rocketmq.common.filter.impl.Operator.RIGHTPARENTHESIS;
+import static org.apache.rocketmq.common.filter.impl.Operator.createOperator;
 
 public class PolishExpr {
 
@@ -96,13 +81,13 @@ public class PolishExpr {
             int chValue = (int) expression.charAt(i);
 
             if ((97 <= chValue && chValue <= 122) || (65 <= chValue && chValue <= 90)
-                || (49 <= chValue && chValue <= 57) || 95 == chValue) {
+                    || (49 <= chValue && chValue <= 57) || 95 == chValue) {
 
                 if (Type.OPERATOR == preType || Type.SEPAERATOR == preType || Type.NULL == preType
-                    || Type.PARENTHESIS == preType) {
+                        || Type.PARENTHESIS == preType) {
                     if (Type.OPERATOR == preType) {
                         segments.add(createOperator(expression.substring(wordStartIndex, wordStartIndex
-                            + wordLen)));
+                                + wordLen)));
                     }
                     wordStartIndex = i;
                     wordLen = 0;
@@ -113,7 +98,7 @@ public class PolishExpr {
 
                 if (Type.OPERATOR == preType) {
                     segments.add(createOperator(expression
-                        .substring(wordStartIndex, wordStartIndex + wordLen)));
+                            .substring(wordStartIndex, wordStartIndex + wordLen)));
                     wordStartIndex = -1;
                     wordLen = 0;
                 } else if (Type.OPERAND == preType) {
@@ -129,7 +114,7 @@ public class PolishExpr {
                 if (Type.OPERAND == preType || Type.SEPAERATOR == preType || Type.PARENTHESIS == preType) {
                     if (Type.OPERAND == preType) {
                         segments.add(new Operand(expression.substring(wordStartIndex, wordStartIndex
-                            + wordLen)));
+                                + wordLen)));
                     }
                     wordStartIndex = i;
                     wordLen = 0;
@@ -140,7 +125,7 @@ public class PolishExpr {
 
                 if (Type.OPERATOR == preType) {
                     segments.add(createOperator(expression
-                        .substring(wordStartIndex, wordStartIndex + wordLen)));
+                            .substring(wordStartIndex, wordStartIndex + wordLen)));
                     wordStartIndex = -1;
                     wordLen = 0;
                 } else if (Type.OPERAND == preType) {

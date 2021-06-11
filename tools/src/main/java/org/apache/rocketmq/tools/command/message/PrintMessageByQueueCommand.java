@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.tools.command.message;
 
 import org.apache.commons.cli.CommandLine;
@@ -32,7 +15,11 @@ import org.apache.rocketmq.tools.command.SubCommand;
 import org.apache.rocketmq.tools.command.SubCommandException;
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class PrintMessageByQueueCommand implements SubCommand {
@@ -50,7 +37,7 @@ public class PrintMessageByQueueCommand implements SubCommand {
     }
 
     private static void calculateByTag(final List<MessageExt> msgs, final Map<String, AtomicLong> tagCalmap,
-        final boolean calByTag) {
+                                       final boolean calByTag) {
         if (!calByTag)
             return;
 
@@ -84,14 +71,14 @@ public class PrintMessageByQueueCommand implements SubCommand {
     }
 
     public static void printMessage(final List<MessageExt> msgs, final String charsetName, boolean printMsg,
-        boolean printBody) {
+                                    boolean printBody) {
         if (!printMsg)
             return;
 
         for (MessageExt msg : msgs) {
             try {
                 System.out.printf("MSGID: %s %s BODY: %s%n", msg.getMsgId(), msg.toString(),
-                    printBody ? new String(msg.getBody(), charsetName) : "NOT PRINT BODY");
+                        printBody ? new String(msg.getBody(), charsetName) : "NOT PRINT BODY");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -159,15 +146,15 @@ public class PrintMessageByQueueCommand implements SubCommand {
 
         try {
             String charsetName =
-                !commandLine.hasOption('c') ? "UTF-8" : commandLine.getOptionValue('c').trim();
+                    !commandLine.hasOption('c') ? "UTF-8" : commandLine.getOptionValue('c').trim();
             boolean printMsg =
-                commandLine.hasOption('p') && Boolean.parseBoolean(commandLine.getOptionValue('p').trim());
+                    commandLine.hasOption('p') && Boolean.parseBoolean(commandLine.getOptionValue('p').trim());
             boolean printBody =
-                commandLine.hasOption('d') && Boolean.parseBoolean(commandLine.getOptionValue('d').trim());
+                    commandLine.hasOption('d') && Boolean.parseBoolean(commandLine.getOptionValue('d').trim());
             boolean calByTag =
-                commandLine.hasOption('f') && Boolean.parseBoolean(commandLine.getOptionValue('f').trim());
+                    commandLine.hasOption('f') && Boolean.parseBoolean(commandLine.getOptionValue('f').trim());
             String subExpression =
-                !commandLine.hasOption('s') ? "*" : commandLine.getOptionValue('s').trim();
+                    !commandLine.hasOption('s') ? "*" : commandLine.getOptionValue('s').trim();
 
             String topic = commandLine.getOptionValue('t').trim();
             String brokerName = commandLine.getOptionValue('a').trim();

@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.tools.command.acl;
 
 import org.apache.commons.cli.CommandLine;
@@ -40,15 +24,18 @@ import java.util.Set;
 
 public class ClusterAclConfigVersionListSubCommand implements SubCommand {
 
-    @Override public String commandName() {
+    @Override
+    public String commandName() {
         return "clusterAclConfigVersion";
     }
 
-    @Override public String commandDesc() {
+    @Override
+    public String commandDesc() {
         return "List all of acl config version information in cluster";
     }
 
-    @Override public Options buildCommandlineOptions(Options options) {
+    @Override
+    public Options buildCommandlineOptions(Options options) {
         OptionGroup optionGroup = new OptionGroup();
 
         Option opt = new Option("b", "brokerAddr", true, "query acl config version for which broker");
@@ -59,12 +46,13 @@ public class ClusterAclConfigVersionListSubCommand implements SubCommand {
 
         optionGroup.setRequired(true);
         options.addOptionGroup(optionGroup);
-        
+
         return options;
     }
 
-    @Override public void execute(CommandLine commandLine, Options options,
-        RPCHook rpcHook) throws SubCommandException {
+    @Override
+    public void execute(CommandLine commandLine, Options options,
+                        RPCHook rpcHook) throws SubCommandException {
 
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -85,13 +73,13 @@ public class ClusterAclConfigVersionListSubCommand implements SubCommand {
                 defaultMQAdminExt.start();
 
                 Set<String> masterSet =
-                    CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 System.out.printf("%-16s  %-22s  %-22s  %-20s  %-22s%n",
-                    "#Cluster Name",
-                    "#Broker Name",
-                    "#Broker Addr",
-                    "#AclConfigVersionNum",
-                    "#AclLastUpdateTime"
+                        "#Cluster Name",
+                        "#Broker Name",
+                        "#Broker Addr",
+                        "#AclConfigVersionNum",
+                        "#AclLastUpdateTime"
                 );
                 for (String addr : masterSet) {
                     printClusterBaseInfo(defaultMQAdminExt, addr);
@@ -110,8 +98,8 @@ public class ClusterAclConfigVersionListSubCommand implements SubCommand {
     }
 
     private void printClusterBaseInfo(
-        final DefaultMQAdminExt defaultMQAdminExt, final String addr) throws
-        InterruptedException, MQBrokerException, RemotingException, MQClientException {
+            final DefaultMQAdminExt defaultMQAdminExt, final String addr) throws
+            InterruptedException, MQBrokerException, RemotingException, MQClientException {
 
 
         ClusterAclVersionInfo clusterAclVersionInfo = defaultMQAdminExt.examineBrokerClusterAclVersionInfo(addr);
@@ -122,11 +110,11 @@ public class ClusterAclConfigVersionListSubCommand implements SubCommand {
         String timeStampStr = sdf.format(new Timestamp(aclDataVersion.getTimestamp()));
 
         System.out.printf("%-16s  %-22s  %-22s  %-20s  %-22s%n",
-            clusterAclVersionInfo.getClusterName(),
-            clusterAclVersionInfo.getBrokerName(),
-            clusterAclVersionInfo.getBrokerAddr(),
-            versionNum,
-            timeStampStr
+                clusterAclVersionInfo.getClusterName(),
+                clusterAclVersionInfo.getBrokerName(),
+                clusterAclVersionInfo.getBrokerAddr(),
+                versionNum,
+                timeStampStr
         );
     }
 }

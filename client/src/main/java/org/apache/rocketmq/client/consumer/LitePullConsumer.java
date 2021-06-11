@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.client.consumer;
 
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -46,7 +30,7 @@ public interface LitePullConsumer {
      * Subscribe some topic with subExpression
      *
      * @param subExpression subscription expression.it only support or operation such as "tag1 || tag2 || tag3" <br> if
-     * null or * expression,meaning subscribe all
+     *                      null or * expression,meaning subscribe all
      * @throws MQClientException if there is any client error.
      */
     void subscribe(final String topic, final String subExpression) throws MQClientException;
@@ -85,7 +69,7 @@ public interface LitePullConsumer {
      * Fetch data for the topics or partitions specified using assign API
      *
      * @param timeout The amount time, in milliseconds, spent waiting in poll if data is not available. Must not be
-     * negative
+     *                negative
      * @return list of message, can be null.
      */
     List<MessageExt> poll(long timeout);
@@ -102,10 +86,10 @@ public interface LitePullConsumer {
 
     /**
      * Suspend pulling from the requested message queues.
-     *
+     * <p>
      * Because of the implementation of pre-pull, fetch data in {@link #poll()} will not stop immediately until the
      * messages of the requested message queues drain.
-     *
+     * <p>
      * Note that this method does not affect message queue subscription. In particular, it does not cause a group
      * rebalance.
      *
@@ -172,13 +156,13 @@ public interface LitePullConsumer {
     /**
      * Register a callback for sensing topic metadata changes.
      *
-     * @param topic The topic that need to monitor.
+     * @param topic                           The topic that need to monitor.
      * @param topicMessageQueueChangeListener Callback when topic metadata changes, refer {@link
-     * TopicMessageQueueChangeListener}
+     *                                        TopicMessageQueueChangeListener}
      * @throws MQClientException if there is any client error.
      */
     void registerTopicMessageQueueChangeListener(String topic,
-        TopicMessageQueueChangeListener topicMessageQueueChangeListener) throws MQClientException;
+                                                 TopicMessageQueueChangeListener topicMessageQueueChangeListener) throws MQClientException;
 
     /**
      * Update name server addresses.
@@ -192,7 +176,7 @@ public interface LitePullConsumer {
      *
      * @param messageQueue
      */
-    void seekToBegin(MessageQueue messageQueue)throws MQClientException;
+    void seekToBegin(MessageQueue messageQueue) throws MQClientException;
 
     /**
      * Overrides the fetch offsets with the end offset that the consumer will use on the next poll. If this API is
@@ -201,5 +185,5 @@ public interface LitePullConsumer {
      *
      * @param messageQueue
      */
-    void seekToEnd(MessageQueue messageQueue)throws MQClientException;
+    void seekToEnd(MessageQueue messageQueue) throws MQClientException;
 }

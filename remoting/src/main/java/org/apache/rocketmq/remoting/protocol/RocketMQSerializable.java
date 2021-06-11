@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.remoting.protocol;
 
 import java.nio.ByteBuffer;
@@ -85,10 +69,10 @@ public class RocketMQSerializable {
             Map.Entry<String, String> entry = it.next();
             if (entry.getKey() != null && entry.getValue() != null) {
                 kvLength =
-                    // keySize + Key
-                    2 + entry.getKey().getBytes(CHARSET_UTF8).length
-                        // valSize + val
-                        + 4 + entry.getValue().getBytes(CHARSET_UTF8).length;
+                        // keySize + Key
+                        2 + entry.getKey().getBytes(CHARSET_UTF8).length
+                                // valSize + val
+                                + 4 + entry.getValue().getBytes(CHARSET_UTF8).length;
                 totalLength += kvLength;
             }
         }
@@ -117,18 +101,18 @@ public class RocketMQSerializable {
     private static int calTotalLen(int remark, int ext) {
         // int code(~32767)
         int length = 2
-            // LanguageCode language
-            + 1
-            // int version(~32767)
-            + 2
-            // int opaque
-            + 4
-            // int flag
-            + 4
-            // String remark
-            + 4 + remark
-            // HashMap<String, String> extFields
-            + 4 + ext;
+                // LanguageCode language
+                + 1
+                // int version(~32767)
+                + 2
+                // int opaque
+                + 4
+                // int flag
+                + 4
+                // String remark
+                + 4 + remark
+                // HashMap<String, String> extFields
+                + 4 + ext;
 
         return length;
     }

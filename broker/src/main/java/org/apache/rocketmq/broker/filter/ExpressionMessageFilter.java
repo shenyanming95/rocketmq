@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.broker.filter;
 
 import org.apache.rocketmq.common.constant.LoggerName;
@@ -41,7 +24,7 @@ public class ExpressionMessageFilter implements MessageFilter {
     protected final boolean bloomDataValid;
 
     public ExpressionMessageFilter(SubscriptionData subscriptionData, ConsumerFilterData consumerFilterData,
-        ConsumerFilterManager consumerFilterManager) {
+                                   ConsumerFilterManager consumerFilterManager) {
         this.subscriptionData = subscriptionData;
         this.consumerFilterData = consumerFilterData;
         this.consumerFilterManager = consumerFilterManager;
@@ -82,7 +65,7 @@ public class ExpressionMessageFilter implements MessageFilter {
         } else {
             // no expression or no bloom
             if (consumerFilterData == null || consumerFilterData.getExpression() == null
-                || consumerFilterData.getCompiledExpression() == null || consumerFilterData.getBloomFilterData() == null) {
+                    || consumerFilterData.getCompiledExpression() == null || consumerFilterData.getBloomFilterData() == null) {
                 return true;
             }
 
@@ -95,7 +78,7 @@ public class ExpressionMessageFilter implements MessageFilter {
             byte[] filterBitMap = cqExtUnit.getFilterBitMap();
             BloomFilter bloomFilter = this.consumerFilterManager.getBloomFilter();
             if (filterBitMap == null || !this.bloomDataValid
-                || filterBitMap.length * Byte.SIZE != consumerFilterData.getBloomFilterData().getBitNum()) {
+                    || filterBitMap.length * Byte.SIZE != consumerFilterData.getBloomFilterData().getBitNum()) {
                 return true;
             }
 
@@ -107,7 +90,7 @@ public class ExpressionMessageFilter implements MessageFilter {
                 return ret;
             } catch (Throwable e) {
                 log.error("bloom filter error, sub=" + subscriptionData
-                    + ", filter=" + consumerFilterData + ", bitMap=" + bitsArray, e);
+                        + ", filter=" + consumerFilterData + ", bitMap=" + bitsArray, e);
             }
         }
 
@@ -133,7 +116,7 @@ public class ExpressionMessageFilter implements MessageFilter {
 
         // no expression
         if (realFilterData == null || realFilterData.getExpression() == null
-            || realFilterData.getCompiledExpression() == null) {
+                || realFilterData.getCompiledExpression() == null) {
             return true;
         }
 

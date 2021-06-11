@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.filter.util;
 
 import com.google.common.hash.Hashing;
@@ -36,16 +19,6 @@ public class BloomFilter {
     private int k;
     // bit count, by calculation.
     private int m;
-
-    /**
-     * Create bloom filter by error rate and mapping num.
-     *
-     * @param f error rate
-     * @param n num will mapping to bit
-     */
-    public static BloomFilter createByFn(int f, int n) {
-        return new BloomFilter(f, n);
-    }
 
     /**
      * Constructor.
@@ -78,6 +51,16 @@ public class BloomFilter {
         this.m = (int) Math.ceil(this.n * logMN(2, 1 / errorRate) * logMN(2, Math.E));
         // m%8 = 0
         this.m = (int) (Byte.SIZE * Math.ceil(this.m / (Byte.SIZE * 1.0)));
+    }
+
+    /**
+     * Create bloom filter by error rate and mapping num.
+     *
+     * @param f error rate
+     * @param n num will mapping to bit
+     */
+    public static BloomFilter createByFn(int f, int n) {
+        return new BloomFilter(f, n);
     }
 
     /**
@@ -144,8 +127,8 @@ public class BloomFilter {
     public void hashTo(BloomFilterData filterData, BitsArray bits) {
         if (!isValid(filterData)) {
             throw new IllegalArgumentException(
-                String.format("Bloom filter data may not belong to this filter! %s, %s",
-                    filterData, this.toString())
+                    String.format("Bloom filter data may not belong to this filter! %s, %s",
+                            filterData, this.toString())
             );
         }
         hashTo(filterData.getBitPos(), bits);
@@ -182,8 +165,8 @@ public class BloomFilter {
     public boolean isHit(BloomFilterData filterData, BitsArray bits) {
         if (!isValid(filterData)) {
             throw new IllegalArgumentException(
-                String.format("Bloom filter data may not belong to this filter! %s, %s",
-                    filterData, this.toString())
+                    String.format("Bloom filter data may not belong to this filter! %s, %s",
+                            filterData, this.toString())
             );
         }
         return isHit(filterData.getBitPos(), bits);
@@ -211,7 +194,7 @@ public class BloomFilter {
     protected void check(BitsArray bits) {
         if (bits.bitLength() != this.m) {
             throw new IllegalArgumentException(
-                String.format("Length(%d) of bits in BitsArray is not equal to %d!", bits.bitLength(), this.m)
+                    String.format("Length(%d) of bits in BitsArray is not equal to %d!", bits.bitLength(), this.m)
             );
         }
     }
@@ -225,9 +208,9 @@ public class BloomFilter {
      */
     public boolean isValid(BloomFilterData filterData) {
         if (filterData == null
-            || filterData.getBitNum() != this.m
-            || filterData.getBitPos() == null
-            || filterData.getBitPos().length != this.k) {
+                || filterData.getBitNum() != this.m
+                || filterData.getBitPos() == null
+                || filterData.getBitPos().length != this.k) {
             return false;
         }
 

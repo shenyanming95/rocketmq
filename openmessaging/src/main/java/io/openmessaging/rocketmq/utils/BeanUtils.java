@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.openmessaging.rocketmq.utils;
 
 import io.openmessaging.KeyValue;
@@ -35,6 +19,7 @@ public final class BeanUtils {
      * Maps primitive {@code Class}es to their corresponding wrapper {@code Class}.
      */
     private static Map<Class<?>, Class<?>> primitiveWrapperMap = new HashMap<Class<?>, Class<?>>();
+    private static Map<Class<?>, Class<?>> wrapperMap = new HashMap<Class<?>, Class<?>>();
 
     static {
         primitiveWrapperMap.put(Boolean.TYPE, Boolean.class);
@@ -47,8 +32,6 @@ public final class BeanUtils {
         primitiveWrapperMap.put(Float.TYPE, Float.class);
         primitiveWrapperMap.put(Void.TYPE, Void.TYPE);
     }
-
-    private static Map<Class<?>, Class<?>> wrapperMap = new HashMap<Class<?>, Class<?>>();
 
     static {
         for (final Class<?> primitiveClass : primitiveWrapperMap.keySet()) {
@@ -79,9 +62,9 @@ public final class BeanUtils {
      * to have more than one setter method (with different argument
      * signatures) for the same property.</p>
      *
-     * @param clazz JavaBean class whose properties are being populated
+     * @param clazz      JavaBean class whose properties are being populated
      * @param properties Map keyed by property name, with the corresponding (String or String[]) value(s) to be set
-     * @param <T> Class type
+     * @param <T>        Class type
      * @return Class instance
      */
     public static <T> T populate(final Properties properties, final Class<T> clazz) {
@@ -117,7 +100,7 @@ public final class BeanUtils {
     }
 
     public static void setProperties(Class<?> clazz, Object obj, String methodName,
-        Object value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+                                     Object value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Class<?> parameterClass = getMethodClass(clazz, methodName);
         Method setterMethod = clazz.getMethod(methodName, parameterClass);
         if (parameterClass == Boolean.TYPE) {

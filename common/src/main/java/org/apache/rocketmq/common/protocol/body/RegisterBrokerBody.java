@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.common.protocol.body;
 
 import com.alibaba.fastjson.JSON;
@@ -44,57 +27,6 @@ public class RegisterBrokerBody extends RemotingSerializable {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(LoggerName.COMMON_LOGGER_NAME);
     private TopicConfigSerializeWrapper topicConfigSerializeWrapper = new TopicConfigSerializeWrapper();
     private List<String> filterServerList = new ArrayList<String>();
-
-    public byte[] encode(boolean compress) {
-
-        if (!compress) {
-            return super.encode();
-        }
-        long start = System.currentTimeMillis();
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        DeflaterOutputStream outputStream = new DeflaterOutputStream(byteArrayOutputStream, new Deflater(Deflater.BEST_COMPRESSION));
-        DataVersion dataVersion = topicConfigSerializeWrapper.getDataVersion();
-        ConcurrentMap<String, TopicConfig> topicConfigTable = cloneTopicConfigTable(topicConfigSerializeWrapper.getTopicConfigTable());
-        assert topicConfigTable != null;
-        try {
-            byte[] buffer = dataVersion.encode();
-
-            // write data version
-            outputStream.write(convertIntToByteArray(buffer.length));
-            outputStream.write(buffer);
-
-            int topicNumber = topicConfigTable.size();
-
-            // write number of topic configs
-            outputStream.write(convertIntToByteArray(topicNumber));
-
-            // write topic config entry one by one.
-            for (ConcurrentMap.Entry<String, TopicConfig> next : topicConfigTable.entrySet()) {
-                buffer = next.getValue().encode().getBytes(MixAll.DEFAULT_CHARSET);
-                outputStream.write(convertIntToByteArray(buffer.length));
-                outputStream.write(buffer);
-            }
-
-            buffer = JSON.toJSONString(filterServerList).getBytes(MixAll.DEFAULT_CHARSET);
-
-            // write filter server list json length
-            outputStream.write(convertIntToByteArray(buffer.length));
-
-            // write filter server list json
-            outputStream.write(buffer);
-
-            outputStream.finish();
-            long interval = System.currentTimeMillis() - start;
-            if (interval > 50) {
-                LOGGER.info("Compressing takes {}ms", interval);
-            }
-            return byteArrayOutputStream.toByteArray();
-        } catch (IOException e) {
-            LOGGER.error("Failed to compress RegisterBrokerBody object", e);
-        }
-
-        return null;
-    }
 
     public static RegisterBrokerBody decode(byte[] data, boolean compressed) throws IOException {
         if (!compressed) {
@@ -168,6 +100,69 @@ public class RegisterBrokerBody extends RemotingSerializable {
         return byteBuffer.getInt();
     }
 
+    public static ConcurrentMap<String, TopicConfig> cloneTopicConfigTable(
+            ConcurrentMap<String, TopicConfig> topicConfigConcurrentMap) {
+        ConcurrentHashMap<String, TopicConfig> result = new ConcurrentHashMap<String, TopicConfig>();
+        if (topicConfigConcurrentMap != null) {
+            for (Map.Entry<String, TopicConfig> entry : topicConfigConcurrentMap.entrySet()) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+
+    }
+
+    public byte[] encode(boolean compress) {
+
+        if (!compress) {
+            return super.encode();
+        }
+        long start = System.currentTimeMillis();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        DeflaterOutputStream outputStream = new DeflaterOutputStream(byteArrayOutputStream, new Deflater(Deflater.BEST_COMPRESSION));
+        DataVersion dataVersion = topicConfigSerializeWrapper.getDataVersion();
+        ConcurrentMap<String, TopicConfig> topicConfigTable = cloneTopicConfigTable(topicConfigSerializeWrapper.getTopicConfigTable());
+        assert topicConfigTable != null;
+        try {
+            byte[] buffer = dataVersion.encode();
+
+            // write data version
+            outputStream.write(convertIntToByteArray(buffer.length));
+            outputStream.write(buffer);
+
+            int topicNumber = topicConfigTable.size();
+
+            // write number of topic configs
+            outputStream.write(convertIntToByteArray(topicNumber));
+
+            // write topic config entry one by one.
+            for (ConcurrentMap.Entry<String, TopicConfig> next : topicConfigTable.entrySet()) {
+                buffer = next.getValue().encode().getBytes(MixAll.DEFAULT_CHARSET);
+                outputStream.write(convertIntToByteArray(buffer.length));
+                outputStream.write(buffer);
+            }
+
+            buffer = JSON.toJSONString(filterServerList).getBytes(MixAll.DEFAULT_CHARSET);
+
+            // write filter server list json length
+            outputStream.write(convertIntToByteArray(buffer.length));
+
+            // write filter server list json
+            outputStream.write(buffer);
+
+            outputStream.finish();
+            long interval = System.currentTimeMillis() - start;
+            if (interval > 50) {
+                LOGGER.info("Compressing takes {}ms", interval);
+            }
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            LOGGER.error("Failed to compress RegisterBrokerBody object", e);
+        }
+
+        return null;
+    }
+
     public TopicConfigSerializeWrapper getTopicConfigSerializeWrapper() {
         return topicConfigSerializeWrapper;
     }
@@ -182,17 +177,5 @@ public class RegisterBrokerBody extends RemotingSerializable {
 
     public void setFilterServerList(List<String> filterServerList) {
         this.filterServerList = filterServerList;
-    }
-
-    public static ConcurrentMap<String, TopicConfig> cloneTopicConfigTable(
-        ConcurrentMap<String, TopicConfig> topicConfigConcurrentMap) {
-        ConcurrentHashMap<String, TopicConfig> result = new ConcurrentHashMap<String, TopicConfig>();
-        if (topicConfigConcurrentMap != null) {
-            for (Map.Entry<String, TopicConfig> entry : topicConfigConcurrentMap.entrySet()) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
-
     }
 }

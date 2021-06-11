@@ -1,22 +1,11 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.openmessaging.rocketmq.producer;
 
-import io.openmessaging.*;
+import io.openmessaging.BytesMessage;
+import io.openmessaging.KeyValue;
+import io.openmessaging.Message;
+import io.openmessaging.MessageFactory;
+import io.openmessaging.OMSBuiltinKeys;
+import io.openmessaging.ServiceLifecycle;
 import io.openmessaging.exception.OMSMessageFormatException;
 import io.openmessaging.exception.OMSNotSupportedException;
 import io.openmessaging.exception.OMSRuntimeException;
@@ -40,8 +29,8 @@ abstract class AbstractOMSProducer implements ServiceLifecycle, MessageFactory {
     final static InternalLogger log = ClientLogger.getLog();
     final KeyValue properties;
     final DefaultMQProducer rocketmqProducer;
-    private boolean started = false;
     private final ClientConfig clientConfig;
+    private boolean started = false;
 
     AbstractOMSProducer(final KeyValue properties) {
         this.properties = properties;
@@ -92,20 +81,20 @@ abstract class AbstractOMSProducer implements ServiceLifecycle, MessageFactory {
             if (e.getCause() != null) {
                 if (e.getCause() instanceof RemotingTimeoutException) {
                     return new OMSTimeOutException("-1", String.format("Send message to broker timeout, %dms, Topic=%s, msgId=%s",
-                        this.rocketmqProducer.getSendMsgTimeout(), topic, msgId), e);
+                            this.rocketmqProducer.getSendMsgTimeout(), topic, msgId), e);
                 } else if (e.getCause() instanceof MQBrokerException || e.getCause() instanceof RemotingConnectException) {
                     if (e.getCause() instanceof MQBrokerException) {
                         MQBrokerException brokerException = (MQBrokerException) e.getCause();
                         return new OMSRuntimeException("-1", String.format("Received a broker exception, Topic=%s, msgId=%s, %s",
-                            topic, msgId, brokerException.getErrorMessage()), e);
+                                topic, msgId, brokerException.getErrorMessage()), e);
                     }
 
                     if (e.getCause() instanceof RemotingConnectException) {
-                        RemotingConnectException connectException = (RemotingConnectException)e.getCause();
+                        RemotingConnectException connectException = (RemotingConnectException) e.getCause();
                         return new OMSRuntimeException("-1",
-                            String.format("Network connection experiences failures. Topic=%s, msgId=%s, %s",
-                                topic, msgId, connectException.getMessage()),
-                            e);
+                                String.format("Network connection experiences failures. Topic=%s, msgId=%s, %s",
+                                        topic, msgId, connectException.getMessage()),
+                                e);
                     }
                 }
             }
@@ -114,10 +103,10 @@ abstract class AbstractOMSProducer implements ServiceLifecycle, MessageFactory {
                 MQClientException clientException = (MQClientException) e;
                 if (-1 == clientException.getResponseCode()) {
                     return new OMSRuntimeException("-1", String.format("Topic does not exist, Topic=%s, msgId=%s",
-                        topic, msgId), e);
+                            topic, msgId), e);
                 } else if (ResponseCode.MESSAGE_ILLEGAL == clientException.getResponseCode()) {
                     return new OMSMessageFormatException("-1", String.format("A illegal message for RocketMQ, Topic=%s, msgId=%s",
-                        topic, msgId), e);
+                            topic, msgId), e);
                 }
             }
         }

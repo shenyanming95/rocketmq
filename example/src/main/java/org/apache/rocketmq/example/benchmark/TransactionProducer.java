@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.example.benchmark;
 
 import org.apache.commons.cli.CommandLine;
@@ -22,7 +5,11 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.client.producer.*;
+import org.apache.rocketmq.client.producer.LocalTransactionState;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
+import org.apache.rocketmq.client.producer.TransactionListener;
+import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.common.message.MessageExt;
@@ -31,18 +18,24 @@ import org.apache.rocketmq.srvutil.ServerUtil;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class TransactionProducer {
-    private static final long START_TIME = System.currentTimeMillis();
-    private static final AtomicLong MSG_COUNT = new AtomicLong(0);
-
     //broker max check times should less than this value
     static final int MAX_CHECK_RESULT_IN_MSG = 20;
+    private static final long START_TIME = System.currentTimeMillis();
+    private static final AtomicLong MSG_COUNT = new AtomicLong(0);
 
     public static void main(String[] args) throws MQClientException, UnsupportedEncodingException {
         Options options = ServerUtil.buildCommandlineOptions(new Options());
@@ -94,7 +87,7 @@ public class TransactionProducer {
                     final long dupCheck = end.duplicatedCheck - begin.duplicatedCheck;
 
                     System.out.printf(
-                        "Current Time: %s Send TPS:%5d Max RT(ms):%5d AVG RT(ms):%3.1f Send Failed: %d check: %d unexpectedCheck: %d duplicatedCheck: %d %n",
+                            "Current Time: %s Send TPS:%5d Max RT(ms):%5d AVG RT(ms):%3.1f Send Failed: %d check: %d unexpectedCheck: %d duplicatedCheck: %d %n",
                             System.currentTimeMillis(), sendTps, statsBenchmark.getSendMessageMaxRT().get(), averageRT, failCount, checkCount,
                             unexpectedCheck, dupCheck);
                     statsBenchmark.getSendMessageMaxRT().set(0);
@@ -113,7 +106,7 @@ public class TransactionProducer {
 
         final TransactionListener transactionCheckListener = new TransactionListenerImpl(statsBenchmark, config);
         final TransactionMQProducer producer =
-            new TransactionMQProducer("benchmark_transaction_producer", config.aclEnable ? AclClient.getAclRPCHook() : null);
+                new TransactionMQProducer("benchmark_transaction_producer", config.aclEnable ? AclClient.getAclRPCHook() : null);
         producer.setInstanceName(Long.toString(System.currentTimeMillis()));
         producer.setTransactionListener(transactionCheckListener);
         producer.setDefaultTopicQueueNums(1000);
@@ -250,16 +243,9 @@ public class TransactionProducer {
 }
 
 class TransactionListenerImpl implements TransactionListener {
+    private final LRUMap<Long, Integer> cache = new LRUMap<>(200000);
     private StatsBenchmarkTProducer statBenchmark;
     private TxSendConfig sendConfig;
-    private final LRUMap<Long, Integer> cache = new LRUMap<>(200000);
-
-    private class MsgMeta {
-        long batchId;
-        long msgId;
-        LocalTransactionState sendResult;
-        List<LocalTransactionState> checkResult;
-    }
 
     public TransactionListenerImpl(StatsBenchmarkTProducer statsBenchmark, TxSendConfig sendConfig) {
         this.statBenchmark = statsBenchmark;
@@ -339,6 +325,13 @@ class TransactionListenerImpl implements TransactionListener {
             }
         }
         return msgMeta.checkResult.get(times - 1);
+    }
+
+    private class MsgMeta {
+        long batchId;
+        long msgId;
+        LocalTransactionState sendResult;
+        List<LocalTransactionState> checkResult;
     }
 }
 

@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.rocketmq.tools.command.topic;
 
 import org.apache.commons.cli.CommandLine;
@@ -54,7 +38,7 @@ public class TopicStatusSubCommand implements SubCommand {
 
     @Override
     public void execute(final CommandLine commandLine, final Options options,
-        RPCHook rpcHook) throws SubCommandException {
+                        RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
 
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -69,11 +53,11 @@ public class TopicStatusSubCommand implements SubCommand {
             Collections.sort(mqList);
 
             System.out.printf("%-32s  %-4s  %-20s  %-20s    %s%n",
-                "#Broker Name",
-                "#QID",
-                "#Min Offset",
-                "#Max Offset",
-                "#Last Updated"
+                    "#Broker Name",
+                    "#QID",
+                    "#Min Offset",
+                    "#Max Offset",
+                    "#Last Updated"
             );
 
             for (MessageQueue mq : mqList) {
@@ -85,11 +69,11 @@ public class TopicStatusSubCommand implements SubCommand {
                 }
 
                 System.out.printf("%-32s  %-4d  %-20d  %-20d    %s%n",
-                    UtilAll.frontStringAtLeast(mq.getBrokerName(), 32),
-                    mq.getQueueId(),
-                    topicOffset.getMinOffset(),
-                    topicOffset.getMaxOffset(),
-                    humanTimestamp
+                        UtilAll.frontStringAtLeast(mq.getBrokerName(), 32),
+                        mq.getQueueId(),
+                        topicOffset.getMinOffset(),
+                        topicOffset.getMaxOffset(),
+                        humanTimestamp
                 );
             }
         } catch (Exception e) {

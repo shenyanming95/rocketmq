@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.rocketmq.remoting.netty;
 
 import io.netty.buffer.ByteBuf;
@@ -29,9 +12,9 @@ import java.nio.channels.WritableByteChannel;
 
 /**
  * <p>
- *     By default, file region are directly transferred to socket channel which is known as zero copy. In case we need
- *     to encrypt transmission, data being sent should go through the {@link SslHandler}. This encoder ensures this
- *     process.
+ * By default, file region are directly transferred to socket channel which is known as zero copy. In case we need
+ * to encrypt transmission, data being sent should go through the {@link SslHandler}. This encoder ensures this
+ * process.
  * </p>
  */
 public class FileRegionEncoder extends MessageToByteEncoder<FileRegion> {
@@ -41,7 +24,7 @@ public class FileRegionEncoder extends MessageToByteEncoder<FileRegion> {
      * can be handled by this encoder.
      *
      * @param ctx the {@link io.netty.channel.ChannelHandlerContext} which this {@link
-     * io.netty.handler.codec.MessageToByteEncoder} belongs to
+     *            io.netty.handler.codec.MessageToByteEncoder} belongs to
      * @param msg the message to encode
      * @param out the {@link io.netty.buffer.ByteBuf} into which the encoded message will be written
      * @throws Exception is thrown if an error occurs
