@@ -53,27 +53,17 @@ public class GetConsumerStatusCommand implements SubCommand {
             }
             defaultMQAdminExt.start();
 
-            Map<String, Map<MessageQueue, Long>> consumerStatusTable =
-                    defaultMQAdminExt.getConsumeStatus(topic, group, originClientId);
-            System.out.printf("get consumer status from client. group=%s, topic=%s, originClientId=%s%n",
-                    group, topic, originClientId);
+            Map<String, Map<MessageQueue, Long>> consumerStatusTable = defaultMQAdminExt.getConsumeStatus(topic, group, originClientId);
+            System.out.printf("get consumer status from client. group=%s, topic=%s, originClientId=%s%n", group, topic, originClientId);
 
-            System.out.printf("%-50s  %-15s  %-15s  %-20s%n",
-                    "#clientId",
-                    "#brokerName",
-                    "#queueId",
-                    "#offset");
+            System.out.printf("%-50s  %-15s  %-15s  %-20s%n", "#clientId", "#brokerName", "#queueId", "#offset");
 
             for (Map.Entry<String, Map<MessageQueue, Long>> entry : consumerStatusTable.entrySet()) {
                 String clientId = entry.getKey();
                 Map<MessageQueue, Long> mqTable = entry.getValue();
                 for (Map.Entry<MessageQueue, Long> entry1 : mqTable.entrySet()) {
                     MessageQueue mq = entry1.getKey();
-                    System.out.printf("%-50s  %-15s  %-15d  %-20d%n",
-                            UtilAll.frontStringAtLeast(clientId, 50),
-                            mq.getBrokerName(),
-                            mq.getQueueId(),
-                            mqTable.get(mq));
+                    System.out.printf("%-50s  %-15s  %-15d  %-20d%n", UtilAll.frontStringAtLeast(clientId, 50), mq.getBrokerName(), mq.getQueueId(), mqTable.get(mq));
                 }
             }
         } catch (Exception e) {

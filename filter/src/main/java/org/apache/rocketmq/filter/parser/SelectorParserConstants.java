@@ -86,40 +86,6 @@ public interface SelectorParserConstants {
     /**
      * Literal token values.
      */
-    String[] TOKEN_IMAGE = {
-            "<EOF>",
-            "\" \"",
-            "\"\\t\"",
-            "\"\\n\"",
-            "\"\\r\"",
-            "\"\\f\"",
-            "<LINE_COMMENT>",
-            "<BLOCK_COMMENT>",
-            "\"NOT\"",
-            "\"AND\"",
-            "\"OR\"",
-            "\"BETWEEN\"",
-            "\"IN\"",
-            "\"TRUE\"",
-            "\"FALSE\"",
-            "\"NULL\"",
-            "\"IS\"",
-            "<DECIMAL_LITERAL>",
-            "<FLOATING_POINT_LITERAL>",
-            "<EXPONENT>",
-            "<STRING_LITERAL>",
-            "<ID>",
-            "\"=\"",
-            "\"<>\"",
-            "\">\"",
-            "\">=\"",
-            "\"<\"",
-            "\"<=\"",
-            "\"(\"",
-            "\",\"",
-            "\")\"",
-            "\"+\"",
-            "\"-\"",
-    };
+    String[] TOKEN_IMAGE = {"<EOF>", "\" \"", "\"\\t\"", "\"\\n\"", "\"\\r\"", "\"\\f\"", "<LINE_COMMENT>", "<BLOCK_COMMENT>", "\"NOT\"", "\"AND\"", "\"OR\"", "\"BETWEEN\"", "\"IN\"", "\"TRUE\"", "\"FALSE\"", "\"NULL\"", "\"IS\"", "<DECIMAL_LITERAL>", "<FLOATING_POINT_LITERAL>", "<EXPONENT>", "<STRING_LITERAL>", "<ID>", "\"=\"", "\"<>\"", "\">\"", "\">=\"", "\"<\"", "\"<=\"", "\"(\"", "\",\"", "\")\"", "\"+\"", "\"-\"",};
 
 }

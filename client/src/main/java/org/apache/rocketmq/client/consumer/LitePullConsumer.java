@@ -161,8 +161,7 @@ public interface LitePullConsumer {
      *                                        TopicMessageQueueChangeListener}
      * @throws MQClientException if there is any client error.
      */
-    void registerTopicMessageQueueChangeListener(String topic,
-                                                 TopicMessageQueueChangeListener topicMessageQueueChangeListener) throws MQClientException;
+    void registerTopicMessageQueueChangeListener(String topic, TopicMessageQueueChangeListener topicMessageQueueChangeListener) throws MQClientException;
 
     /**
      * Update name server addresses.

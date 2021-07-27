@@ -9,25 +9,13 @@ import org.apache.rocketmq.remoting.exception.RemotingSendRequestException;
 import org.apache.rocketmq.remoting.exception.RemotingTimeoutException;
 import org.apache.rocketmq.tools.admin.MQAdminExt;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CommandUtil {
 
-    private static final String ERROR_MESSAGE = "Make sure the specified clusterName exists or the name server " +
-            "connected to is correct.";
+    private static final String ERROR_MESSAGE = "Make sure the specified clusterName exists or the name server " + "connected to is correct.";
 
-    public static Map<String/*master addr*/, List<String>/*slave addr*/> fetchMasterAndSlaveDistinguish(
-            final MQAdminExt adminExt, final String clusterName)
-            throws InterruptedException, RemotingConnectException,
-            RemotingTimeoutException, RemotingSendRequestException,
-            MQBrokerException {
+    public static Map<String/*master addr*/, List<String>/*slave addr*/> fetchMasterAndSlaveDistinguish(final MQAdminExt adminExt, final String clusterName) throws InterruptedException, RemotingConnectException, RemotingTimeoutException, RemotingSendRequestException, MQBrokerException {
         Map<String, List<String>> masterAndSlaveMap = new HashMap<String, List<String>>(4);
 
         ClusterInfo clusterInfoSerializeWrapper = adminExt.examineBrokerClusterInfo();
@@ -60,9 +48,7 @@ public class CommandUtil {
         return masterAndSlaveMap;
     }
 
-    public static Set<String> fetchMasterAddrByClusterName(final MQAdminExt adminExt, final String clusterName)
-            throws InterruptedException, RemotingConnectException, RemotingTimeoutException,
-            RemotingSendRequestException, MQBrokerException {
+    public static Set<String> fetchMasterAddrByClusterName(final MQAdminExt adminExt, final String clusterName) throws InterruptedException, RemotingConnectException, RemotingTimeoutException, RemotingSendRequestException, MQBrokerException {
         Set<String> masterSet = new HashSet<String>();
 
         ClusterInfo clusterInfoSerializeWrapper = adminExt.examineBrokerClusterInfo();
@@ -87,9 +73,7 @@ public class CommandUtil {
         return masterSet;
     }
 
-    public static Set<String> fetchMasterAndSlaveAddrByClusterName(final MQAdminExt adminExt, final String clusterName)
-            throws InterruptedException, RemotingConnectException, RemotingTimeoutException,
-            RemotingSendRequestException, MQBrokerException {
+    public static Set<String> fetchMasterAndSlaveAddrByClusterName(final MQAdminExt adminExt, final String clusterName) throws InterruptedException, RemotingConnectException, RemotingTimeoutException, RemotingSendRequestException, MQBrokerException {
         Set<String> brokerAddressSet = new HashSet<String>();
         ClusterInfo clusterInfoSerializeWrapper = adminExt.examineBrokerClusterInfo();
         Set<String> brokerNameSet = clusterInfoSerializeWrapper.getClusterAddrTable().get(clusterName);
@@ -108,8 +92,7 @@ public class CommandUtil {
         return brokerAddressSet;
     }
 
-    public static Set<String> fetchBrokerNameByClusterName(final MQAdminExt adminExt, final String clusterName)
-            throws Exception {
+    public static Set<String> fetchBrokerNameByClusterName(final MQAdminExt adminExt, final String clusterName) throws Exception {
         ClusterInfo clusterInfoSerializeWrapper = adminExt.examineBrokerClusterInfo();
         Set<String> brokerNameSet = clusterInfoSerializeWrapper.getClusterAddrTable().get(clusterName);
         if (brokerNameSet.isEmpty()) {

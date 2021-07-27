@@ -17,16 +17,11 @@ public class Operator extends Op {
     }
 
     public static Operator createOperator(String operator) {
-        if (LEFTPARENTHESIS.getSymbol().equals(operator))
-            return LEFTPARENTHESIS;
-        else if (RIGHTPARENTHESIS.getSymbol().equals(operator))
-            return RIGHTPARENTHESIS;
-        else if (AND.getSymbol().equals(operator))
-            return AND;
-        else if (OR.getSymbol().equals(operator))
-            return OR;
-        else
-            throw new IllegalArgumentException("unsupport operator " + operator);
+        if (LEFTPARENTHESIS.getSymbol().equals(operator)) return LEFTPARENTHESIS;
+        else if (RIGHTPARENTHESIS.getSymbol().equals(operator)) return RIGHTPARENTHESIS;
+        else if (AND.getSymbol().equals(operator)) return AND;
+        else if (OR.getSymbol().equals(operator)) return OR;
+        else throw new IllegalArgumentException("unsupport operator " + operator);
     }
 
     public int getPriority() {
@@ -38,12 +33,9 @@ public class Operator extends Op {
     }
 
     public int compare(Operator operator) {
-        if (this.priority > operator.priority)
-            return 1;
-        else if (this.priority == operator.priority)
-            return 0;
-        else
-            return -1;
+        if (this.priority > operator.priority) return 1;
+        else if (this.priority == operator.priority) return 0;
+        else return -1;
     }
 
     public boolean isSpecifiedOp(String operator) {

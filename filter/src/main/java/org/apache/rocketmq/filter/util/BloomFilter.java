@@ -126,10 +126,7 @@ public class BloomFilter {
      */
     public void hashTo(BloomFilterData filterData, BitsArray bits) {
         if (!isValid(filterData)) {
-            throw new IllegalArgumentException(
-                    String.format("Bloom filter data may not belong to this filter! %s, %s",
-                            filterData, this.toString())
-            );
+            throw new IllegalArgumentException(String.format("Bloom filter data may not belong to this filter! %s, %s", filterData, this.toString()));
         }
         hashTo(filterData.getBitPos(), bits);
     }
@@ -164,10 +161,7 @@ public class BloomFilter {
      */
     public boolean isHit(BloomFilterData filterData, BitsArray bits) {
         if (!isValid(filterData)) {
-            throw new IllegalArgumentException(
-                    String.format("Bloom filter data may not belong to this filter! %s, %s",
-                            filterData, this.toString())
-            );
+            throw new IllegalArgumentException(String.format("Bloom filter data may not belong to this filter! %s, %s", filterData, this.toString()));
         }
         return isHit(filterData.getBitPos(), bits);
     }
@@ -193,9 +187,7 @@ public class BloomFilter {
 
     protected void check(BitsArray bits) {
         if (bits.bitLength() != this.m) {
-            throw new IllegalArgumentException(
-                    String.format("Length(%d) of bits in BitsArray is not equal to %d!", bits.bitLength(), this.m)
-            );
+            throw new IllegalArgumentException(String.format("Length(%d) of bits in BitsArray is not equal to %d!", bits.bitLength(), this.m));
         }
     }
 
@@ -207,10 +199,7 @@ public class BloomFilter {
      * <li>4. {@link org.apache.rocketmq.filter.util.BloomFilterData#getBitPos}'s length is equal to {@code k}</li>
      */
     public boolean isValid(BloomFilterData filterData) {
-        if (filterData == null
-                || filterData.getBitNum() != this.m
-                || filterData.getBitPos() == null
-                || filterData.getBitPos().length != this.k) {
+        if (filterData == null || filterData.getBitNum() != this.m || filterData.getBitPos() == null || filterData.getBitPos().length != this.k) {
             return false;
         }
 
@@ -247,21 +236,15 @@ public class BloomFilter {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof BloomFilter))
-            return false;
+        if (this == o) return true;
+        if (!(o instanceof BloomFilter)) return false;
 
         BloomFilter that = (BloomFilter) o;
 
-        if (f != that.f)
-            return false;
-        if (k != that.k)
-            return false;
-        if (m != that.m)
-            return false;
-        if (n != that.n)
-            return false;
+        if (f != that.f) return false;
+        if (k != that.k) return false;
+        if (m != that.m) return false;
+        if (n != that.n) return false;
 
         return true;
     }

@@ -44,8 +44,7 @@ public class ConsistentHashRouter<T extends Node> {
      * @param vNodeCount the number of virtual node of the physical node. Value should be greater than or equals to 0
      */
     public void addNode(T pNode, int vNodeCount) {
-        if (vNodeCount < 0)
-            throw new IllegalArgumentException("illegal virtual node counts :" + vNodeCount);
+        if (vNodeCount < 0) throw new IllegalArgumentException("illegal virtual node counts :" + vNodeCount);
         int existingReplicas = getExistingReplicas(pNode);
         for (int i = 0; i < vNodeCount; i++) {
             VirtualNode<T> vNode = new VirtualNode<T>(pNode, i + existingReplicas);

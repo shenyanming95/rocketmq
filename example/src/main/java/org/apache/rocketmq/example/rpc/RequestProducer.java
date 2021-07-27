@@ -15,9 +15,7 @@ public class RequestProducer {
         producer.start();
 
         try {
-            Message msg = new Message(topic,
-                    "",
-                    "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
+            Message msg = new Message(topic, "", "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
 
             long begin = System.currentTimeMillis();
             Message retMsg = producer.request(msg, ttl);

@@ -74,8 +74,7 @@ public class RocketmqLog4jAppender extends AppenderSkeleton {
             producer.sendOneway(msg);
         } catch (Exception e) {
             String msg = new String(data);
-            errorHandler.error("Could not send message in RocketmqLog4jAppender [" + name + "].Message is :" + msg, e,
-                    ErrorCode.GENERIC_FAILURE);
+            errorHandler.error("Could not send message in RocketmqLog4jAppender [" + name + "].Message is :" + msg, e, ErrorCode.GENERIC_FAILURE);
         }
     }
 
@@ -102,8 +101,7 @@ public class RocketmqLog4jAppender extends AppenderSkeleton {
     public synchronized void close() {
         // The synchronized modifier avoids concurrent append and close operations
 
-        if (this.closed)
-            return;
+        if (this.closed) return;
 
         LogLog.debug("Closing RocketmqLog4jAppender [" + name + "].");
         this.closed = true;

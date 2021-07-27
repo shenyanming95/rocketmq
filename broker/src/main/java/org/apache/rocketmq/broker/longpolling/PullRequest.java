@@ -14,9 +14,7 @@ public class PullRequest {
     private final SubscriptionData subscriptionData;
     private final MessageFilter messageFilter;
 
-    public PullRequest(RemotingCommand requestCommand, Channel clientChannel, long timeoutMillis, long suspendTimestamp,
-                       long pullFromThisOffset, SubscriptionData subscriptionData,
-                       MessageFilter messageFilter) {
+    public PullRequest(RemotingCommand requestCommand, Channel clientChannel, long timeoutMillis, long suspendTimestamp, long pullFromThisOffset, SubscriptionData subscriptionData, MessageFilter messageFilter) {
         this.requestCommand = requestCommand;
         this.clientChannel = clientChannel;
         this.timeoutMillis = timeoutMillis;

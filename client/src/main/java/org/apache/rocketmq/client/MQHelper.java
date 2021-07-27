@@ -10,11 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class MQHelper {
-    public static void resetOffsetByTimestamp(
-            final MessageModel messageModel,
-            final String consumerGroup,
-            final String topic,
-            final long timestamp) throws Exception {
+    public static void resetOffsetByTimestamp(final MessageModel messageModel, final String consumerGroup, final String topic, final long timestamp) throws Exception {
         resetOffsetByTimestamp(messageModel, "DEFAULT", consumerGroup, topic, timestamp);
     }
 
@@ -27,12 +23,7 @@ public class MQHelper {
      * @param topic         topic
      * @param timestamp     time
      */
-    public static void resetOffsetByTimestamp(
-            final MessageModel messageModel,
-            final String instanceName,
-            final String consumerGroup,
-            final String topic,
-            final long timestamp) throws Exception {
+    public static void resetOffsetByTimestamp(final MessageModel messageModel, final String instanceName, final String consumerGroup, final String topic, final long timestamp) throws Exception {
         final InternalLogger log = ClientLogger.getLog();
 
         DefaultMQPullConsumer consumer = new DefaultMQPullConsumer(consumerGroup);
@@ -49,8 +40,7 @@ public class MQHelper {
                     long offset = consumer.searchOffset(mq, timestamp);
                     if (offset >= 0) {
                         consumer.updateConsumeOffset(mq, offset);
-                        log.info("resetOffsetByTimestamp updateConsumeOffset success, {} {} {}",
-                                consumerGroup, offset, mq);
+                        log.info("resetOffsetByTimestamp updateConsumeOffset success, {} {} {}", consumerGroup, offset, mq);
                     }
                 }
             }

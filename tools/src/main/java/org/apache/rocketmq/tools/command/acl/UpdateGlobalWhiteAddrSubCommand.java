@@ -47,8 +47,7 @@ public class UpdateGlobalWhiteAddrSubCommand implements SubCommand {
     }
 
     @Override
-    public void execute(CommandLine commandLine, Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(CommandLine commandLine, Options options, RPCHook rpcHook) throws SubCommandException {
 
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -71,8 +70,7 @@ public class UpdateGlobalWhiteAddrSubCommand implements SubCommand {
                 String clusterName = commandLine.getOptionValue('c').trim();
 
                 defaultMQAdminExt.start();
-                Set<String> masterSet =
-                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String addr : masterSet) {
                     defaultMQAdminExt.updateGlobalWhiteAddrConfig(addr, globalWhiteRemoteAddresses);
                     System.out.printf("update global white remote addresses to %s success.%n", addr);

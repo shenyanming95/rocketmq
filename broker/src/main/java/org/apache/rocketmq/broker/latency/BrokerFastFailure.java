@@ -15,8 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BrokerFastFailure {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
-            "BrokerFastFailureScheduledThread"));
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("BrokerFastFailureScheduledThread"));
     private final BrokerController brokerController;
 
     public BrokerFastFailure(final BrokerController brokerController) {
@@ -65,17 +64,13 @@ public class BrokerFastFailure {
             }
         }
 
-        cleanExpiredRequestInQueue(this.brokerController.getSendThreadPoolQueue(),
-                this.brokerController.getBrokerConfig().getWaitTimeMillsInSendQueue());
+        cleanExpiredRequestInQueue(this.brokerController.getSendThreadPoolQueue(), this.brokerController.getBrokerConfig().getWaitTimeMillsInSendQueue());
 
-        cleanExpiredRequestInQueue(this.brokerController.getPullThreadPoolQueue(),
-                this.brokerController.getBrokerConfig().getWaitTimeMillsInPullQueue());
+        cleanExpiredRequestInQueue(this.brokerController.getPullThreadPoolQueue(), this.brokerController.getBrokerConfig().getWaitTimeMillsInPullQueue());
 
-        cleanExpiredRequestInQueue(this.brokerController.getHeartbeatThreadPoolQueue(),
-                this.brokerController.getBrokerConfig().getWaitTimeMillsInHeartbeatQueue());
+        cleanExpiredRequestInQueue(this.brokerController.getHeartbeatThreadPoolQueue(), this.brokerController.getBrokerConfig().getWaitTimeMillsInHeartbeatQueue());
 
-        cleanExpiredRequestInQueue(this.brokerController.getEndTransactionThreadPoolQueue(), this
-                .brokerController.getBrokerConfig().getWaitTimeMillsInTransactionQueue());
+        cleanExpiredRequestInQueue(this.brokerController.getEndTransactionThreadPoolQueue(), this.brokerController.getBrokerConfig().getWaitTimeMillsInTransactionQueue());
     }
 
     void cleanExpiredRequestInQueue(final BlockingQueue<Runnable> blockingQueue, final long maxWaitTimeMillsInQueue) {

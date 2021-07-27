@@ -69,17 +69,12 @@ public class ConsumerStatusSubCommand implements SubCommand {
                 final TreeMap<String/* clientId */, ConsumerRunningInfo> criTable = new TreeMap<String, ConsumerRunningInfo>();
                 for (Connection conn : cc.getConnectionSet()) {
                     try {
-                        ConsumerRunningInfo consumerRunningInfo =
-                                defaultMQAdminExt.getConsumerRunningInfo(group, conn.getClientId(), jstack);
+                        ConsumerRunningInfo consumerRunningInfo = defaultMQAdminExt.getConsumerRunningInfo(group, conn.getClientId(), jstack);
                         if (consumerRunningInfo != null) {
                             criTable.put(conn.getClientId(), consumerRunningInfo);
                             String filePath = now + "/" + conn.getClientId();
                             MixAll.string2FileNotSafe(consumerRunningInfo.formatString(), filePath);
-                            System.out.printf("%03d  %-40s %-20s %s%n",
-                                    i++,
-                                    conn.getClientId(),
-                                    MQVersion.getVersionDesc(conn.getVersion()),
-                                    filePath);
+                            System.out.printf("%03d  %-40s %-20s %s%n", i++, conn.getClientId(), MQVersion.getVersionDesc(conn.getVersion()), filePath);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -97,8 +92,7 @@ public class ConsumerStatusSubCommand implements SubCommand {
                         Iterator<Entry<String, ConsumerRunningInfo>> it = criTable.entrySet().iterator();
                         while (it.hasNext()) {
                             Entry<String, ConsumerRunningInfo> next = it.next();
-                            String result =
-                                    ConsumerRunningInfo.analyzeProcessQueue(next.getKey(), next.getValue());
+                            String result = ConsumerRunningInfo.analyzeProcessQueue(next.getKey(), next.getValue());
                             if (result.length() > 0) {
                                 System.out.printf("%s", result);
                             }
@@ -109,8 +103,7 @@ public class ConsumerStatusSubCommand implements SubCommand {
                 }
             } else {
                 String clientId = commandLine.getOptionValue('i').trim();
-                ConsumerRunningInfo consumerRunningInfo =
-                        defaultMQAdminExt.getConsumerRunningInfo(group, clientId, jstack);
+                ConsumerRunningInfo consumerRunningInfo = defaultMQAdminExt.getConsumerRunningInfo(group, clientId, jstack);
                 if (consumerRunningInfo != null) {
                     System.out.printf("%s", consumerRunningInfo.formatString());
                 }

@@ -72,8 +72,7 @@ public class UpdateTopicSubCommand implements SubCommand {
     }
 
     @Override
-    public void execute(final CommandLine commandLine, final Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(final CommandLine commandLine, final Options options, RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
 
@@ -127,8 +126,7 @@ public class UpdateTopicSubCommand implements SubCommand {
                     String brokerName = CommandUtil.fetchBrokerNameByAddr(defaultMQAdminExt, addr);
                     String orderConf = brokerName + ":" + topicConfig.getWriteQueueNums();
                     defaultMQAdminExt.createOrUpdateOrderConf(topicConfig.getTopicName(), orderConf, false);
-                    System.out.printf("%s", String.format("set broker orderConf. isOrder=%s, orderConf=[%s]",
-                            isOrder, orderConf.toString()));
+                    System.out.printf("%s", String.format("set broker orderConf. isOrder=%s, orderConf=[%s]", isOrder, orderConf.toString()));
                 }
                 System.out.printf("create topic to %s success.%n", addr);
                 System.out.printf("%s", topicConfig);
@@ -139,25 +137,21 @@ public class UpdateTopicSubCommand implements SubCommand {
 
                 defaultMQAdminExt.start();
 
-                Set<String> masterSet =
-                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String addr : masterSet) {
                     defaultMQAdminExt.createAndUpdateTopicConfig(addr, topicConfig);
                     System.out.printf("create topic to %s success.%n", addr);
                 }
 
                 if (isOrder) {
-                    Set<String> brokerNameSet =
-                            CommandUtil.fetchBrokerNameByClusterName(defaultMQAdminExt, clusterName);
+                    Set<String> brokerNameSet = CommandUtil.fetchBrokerNameByClusterName(defaultMQAdminExt, clusterName);
                     StringBuilder orderConf = new StringBuilder();
                     String splitor = "";
                     for (String s : brokerNameSet) {
-                        orderConf.append(splitor).append(s).append(":")
-                                .append(topicConfig.getWriteQueueNums());
+                        orderConf.append(splitor).append(s).append(":").append(topicConfig.getWriteQueueNums());
                         splitor = ";";
                     }
-                    defaultMQAdminExt.createOrUpdateOrderConf(topicConfig.getTopicName(),
-                            orderConf.toString(), true);
+                    defaultMQAdminExt.createOrUpdateOrderConf(topicConfig.getTopicName(), orderConf.toString(), true);
                     System.out.printf("set cluster orderConf. isOrder=%s, orderConf=[%s]", isOrder, orderConf);
                 }
 

@@ -8,11 +8,7 @@ import org.apache.rocketmq.logging.InternalLoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketAddress;
+import java.net.*;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
@@ -179,8 +175,7 @@ public class RemotingUtil {
         channel.close().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                log.info("closeChannel: close the connection to remote address[{}] result: {}", addrRemote,
-                        future.isSuccess());
+                log.info("closeChannel: close the connection to remote address[{}] result: {}", addrRemote, future.isSuccess());
             }
         });
     }

@@ -47,10 +47,7 @@ public class AclClient {
         for (int i = 0; i < 128; i++)
             try {
                 {
-                    Message msg = new Message("TopicTest",
-                            "TagA",
-                            "OrderID188",
-                            "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
+                    Message msg = new Message("TopicTest", "TagA", "OrderID188", "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
                     SendResult sendResult = producer.send(msg);
                     System.out.printf("%s%n", sendResult);
                 }
@@ -94,8 +91,7 @@ public class AclClient {
             SINGLE_MQ:
             while (true) {
                 try {
-                    PullResult pullResult =
-                            consumer.pullBlockIfNotFound(mq, null, getMessageQueueOffset(mq), 32);
+                    PullResult pullResult = consumer.pullBlockIfNotFound(mq, null, getMessageQueueOffset(mq), 32);
                     System.out.printf("%s%n", pullResult);
                     putMessageQueueOffset(mq, pullResult.getNextBeginOffset());
                     printBody(pullResult);
@@ -125,8 +121,7 @@ public class AclClient {
     }
 
     private static void printBody(List<MessageExt> msg) {
-        if (msg == null || msg.size() == 0)
-            return;
+        if (msg == null || msg.size() == 0) return;
         for (MessageExt m : msg) {
             if (m != null) {
                 System.out.printf("msgId : %s  body : %s  \n\r", m.getMsgId(), new String(m.getBody()));
@@ -136,8 +131,7 @@ public class AclClient {
 
     private static long getMessageQueueOffset(MessageQueue mq) {
         Long offset = OFFSE_TABLE.get(mq);
-        if (offset != null)
-            return offset;
+        if (offset != null) return offset;
 
         return 0;
     }

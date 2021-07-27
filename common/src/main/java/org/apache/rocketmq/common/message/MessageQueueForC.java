@@ -52,25 +52,17 @@ public class MessageQueueForC implements Comparable<MessageQueueForC>, Serializa
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         MessageQueueForC other = (MessageQueueForC) obj;
         if (brokerName == null) {
-            if (other.brokerName != null)
-                return false;
-        } else if (!brokerName.equals(other.brokerName))
-            return false;
-        if (queueId != other.queueId)
-            return false;
+            if (other.brokerName != null) return false;
+        } else if (!brokerName.equals(other.brokerName)) return false;
+        if (queueId != other.queueId) return false;
         if (topic == null) {
-            if (other.topic != null)
-                return false;
-        } else if (!topic.equals(other.topic))
-            return false;
+            if (other.topic != null) return false;
+        } else if (!topic.equals(other.topic)) return false;
 
         if (offset != other.offset) {
             return false;
@@ -80,8 +72,7 @@ public class MessageQueueForC implements Comparable<MessageQueueForC>, Serializa
 
     @Override
     public String toString() {
-        return "MessageQueueForC [topic=" + topic + ", brokerName=" + brokerName + ", queueId=" + queueId
-                + ", offset=" + offset + "]";
+        return "MessageQueueForC [topic=" + topic + ", brokerName=" + brokerName + ", queueId=" + queueId + ", offset=" + offset + "]";
     }
 
     public String getTopic() {

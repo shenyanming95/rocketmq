@@ -3,11 +3,7 @@ package org.apache.rocketmq.common.message;
 import org.apache.rocketmq.common.UtilAll;
 import org.apache.rocketmq.common.sysflag.MessageSysFlag;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -248,13 +244,11 @@ public class MessageDecoder {
         return byteBuffer.array();
     }
 
-    public static MessageExt decode(
-            java.nio.ByteBuffer byteBuffer, final boolean readBody, final boolean deCompressBody) {
+    public static MessageExt decode(java.nio.ByteBuffer byteBuffer, final boolean readBody, final boolean deCompressBody) {
         return decode(byteBuffer, readBody, deCompressBody, false);
     }
 
-    public static MessageExt decode(
-            java.nio.ByteBuffer byteBuffer, final boolean readBody, final boolean deCompressBody, final boolean isClient) {
+    public static MessageExt decode(java.nio.ByteBuffer byteBuffer, final boolean readBody, final boolean deCompressBody, final boolean isClient) {
         try {
 
             MessageExt msgExt;

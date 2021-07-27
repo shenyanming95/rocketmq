@@ -68,14 +68,6 @@ public class ConsumeQueueData {
 
     @Override
     public String toString() {
-        return "ConsumeQueueData{" +
-                "physicOffset=" + physicOffset +
-                ", physicSize=" + physicSize +
-                ", tagsCode=" + tagsCode +
-                ", extendDataJson='" + extendDataJson + '\'' +
-                ", bitMap='" + bitMap + '\'' +
-                ", eval=" + eval +
-                ", msg='" + msg + '\'' +
-                '}';
+        return "ConsumeQueueData{" + "physicOffset=" + physicOffset + ", physicSize=" + physicSize + ", tagsCode=" + tagsCode + ", extendDataJson='" + extendDataJson + '\'' + ", bitMap='" + bitMap + '\'' + ", eval=" + eval + ", msg='" + msg + '\'' + '}';
     }
 }

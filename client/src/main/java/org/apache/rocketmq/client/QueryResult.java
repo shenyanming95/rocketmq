@@ -23,7 +23,6 @@ public class QueryResult {
 
     @Override
     public String toString() {
-        return "QueryResult [indexLastUpdateTimestamp=" + indexLastUpdateTimestamp + ", messageList="
-                + messageList + "]";
+        return "QueryResult [indexLastUpdateTimestamp=" + indexLastUpdateTimestamp + ", messageList=" + messageList + "]";
     }
 }

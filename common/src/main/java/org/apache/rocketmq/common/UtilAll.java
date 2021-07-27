@@ -20,13 +20,7 @@ import java.net.NetworkInterface;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -105,9 +99,7 @@ public class UtilAll {
     public static String timeMillisToHumanString(final long t) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(t);
-        return String.format("%04d%02d%02d%02d%02d%02d%03d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1,
-                cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND),
-                cal.get(Calendar.MILLISECOND));
+        return String.format("%04d%02d%02d%02d%02d%02d%03d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
     }
 
     public static long computeNextMorningTimeMillis() {
@@ -161,26 +153,13 @@ public class UtilAll {
     public static String timeMillisToHumanString2(final long t) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(t);
-        return String.format("%04d-%02d-%02d %02d:%02d:%02d,%03d",
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH) + 1,
-                cal.get(Calendar.DAY_OF_MONTH),
-                cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE),
-                cal.get(Calendar.SECOND),
-                cal.get(Calendar.MILLISECOND));
+        return String.format("%04d-%02d-%02d %02d:%02d:%02d,%03d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
     }
 
     public static String timeMillisToHumanString3(final long t) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(t);
-        return String.format("%04d%02d%02d%02d%02d%02d",
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH) + 1,
-                cal.get(Calendar.DAY_OF_MONTH),
-                cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE),
-                cal.get(Calendar.SECOND));
+        return String.format("%04d%02d%02d%02d%02d%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
     }
 
     public static double getDiskPartitionSpaceUsedPercent(final String path) {
@@ -463,9 +442,7 @@ public class UtilAll {
         if (ip.length != 4) {
             return null;
         }
-        return new StringBuilder().append(ip[0] & 0xFF).append(".").append(
-                ip[1] & 0xFF).append(".").append(ip[2] & 0xFF)
-                .append(".").append(ip[3] & 0xFF).toString();
+        return new StringBuilder().append(ip[0] & 0xFF).append(".").append(ip[1] & 0xFF).append(".").append(ip[2] & 0xFF).append(".").append(ip[3] & 0xFF).toString();
     }
 
     public static String ipToIPv6Str(byte[] ip) {

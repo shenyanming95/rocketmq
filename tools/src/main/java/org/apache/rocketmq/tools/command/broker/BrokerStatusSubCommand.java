@@ -58,8 +58,7 @@ public class BrokerStatusSubCommand implements SubCommand {
             if (brokerAddr != null) {
                 printBrokerRuntimeStats(defaultMQAdminExt, brokerAddr, false);
             } else if (clusterName != null) {
-                Set<String> masterSet =
-                        CommandUtil.fetchMasterAndSlaveAddrByClusterName(defaultMQAdminExt, clusterName);
+                Set<String> masterSet = CommandUtil.fetchMasterAndSlaveAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String ba : masterSet) {
                     try {
                         printBrokerRuntimeStats(defaultMQAdminExt, ba, true);
@@ -76,8 +75,7 @@ public class BrokerStatusSubCommand implements SubCommand {
         }
     }
 
-    public void printBrokerRuntimeStats(final DefaultMQAdminExt defaultMQAdminExt, final String brokerAddr,
-                                        final boolean printBroker) throws InterruptedException, MQBrokerException, RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException {
+    public void printBrokerRuntimeStats(final DefaultMQAdminExt defaultMQAdminExt, final String brokerAddr, final boolean printBroker) throws InterruptedException, MQBrokerException, RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException {
         KVTable kvTable = defaultMQAdminExt.fetchBrokerRuntimeStats(brokerAddr);
 
         TreeMap<String, String> tmp = new TreeMap<String, String>();

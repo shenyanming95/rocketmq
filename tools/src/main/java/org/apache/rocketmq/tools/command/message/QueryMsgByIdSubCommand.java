@@ -27,8 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class QueryMsgByIdSubCommand implements SubCommand {
-    public static void queryById(final DefaultMQAdminExt admin, final String msgId) throws MQClientException,
-            RemotingException, MQBrokerException, InterruptedException, IOException {
+    public static void queryById(final DefaultMQAdminExt admin, final String msgId) throws MQClientException, RemotingException, MQBrokerException, InterruptedException, IOException {
         MessageExt msg = admin.viewMessage(msgId);
 
         printMsg(admin, msg);
@@ -46,80 +45,35 @@ public class QueryMsgByIdSubCommand implements SubCommand {
             msgId = ((MessageClientExt) msg).getOffsetMsgId();
         }
 
-        System.out.printf("%-20s %s%n",
-                "OffsetID:",
-                msgId
-        );
+        System.out.printf("%-20s %s%n", "OffsetID:", msgId);
 
-        System.out.printf("%-20s %s%n",
-                "Topic:",
-                msg.getTopic()
-        );
+        System.out.printf("%-20s %s%n", "Topic:", msg.getTopic());
 
-        System.out.printf("%-20s %s%n",
-                "Tags:",
-                "[" + msg.getTags() + "]"
-        );
+        System.out.printf("%-20s %s%n", "Tags:", "[" + msg.getTags() + "]");
 
-        System.out.printf("%-20s %s%n",
-                "Keys:",
-                "[" + msg.getKeys() + "]"
-        );
+        System.out.printf("%-20s %s%n", "Keys:", "[" + msg.getKeys() + "]");
 
-        System.out.printf("%-20s %d%n",
-                "Queue ID:",
-                msg.getQueueId()
-        );
+        System.out.printf("%-20s %d%n", "Queue ID:", msg.getQueueId());
 
-        System.out.printf("%-20s %d%n",
-                "Queue Offset:",
-                msg.getQueueOffset()
-        );
+        System.out.printf("%-20s %d%n", "Queue Offset:", msg.getQueueOffset());
 
-        System.out.printf("%-20s %d%n",
-                "CommitLog Offset:",
-                msg.getCommitLogOffset()
-        );
+        System.out.printf("%-20s %d%n", "CommitLog Offset:", msg.getCommitLogOffset());
 
-        System.out.printf("%-20s %d%n",
-                "Reconsume Times:",
-                msg.getReconsumeTimes()
-        );
+        System.out.printf("%-20s %d%n", "Reconsume Times:", msg.getReconsumeTimes());
 
-        System.out.printf("%-20s %s%n",
-                "Born Timestamp:",
-                UtilAll.timeMillisToHumanString2(msg.getBornTimestamp())
-        );
+        System.out.printf("%-20s %s%n", "Born Timestamp:", UtilAll.timeMillisToHumanString2(msg.getBornTimestamp()));
 
-        System.out.printf("%-20s %s%n",
-                "Store Timestamp:",
-                UtilAll.timeMillisToHumanString2(msg.getStoreTimestamp())
-        );
+        System.out.printf("%-20s %s%n", "Store Timestamp:", UtilAll.timeMillisToHumanString2(msg.getStoreTimestamp()));
 
-        System.out.printf("%-20s %s%n",
-                "Born Host:",
-                RemotingHelper.parseSocketAddressAddr(msg.getBornHost())
-        );
+        System.out.printf("%-20s %s%n", "Born Host:", RemotingHelper.parseSocketAddressAddr(msg.getBornHost()));
 
-        System.out.printf("%-20s %s%n",
-                "Store Host:",
-                RemotingHelper.parseSocketAddressAddr(msg.getStoreHost())
-        );
+        System.out.printf("%-20s %s%n", "Store Host:", RemotingHelper.parseSocketAddressAddr(msg.getStoreHost()));
 
-        System.out.printf("%-20s %d%n",
-                "System Flag:",
-                msg.getSysFlag()
-        );
+        System.out.printf("%-20s %d%n", "System Flag:", msg.getSysFlag());
 
-        System.out.printf("%-20s %s%n",
-                "Properties:",
-                msg.getProperties() != null ? msg.getProperties().toString() : ""
-        );
+        System.out.printf("%-20s %s%n", "Properties:", msg.getProperties() != null ? msg.getProperties().toString() : "");
 
-        System.out.printf("%-20s %s%n",
-                "Message Body Path:",
-                bodyTmpFilePath
-        );
+        System.out.printf("%-20s %s%n", "Message Body Path:", bodyTmpFilePath);
 
         try {
             List<MessageTrack> mtdList = admin.messageTrackDetail(msg);
@@ -149,8 +103,7 @@ public class QueryMsgByIdSubCommand implements SubCommand {
             dos.write(msg.getBody());
             return bodyTmpFilePath;
         } finally {
-            if (dos != null)
-                dos.close();
+            if (dos != null) dos.close();
         }
     }
 
@@ -242,19 +195,16 @@ public class QueryMsgByIdSubCommand implements SubCommand {
         }
     }
 
-    private void pushMsg(final DefaultMQAdminExt defaultMQAdminExt, final String consumerGroup, final String clientId,
-                         final String msgId) {
+    private void pushMsg(final DefaultMQAdminExt defaultMQAdminExt, final String consumerGroup, final String clientId, final String msgId) {
         try {
-            ConsumeMessageDirectlyResult result =
-                    defaultMQAdminExt.consumeMessageDirectly(consumerGroup, clientId, msgId);
+            ConsumeMessageDirectlyResult result = defaultMQAdminExt.consumeMessageDirectly(consumerGroup, clientId, msgId);
             System.out.printf("%s", result);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void sendMsg(final DefaultMQAdminExt defaultMQAdminExt, final DefaultMQProducer defaultMQProducer,
-                         final String msgId) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
+    private void sendMsg(final DefaultMQAdminExt defaultMQAdminExt, final DefaultMQProducer defaultMQProducer, final String msgId) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
         try {
             MessageExt msg = defaultMQAdminExt.viewMessage(msgId);
             if (msg != null) {

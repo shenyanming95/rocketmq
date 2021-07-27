@@ -9,8 +9,7 @@ import io.openmessaging.consumer.PushConsumer;
 
 public class SimplePushConsumer {
     public static void main(String[] args) {
-        final MessagingAccessPoint messagingAccessPoint = OMS
-                .getMessagingAccessPoint("oms:rocketmq://localhost:9876/default:default");
+        final MessagingAccessPoint messagingAccessPoint = OMS.getMessagingAccessPoint("oms:rocketmq://localhost:9876/default:default");
 
         final PushConsumer consumer = messagingAccessPoint.
                 createPushConsumer(OMS.newKeyValue().put(OMSBuiltinKeys.CONSUMER_ID, "OMS_CONSUMER"));

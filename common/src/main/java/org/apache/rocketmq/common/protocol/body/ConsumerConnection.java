@@ -12,8 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class ConsumerConnection extends RemotingSerializable {
     private HashSet<Connection> connectionSet = new HashSet<Connection>();
-    private ConcurrentMap<String/* Topic */, SubscriptionData> subscriptionTable =
-            new ConcurrentHashMap<String, SubscriptionData>();
+    private ConcurrentMap<String/* Topic */, SubscriptionData> subscriptionTable = new ConcurrentHashMap<String, SubscriptionData>();
     private ConsumeType consumeType;
     private MessageModel messageModel;
     private ConsumeFromWhere consumeFromWhere;

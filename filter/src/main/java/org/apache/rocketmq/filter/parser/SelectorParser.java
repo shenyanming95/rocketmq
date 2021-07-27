@@ -5,15 +5,7 @@ package org.apache.rocketmq.filter.parser;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.apache.rocketmq.filter.expression.BooleanConstantExpression;
-import org.apache.rocketmq.filter.expression.BooleanExpression;
-import org.apache.rocketmq.filter.expression.ComparisonExpression;
-import org.apache.rocketmq.filter.expression.ConstantExpression;
-import org.apache.rocketmq.filter.expression.Expression;
-import org.apache.rocketmq.filter.expression.LogicExpression;
-import org.apache.rocketmq.filter.expression.MQFilterException;
-import org.apache.rocketmq.filter.expression.PropertyExpression;
-import org.apache.rocketmq.filter.expression.UnaryExpression;
+import org.apache.rocketmq.filter.expression.*;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -164,9 +156,7 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private static void jj_la1_init_0() {
-        jjLa10 = new int[]{
-                0x400, 0x200, 0xc10000, 0xc00000, 0x10000, 0xf001900, 0x20000000, 0x20000000, 0xf000800,
-                0x1000, 0x1036e100, 0x1036e000, 0x16e000};
+        jjLa10 = new int[]{0x400, 0x200, 0xc10000, 0xc00000, 0x10000, 0xf001900, 0x20000000, 0x20000000, 0xf000800, 0x1000, 0x1036e100, 0x1036e000, 0x16e000};
     }
 
     private static void jj_la1_init_1() {
@@ -198,8 +188,7 @@ public class SelectorParser implements SelectorParserConstants {
         Expression left = null;
         left = orExpression();
         {
-            if (true)
-                return asBooleanExpression(left);
+            if (true) return asBooleanExpression(left);
         }
         throw new Error("Missing return statement in function");
     }
@@ -222,8 +211,7 @@ public class SelectorParser implements SelectorParserConstants {
             left = LogicExpression.createOR(asBooleanExpression(left), asBooleanExpression(right));
         }
         {
-            if (true)
-                return left;
+            if (true) return left;
         }
         throw new Error("Missing return statement in function");
     }
@@ -246,8 +234,7 @@ public class SelectorParser implements SelectorParserConstants {
             left = LogicExpression.createAND(asBooleanExpression(left), asBooleanExpression(right));
         }
         {
-            if (true)
-                return left;
+            if (true) return left;
         }
         throw new Error("Missing return statement in function");
     }
@@ -301,8 +288,7 @@ public class SelectorParser implements SelectorParserConstants {
             }
         }
         {
-            if (true)
-                return left;
+            if (true) return left;
         }
         throw new Error("Missing return statement in function");
     }
@@ -425,8 +411,7 @@ public class SelectorParser implements SelectorParserConstants {
             }
         }
         {
-            if (true)
-                return left;
+            if (true) return left;
         }
         throw new Error("Missing return statement in function");
     }
@@ -466,8 +451,7 @@ public class SelectorParser implements SelectorParserConstants {
             }
         }
         {
-            if (true)
-                return left;
+            if (true) return left;
         }
         throw new Error("Missing return statement in function");
     }
@@ -497,8 +481,7 @@ public class SelectorParser implements SelectorParserConstants {
                 throw new ParseException();
         }
         {
-            if (true)
-                return left;
+            if (true) return left;
         }
         throw new Error("Missing return statement in function");
     }
@@ -538,8 +521,7 @@ public class SelectorParser implements SelectorParserConstants {
                 throw new ParseException();
         }
         {
-            if (true)
-                return left;
+            if (true) return left;
         }
         throw new Error("Missing return statement in function");
     }
@@ -553,13 +535,11 @@ public class SelectorParser implements SelectorParserConstants {
         String image = t.image;
         for (int i = 1; i < image.length() - 1; i++) {
             char c = image.charAt(i);
-            if (c == '\'')
-                i++;
+            if (c == '\'') i++;
             rc.append(c);
         }
         {
-            if (true)
-                return rc.toString();
+            if (true) return rc.toString();
         }
         throw new Error("Missing return statement in function");
     }
@@ -570,8 +550,7 @@ public class SelectorParser implements SelectorParserConstants {
         t = jj_consume_token(ID);
         left = new PropertyExpression(t.image);
         {
-            if (true)
-                return left;
+            if (true) return left;
         }
         throw new Error("Missing return statement in function");
     }
@@ -633,8 +612,7 @@ public class SelectorParser implements SelectorParserConstants {
                 jjScanpos = xsp;
                 if (jj_3R_10()) {
                     jjScanpos = xsp;
-                    if (jj_3R_11())
-                        return true;
+                    if (jj_3R_11()) return true;
                 }
             }
         }
@@ -642,66 +620,50 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private boolean jj_3R_43() {
-        if (jj_scan_token(29))
-            return true;
-        if (jj_3R_27())
-            return true;
+        if (jj_scan_token(29)) return true;
+        if (jj_3R_27()) return true;
         return false;
     }
 
     private boolean jj_3R_24() {
-        if (jj_scan_token(NULL))
-            return true;
+        if (jj_scan_token(NULL)) return true;
         return false;
     }
 
     private boolean jj_3R_35() {
-        if (jj_scan_token(IS))
-            return true;
-        if (jj_scan_token(NOT))
-            return true;
-        if (jj_scan_token(NULL))
-            return true;
+        if (jj_scan_token(IS)) return true;
+        if (jj_scan_token(NOT)) return true;
+        if (jj_scan_token(NULL)) return true;
         return false;
     }
 
     private boolean jj_3_1() {
-        if (jj_scan_token(IS))
-            return true;
-        if (jj_scan_token(NULL))
-            return true;
+        if (jj_scan_token(IS)) return true;
+        if (jj_scan_token(NULL)) return true;
         return false;
     }
 
     private boolean jj_3R_23() {
-        if (jj_scan_token(FALSE))
-            return true;
+        if (jj_scan_token(FALSE)) return true;
         return false;
     }
 
     private boolean jj_3R_34() {
-        if (jj_scan_token(23))
-            return true;
-        if (jj_3R_30())
-            return true;
+        if (jj_scan_token(23)) return true;
+        if (jj_3R_30()) return true;
         return false;
     }
 
     private boolean jj_3R_22() {
-        if (jj_scan_token(TRUE))
-            return true;
+        if (jj_scan_token(TRUE)) return true;
         return false;
     }
 
     private boolean jj_3_3() {
-        if (jj_scan_token(NOT))
-            return true;
-        if (jj_scan_token(IN))
-            return true;
-        if (jj_scan_token(28))
-            return true;
-        if (jj_3R_27())
-            return true;
+        if (jj_scan_token(NOT)) return true;
+        if (jj_scan_token(IN)) return true;
+        if (jj_scan_token(28)) return true;
+        if (jj_3R_27()) return true;
         Token xsp;
         while (true) {
             xsp = jjScanpos;
@@ -710,8 +672,7 @@ public class SelectorParser implements SelectorParserConstants {
                 break;
             }
         }
-        if (jj_scan_token(30))
-            return true;
+        if (jj_scan_token(30)) return true;
         return false;
     }
 
@@ -724,8 +685,7 @@ public class SelectorParser implements SelectorParserConstants {
                 jjScanpos = xsp;
                 if (jj_3_1()) {
                     jjScanpos = xsp;
-                    if (jj_3R_35())
-                        return true;
+                    if (jj_3R_35()) return true;
                 }
             }
         }
@@ -733,36 +693,29 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private boolean jj_3R_33() {
-        if (jj_scan_token(22))
-            return true;
-        if (jj_3R_30())
-            return true;
+        if (jj_scan_token(22)) return true;
+        if (jj_3R_30()) return true;
         return false;
     }
 
     private boolean jj_3R_42() {
-        if (jj_scan_token(29))
-            return true;
-        if (jj_3R_27())
-            return true;
+        if (jj_scan_token(29)) return true;
+        if (jj_3R_27()) return true;
         return false;
     }
 
     private boolean jj_3R_21() {
-        if (jj_scan_token(FLOATING_POINT_LITERAL))
-            return true;
+        if (jj_scan_token(FLOATING_POINT_LITERAL)) return true;
         return false;
     }
 
     private boolean jj_3R_20() {
-        if (jj_scan_token(DECIMAL_LITERAL))
-            return true;
+        if (jj_scan_token(DECIMAL_LITERAL)) return true;
         return false;
     }
 
     private boolean jj_3R_28() {
-        if (jj_3R_30())
-            return true;
+        if (jj_3R_30()) return true;
         Token xsp;
         while (true) {
             xsp = jjScanpos;
@@ -775,12 +728,9 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private boolean jj_3R_41() {
-        if (jj_scan_token(IN))
-            return true;
-        if (jj_scan_token(28))
-            return true;
-        if (jj_3R_27())
-            return true;
+        if (jj_scan_token(IN)) return true;
+        if (jj_scan_token(28)) return true;
+        if (jj_3R_27()) return true;
         Token xsp;
         while (true) {
             xsp = jjScanpos;
@@ -789,22 +739,18 @@ public class SelectorParser implements SelectorParserConstants {
                 break;
             }
         }
-        if (jj_scan_token(30))
-            return true;
+        if (jj_scan_token(30)) return true;
         return false;
     }
 
     private boolean jj_3R_19() {
-        if (jj_3R_27())
-            return true;
+        if (jj_3R_27()) return true;
         return false;
     }
 
     private boolean jj_3R_29() {
-        if (jj_scan_token(AND))
-            return true;
-        if (jj_3R_28())
-            return true;
+        if (jj_scan_token(AND)) return true;
+        if (jj_3R_28()) return true;
         return false;
     }
 
@@ -821,8 +767,7 @@ public class SelectorParser implements SelectorParserConstants {
                         jjScanpos = xsp;
                         if (jj_3R_23()) {
                             jjScanpos = xsp;
-                            if (jj_3R_24())
-                                return true;
+                            if (jj_3R_24()) return true;
                         }
                     }
                 }
@@ -832,34 +777,24 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private boolean jj_3_2() {
-        if (jj_scan_token(NOT))
-            return true;
-        if (jj_scan_token(BETWEEN))
-            return true;
-        if (jj_3R_7())
-            return true;
-        if (jj_scan_token(AND))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(NOT)) return true;
+        if (jj_scan_token(BETWEEN)) return true;
+        if (jj_3R_7()) return true;
+        if (jj_scan_token(AND)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
     private boolean jj_3R_40() {
-        if (jj_scan_token(BETWEEN))
-            return true;
-        if (jj_3R_7())
-            return true;
-        if (jj_scan_token(AND))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(BETWEEN)) return true;
+        if (jj_3R_7()) return true;
+        if (jj_scan_token(AND)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
     private boolean jj_3R_25() {
-        if (jj_3R_28())
-            return true;
+        if (jj_3R_28()) return true;
         Token xsp;
         while (true) {
             xsp = jjScanpos;
@@ -872,62 +807,48 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private boolean jj_3R_39() {
-        if (jj_scan_token(27))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(27)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
     private boolean jj_3R_15() {
-        if (jj_scan_token(28))
-            return true;
-        if (jj_3R_18())
-            return true;
-        if (jj_scan_token(30))
-            return true;
+        if (jj_scan_token(28)) return true;
+        if (jj_3R_18()) return true;
+        if (jj_scan_token(30)) return true;
         return false;
     }
 
     private boolean jj_3R_14() {
-        if (jj_3R_17())
-            return true;
+        if (jj_3R_17()) return true;
         return false;
     }
 
     private boolean jj_3R_38() {
-        if (jj_scan_token(26))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(26)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
     private boolean jj_3R_13() {
-        if (jj_3R_16())
-            return true;
+        if (jj_3R_16()) return true;
         return false;
     }
 
     private boolean jj_3R_26() {
-        if (jj_scan_token(OR))
-            return true;
-        if (jj_3R_25())
-            return true;
+        if (jj_scan_token(OR)) return true;
+        if (jj_3R_25()) return true;
         return false;
     }
 
     private boolean jj_3R_17() {
-        if (jj_scan_token(ID))
-            return true;
+        if (jj_scan_token(ID)) return true;
         return false;
     }
 
     private boolean jj_3R_37() {
-        if (jj_scan_token(25))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(25)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
@@ -938,8 +859,7 @@ public class SelectorParser implements SelectorParserConstants {
             jjScanpos = xsp;
             if (jj_3R_14()) {
                 jjScanpos = xsp;
-                if (jj_3R_15())
-                    return true;
+                if (jj_3R_15()) return true;
             }
         }
         return false;
@@ -962,8 +882,7 @@ public class SelectorParser implements SelectorParserConstants {
                                 jjScanpos = xsp;
                                 if (jj_3R_41()) {
                                     jjScanpos = xsp;
-                                    if (jj_3_3())
-                                        return true;
+                                    if (jj_3_3()) return true;
                                 }
                             }
                         }
@@ -975,22 +894,18 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private boolean jj_3R_36() {
-        if (jj_scan_token(24))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(24)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
     private boolean jj_3R_11() {
-        if (jj_3R_12())
-            return true;
+        if (jj_3R_12()) return true;
         return false;
     }
 
     private boolean jj_3R_18() {
-        if (jj_3R_25())
-            return true;
+        if (jj_3R_25()) return true;
         Token xsp;
         while (true) {
             xsp = jjScanpos;
@@ -1003,38 +918,30 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private boolean jj_3_4() {
-        if (jj_scan_token(31))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(31)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
     private boolean jj_3R_10() {
-        if (jj_scan_token(NOT))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(NOT)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
     private boolean jj_3R_9() {
-        if (jj_scan_token(32))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(32)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
     private boolean jj_3R_27() {
-        if (jj_scan_token(STRING_LITERAL))
-            return true;
+        if (jj_scan_token(STRING_LITERAL)) return true;
         return false;
     }
 
     private boolean jj_3R_30() {
-        if (jj_3R_7())
-            return true;
+        if (jj_3R_7()) return true;
         Token xsp;
         while (true) {
             xsp = jjScanpos;
@@ -1047,10 +954,8 @@ public class SelectorParser implements SelectorParserConstants {
     }
 
     private boolean jj_3R_8() {
-        if (jj_scan_token(31))
-            return true;
-        if (jj_3R_7())
-            return true;
+        if (jj_scan_token(31)) return true;
+        if (jj_3R_7()) return true;
         return false;
     }
 
@@ -1111,10 +1016,8 @@ public class SelectorParser implements SelectorParserConstants {
 
     private Token jj_consume_token(int kind) throws ParseException {
         Token oldToken;
-        if ((oldToken = token).next != null)
-            token = token.next;
-        else
-            token = token.next = tokenSource.getNextToken();
+        if ((oldToken = token).next != null) token = token.next;
+        else token = token.next = tokenSource.getNextToken();
         jjNtk = -1;
         if (token.kind == kind) {
             jjGen++;
@@ -1123,8 +1026,7 @@ public class SelectorParser implements SelectorParserConstants {
                 for (int i = 0; i < jj2Rtns.length; i++) {
                     JJCalls c = jj2Rtns[i];
                     while (c != null) {
-                        if (c.gen < jjGen)
-                            c.first = null;
+                        if (c.gen < jjGen) c.first = null;
                         c = c.next;
                     }
                 }
@@ -1154,13 +1056,10 @@ public class SelectorParser implements SelectorParserConstants {
                 i++;
                 tok = tok.next;
             }
-            if (tok != null)
-                jj_add_error_token(kind, i);
+            if (tok != null) jj_add_error_token(kind, i);
         }
-        if (jjScanpos.kind != kind)
-            return true;
-        if (jjLa == 0 && jjScanpos == jjLastpos)
-            throw jjLs;
+        if (jjScanpos.kind != kind) return true;
+        if (jjLa == 0 && jjScanpos == jjLastpos) throw jjLs;
         return false;
     }
 
@@ -1168,10 +1067,8 @@ public class SelectorParser implements SelectorParserConstants {
      * Get the next Token.
      */
     final public Token getNextToken() {
-        if (token.next != null)
-            token = token.next;
-        else
-            token = token.next = tokenSource.getNextToken();
+        if (token.next != null) token = token.next;
+        else token = token.next = tokenSource.getNextToken();
         jjNtk = -1;
         jjGen++;
         return token;
@@ -1183,24 +1080,19 @@ public class SelectorParser implements SelectorParserConstants {
     final public Token getToken(int index) {
         Token t = token;
         for (int i = 0; i < index; i++) {
-            if (t.next != null)
-                t = t.next;
-            else
-                t = t.next = tokenSource.getNextToken();
+            if (t.next != null) t = t.next;
+            else t = t.next = tokenSource.getNextToken();
         }
         return t;
     }
 
     private int jj_ntk() {
-        if ((jjNt = token.next) == null)
-            return jjNtk = (token.next = tokenSource.getNextToken()).kind;
-        else
-            return jjNtk = jjNt.kind;
+        if ((jjNt = token.next) == null) return jjNtk = (token.next = tokenSource.getNextToken()).kind;
+        else return jjNtk = jjNt.kind;
     }
 
     private void jj_add_error_token(int kind, int pos) {
-        if (pos >= 100)
-            return;
+        if (pos >= 100) return;
         if (pos == jjEndpos + 1) {
             jjLasttokens[jjEndpos++] = kind;
         } else if (jjEndpos != 0) {
@@ -1221,8 +1113,7 @@ public class SelectorParser implements SelectorParserConstants {
                     break jj_entries_loop;
                 }
             }
-            if (pos != 0)
-                jjLasttokens[(jjEndpos = pos) - 1] = kind;
+            if (pos != 0) jjLasttokens[(jjEndpos = pos) - 1] = kind;
         }
     }
 
@@ -1302,8 +1193,7 @@ public class SelectorParser implements SelectorParserConstants {
                         }
                     }
                     p = p.next;
-                }
-                while (p != null);
+                } while (p != null);
             } catch (LookaheadSuccess ls) {
             }
         }

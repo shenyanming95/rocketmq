@@ -29,8 +29,7 @@ public class ConsumerFilterManager extends ConfigManager {
 
     private static final long MS_24_HOUR = 24 * 3600 * 1000;
 
-    private ConcurrentMap<String/*Topic*/, FilterDataMapByTopic>
-            filterDataByTopic = new ConcurrentHashMap<String/*Topic*/, FilterDataMapByTopic>(256);
+    private ConcurrentMap<String/*Topic*/, FilterDataMapByTopic> filterDataByTopic = new ConcurrentHashMap<String/*Topic*/, FilterDataMapByTopic>(256);
 
     private transient BrokerController brokerController;
     private transient BloomFilter bloomFilter;
@@ -42,14 +41,9 @@ public class ConsumerFilterManager extends ConfigManager {
 
     public ConsumerFilterManager(BrokerController brokerController) {
         this.brokerController = brokerController;
-        this.bloomFilter = BloomFilter.createByFn(
-                brokerController.getBrokerConfig().getMaxErrorRateOfBloomFilter(),
-                brokerController.getBrokerConfig().getExpectConsumerNumUseFilter()
-        );
+        this.bloomFilter = BloomFilter.createByFn(brokerController.getBrokerConfig().getMaxErrorRateOfBloomFilter(), brokerController.getBrokerConfig().getExpectConsumerNumUseFilter());
         // then set bit map length of store config.
-        brokerController.getMessageStoreConfig().setBitMapLengthConsumeQueueExt(
-                this.bloomFilter.getM()
-        );
+        brokerController.getMessageStoreConfig().setBitMapLengthConsumeQueueExt(this.bloomFilter.getM());
     }
 
     /**
@@ -57,9 +51,7 @@ public class ConsumerFilterManager extends ConfigManager {
      *
      * @return maybe null
      */
-    public static ConsumerFilterData build(final String topic, final String consumerGroup,
-                                           final String expression, final String type,
-                                           final long clientVersion) {
+    public static ConsumerFilterData build(final String topic, final String consumerGroup, final String expression, final String type, final long clientVersion) {
         if (ExpressionType.isTagType(type)) {
             return null;
         }
@@ -73,9 +65,7 @@ public class ConsumerFilterManager extends ConfigManager {
         consumerFilterData.setExpressionType(type);
         consumerFilterData.setClientVersion(clientVersion);
         try {
-            consumerFilterData.setCompiledExpression(
-                    FilterFactory.INSTANCE.get(type).compile(expression)
-            );
+            consumerFilterData.setCompiledExpression(FilterFactory.INSTANCE.get(type).compile(expression));
         } catch (Throwable e) {
             log.error("parse error: expr={}, topic={}, group={}, error={}", expression, topic, consumerGroup, e.getMessage());
             return null;
@@ -86,13 +76,7 @@ public class ConsumerFilterManager extends ConfigManager {
 
     public void register(final String consumerGroup, final Collection<SubscriptionData> subList) {
         for (SubscriptionData subscriptionData : subList) {
-            register(
-                    subscriptionData.getTopic(),
-                    consumerGroup,
-                    subscriptionData.getSubString(),
-                    subscriptionData.getExpressionType(),
-                    subscriptionData.getSubVersion()
-            );
+            register(subscriptionData.getTopic(), consumerGroup, subscriptionData.getSubString(), subscriptionData.getExpressionType(), subscriptionData.getSubVersion());
         }
 
         // make illegal topic dead.
@@ -117,8 +101,7 @@ public class ConsumerFilterManager extends ConfigManager {
         }
     }
 
-    public boolean register(final String topic, final String consumerGroup, final String expression,
-                            final String type, final long clientVersion) {
+    public boolean register(final String topic, final String consumerGroup, final String expression, final String type, final long clientVersion) {
         if (ExpressionType.isTagType(type)) {
             return false;
         }
@@ -201,9 +184,7 @@ public class ConsumerFilterManager extends ConfigManager {
     @Override
     public String configFilePath() {
         if (this.brokerController != null) {
-            return BrokerPathConfigHelper.getConsumerFilterPath(
-                    this.brokerController.getMessageStoreConfig().getStorePathRootDir()
-            );
+            return BrokerPathConfigHelper.getConsumerFilterPath(this.brokerController.getMessageStoreConfig().getStorePathRootDir());
         }
         return BrokerPathConfigHelper.getConsumerFilterPath("./unit_test");
     }
@@ -228,9 +209,7 @@ public class ConsumerFilterManager extends ConfigManager {
                     }
 
                     try {
-                        filterData.setCompiledExpression(
-                                FilterFactory.INSTANCE.get(filterData.getExpressionType()).compile(filterData.getExpression())
-                        );
+                        filterData.setCompiledExpression(FilterFactory.INSTANCE.get(filterData.getExpressionType()).compile(filterData.getExpression()));
                     } catch (Exception e) {
                         log.error("load filter data error, " + filterData, e);
                     }
@@ -248,9 +227,7 @@ public class ConsumerFilterManager extends ConfigManager {
                     if (filterData.getDeadTime() == 0) {
                         // we think all consumers are dead when load
                         long deadTime = System.currentTimeMillis() - 30 * 1000;
-                        filterData.setDeadTime(
-                                deadTime <= filterData.getBornTime() ? filterData.getBornTime() : deadTime
-                        );
+                        filterData.setDeadTime(deadTime <= filterData.getBornTime() ? filterData.getBornTime() : deadTime);
                     }
                 }
             }
@@ -275,8 +252,7 @@ public class ConsumerFilterManager extends ConfigManager {
         while (topicIterator.hasNext()) {
             Map.Entry<String, FilterDataMapByTopic> filterDataMapByTopic = topicIterator.next();
 
-            Iterator<Map.Entry<String, ConsumerFilterData>> filterDataIterator
-                    = filterDataMapByTopic.getValue().getGroupFilterData().entrySet().iterator();
+            Iterator<Map.Entry<String, ConsumerFilterData>> filterDataIterator = filterDataMapByTopic.getValue().getGroupFilterData().entrySet().iterator();
 
             while (filterDataIterator.hasNext()) {
                 Map.Entry<String, ConsumerFilterData> filterDataByGroup = filterDataIterator.next();
@@ -305,8 +281,7 @@ public class ConsumerFilterManager extends ConfigManager {
 
     public static class FilterDataMapByTopic {
 
-        private ConcurrentMap<String/*consumer group*/, ConsumerFilterData>
-                groupFilterData = new ConcurrentHashMap<String, ConsumerFilterData>();
+        private ConcurrentMap<String/*consumer group*/, ConsumerFilterData> groupFilterData = new ConcurrentHashMap<String, ConsumerFilterData>();
 
         private String topic;
 
@@ -335,8 +310,7 @@ public class ConsumerFilterManager extends ConfigManager {
             data.setDeadTime(now);
         }
 
-        public boolean register(String consumerGroup, String expression, String type, BloomFilterData bloomFilterData,
-                                long clientVersion) {
+        public boolean register(String consumerGroup, String expression, String type, BloomFilterData bloomFilterData, long clientVersion) {
             ConsumerFilterData old = this.groupFilterData.get(consumerGroup);
 
             if (old == null) {
@@ -353,11 +327,7 @@ public class ConsumerFilterManager extends ConfigManager {
                 } else {
                     if (clientVersion <= old.getClientVersion()) {
                         if (!type.equals(old.getExpressionType()) || !expression.equals(old.getExpression())) {
-                            log.warn("Ignore consumer({} : {}) filter(concurrent), because of version {} <= {}, but maybe info changed!old={}:{}, ignored={}:{}",
-                                    consumerGroup, topic,
-                                    clientVersion, old.getClientVersion(),
-                                    old.getExpressionType(), old.getExpression(),
-                                    type, expression);
+                            log.warn("Ignore consumer({} : {}) filter(concurrent), because of version {} <= {}, but maybe info changed!old={}:{}, ignored={}:{}", consumerGroup, topic, clientVersion, old.getClientVersion(), old.getExpressionType(), old.getExpression(), type, expression);
                         }
                         if (clientVersion == old.getClientVersion() && old.isDead()) {
                             reAlive(old);
@@ -374,11 +344,7 @@ public class ConsumerFilterManager extends ConfigManager {
             } else {
                 if (clientVersion <= old.getClientVersion()) {
                     if (!type.equals(old.getExpressionType()) || !expression.equals(old.getExpression())) {
-                        log.info("Ignore consumer({}:{}) filter, because of version {} <= {}, but maybe info changed!old={}:{}, ignored={}:{}",
-                                consumerGroup, topic,
-                                clientVersion, old.getClientVersion(),
-                                old.getExpressionType(), old.getExpression(),
-                                type, expression);
+                        log.info("Ignore consumer({}:{}) filter, because of version {} <= {}, but maybe info changed!old={}:{}, ignored={}:{}", consumerGroup, topic, clientVersion, old.getClientVersion(), old.getExpressionType(), old.getExpression(), type, expression);
                     }
                     if (clientVersion == old.getClientVersion() && old.isDead()) {
                         reAlive(old);
@@ -408,8 +374,7 @@ public class ConsumerFilterManager extends ConfigManager {
 
                     this.groupFilterData.put(consumerGroup, consumerFilterData);
 
-                    log.info("Consumer filter info change, old: {}, new: {}, change: {}",
-                            old, consumerFilterData, change);
+                    log.info("Consumer filter info change, old: {}, new: {}, change: {}", old, consumerFilterData, change);
 
                     return true;
                 } else {

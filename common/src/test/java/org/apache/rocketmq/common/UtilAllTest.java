@@ -133,12 +133,7 @@ public class UtilAllTest {
 
         @Override
         public String toString() {
-            return "DemoConfig{" +
-                    "demoWidth=" + demoWidth +
-                    ", demoLength=" + demoLength +
-                    ", demoOK=" + demoOK +
-                    ", demoName='" + demoName + '\'' +
-                    '}';
+            return "DemoConfig{" + "demoWidth=" + demoWidth + ", demoLength=" + demoLength + ", demoOK=" + demoOK + ", demoName='" + demoName + '\'' + '}';
         }
     }
 }

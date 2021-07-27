@@ -100,8 +100,7 @@ public class RegisterBrokerBody extends RemotingSerializable {
         return byteBuffer.getInt();
     }
 
-    public static ConcurrentMap<String, TopicConfig> cloneTopicConfigTable(
-            ConcurrentMap<String, TopicConfig> topicConfigConcurrentMap) {
+    public static ConcurrentMap<String, TopicConfig> cloneTopicConfigTable(ConcurrentMap<String, TopicConfig> topicConfigConcurrentMap) {
         ConcurrentHashMap<String, TopicConfig> result = new ConcurrentHashMap<String, TopicConfig>();
         if (topicConfigConcurrentMap != null) {
             for (Map.Entry<String, TopicConfig> entry : topicConfigConcurrentMap.entrySet()) {

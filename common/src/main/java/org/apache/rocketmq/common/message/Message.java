@@ -27,11 +27,9 @@ public class Message implements Serializable {
         this.flag = flag;
         this.body = body;
 
-        if (tags != null && tags.length() > 0)
-            this.setTags(tags);
+        if (tags != null && tags.length() > 0) this.setTags(tags);
 
-        if (keys != null && keys.length() > 0)
-            this.setKeys(keys);
+        if (keys != null && keys.length() > 0) this.setKeys(keys);
 
         this.setWaitStoreMsgOK(waitStoreMsgOK);
     }
@@ -60,15 +58,11 @@ public class Message implements Serializable {
 
     public void putUserProperty(final String name, final String value) {
         if (MessageConst.STRING_HASH_SET.contains(name)) {
-            throw new RuntimeException(String.format(
-                    "The Property<%s> is used by system, input another please", name));
+            throw new RuntimeException(String.format("The Property<%s> is used by system, input another please", name));
         }
 
-        if (value == null || value.trim().isEmpty()
-                || name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "The name or value of property can not be null or blank string!"
-            );
+        if (value == null || value.trim().isEmpty() || name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("The name or value of property can not be null or blank string!");
         }
 
         this.putProperty(name, value);
@@ -135,8 +129,7 @@ public class Message implements Serializable {
 
     public boolean isWaitStoreMsgOK() {
         String result = this.getProperty(MessageConst.PROPERTY_WAIT_STORE_MSG_OK);
-        if (null == result)
-            return true;
+        if (null == result) return true;
 
         return Boolean.parseBoolean(result);
     }
@@ -191,12 +184,6 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return "Message{" +
-                "topic='" + topic + '\'' +
-                ", flag=" + flag +
-                ", properties=" + properties +
-                ", body=" + Arrays.toString(body) +
-                ", transactionId='" + transactionId + '\'' +
-                '}';
+        return "Message{" + "topic='" + topic + '\'' + ", flag=" + flag + ", properties=" + properties + ", body=" + Arrays.toString(body) + ", transactionId='" + transactionId + '\'' + '}';
     }
 }

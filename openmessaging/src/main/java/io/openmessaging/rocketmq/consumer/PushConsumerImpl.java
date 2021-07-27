@@ -149,16 +149,14 @@ public class PushConsumerImpl implements PushConsumer {
     class MessageListenerImpl implements MessageListenerConcurrently {
 
         @Override
-        public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> rmqMsgList,
-                                                        ConsumeConcurrentlyContext contextRMQ) {
+        public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> rmqMsgList, ConsumeConcurrentlyContext contextRMQ) {
             MessageExt rmqMsg = rmqMsgList.get(0);
             BytesMessage omsMsg = OMSUtil.msgConvert(rmqMsg);
 
             MessageListener listener = PushConsumerImpl.this.subscribeTable.get(rmqMsg.getTopic());
 
             if (listener == null) {
-                throw new OMSRuntimeException("-1",
-                        String.format("The topic/queue %s isn't attached to this consumer", rmqMsg.getTopic()));
+                throw new OMSRuntimeException("-1", String.format("The topic/queue %s isn't attached to this consumer", rmqMsg.getTopic()));
             }
 
             final KeyValue contextProperties = OMS.newKeyValue();
@@ -175,8 +173,7 @@ public class PushConsumerImpl implements PushConsumer {
                 @Override
                 public void ack() {
                     sync.countDown();
-                    contextProperties.put(NonStandardKeys.MESSAGE_CONSUME_STATUS,
-                            ConsumeConcurrentlyStatus.CONSUME_SUCCESS.name());
+                    contextProperties.put(NonStandardKeys.MESSAGE_CONSUME_STATUS, ConsumeConcurrentlyStatus.CONSUME_SUCCESS.name());
                 }
             };
             long begin = System.currentTimeMillis();

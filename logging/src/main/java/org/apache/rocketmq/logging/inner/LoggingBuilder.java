@@ -1,28 +1,9 @@
 package org.apache.rocketmq.logging.inner;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilterWriter;
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 public class LoggingBuilder {
 
@@ -183,9 +164,7 @@ public class LoggingBuilder {
                     }
 
                     boolean discard = true;
-                    if (blocking
-                            && !Thread.interrupted()
-                            && Thread.currentThread() != dispatcher) {
+                    if (blocking && !Thread.interrupted() && Thread.currentThread() != dispatcher) {
                         try {
                             buffer.wait();
                             discard = false;
@@ -221,9 +200,7 @@ public class LoggingBuilder {
                 dispatcher.join();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                SysLogger.error(
-                        "Got an InterruptedException while waiting for the "
-                                + "dispatcher to finish.", e);
+                SysLogger.error("Got an InterruptedException while waiting for the " + "dispatcher to finish.", e);
             }
 
             synchronized (appenderPipeline) {
@@ -320,17 +297,9 @@ public class LoggingBuilder {
             }
 
             public LoggingEvent createEvent() {
-                String msg =
-                        MessageFormat.format(
-                                "Discarded {0} messages due to full event buffer including: {1}",
-                                count, maxEvent.getMessage());
+                String msg = MessageFormat.format("Discarded {0} messages due to full event buffer including: {1}", count, maxEvent.getMessage());
 
-                return new LoggingEvent(
-                        "AsyncAppender.DONT_REPORT_LOCATION",
-                        Logger.getLogger(maxEvent.getLoggerName()),
-                        maxEvent.getLevel(),
-                        msg,
-                        null);
+                return new LoggingEvent("AsyncAppender.DONT_REPORT_LOCATION", Logger.getLogger(maxEvent.getLoggerName()), maxEvent.getLevel(), msg, null);
             }
         }
 
@@ -344,9 +313,7 @@ public class LoggingBuilder {
 
             private final AppenderPipelineImpl appenderPipeline;
 
-            public Dispatcher(
-                    final AsyncAppender parent, final List<LoggingEvent> buffer, final Map<String, DiscardSummary> discardMap,
-                    final AppenderPipelineImpl appenderPipeline) {
+            public Dispatcher(final AsyncAppender parent, final List<LoggingEvent> buffer, final Map<String, DiscardSummary> discardMap, final AppenderPipelineImpl appenderPipeline) {
 
                 this.parent = parent;
                 this.buffer = buffer;
@@ -416,8 +383,7 @@ public class LoggingBuilder {
                 try {
                     out.write(string);
                 } catch (Exception e) {
-                    appender.handleError("Failed to write [" + string + "].", e,
-                            Appender.CODE_WRITE_FAILURE);
+                    appender.handleError("Failed to write [" + string + "].", e, Appender.CODE_WRITE_FAILURE);
                 }
             }
         }
@@ -426,8 +392,7 @@ public class LoggingBuilder {
             try {
                 out.flush();
             } catch (Exception e) {
-                appender.handleError("Failed to flush writer,", e,
-                        Appender.CODE_FLUSH_FAILURE);
+                appender.handleError("Failed to flush writer,", e, Appender.CODE_FLUSH_FAILURE);
             }
         }
     }
@@ -472,8 +437,7 @@ public class LoggingBuilder {
             }
 
             if (this.qw == null) {
-                handleError("No output stream or file set for the appender named [" +
-                        name + "].");
+                handleError("No output stream or file set for the appender named [" + name + "].");
                 return false;
             }
 
@@ -596,8 +560,7 @@ public class LoggingBuilder {
         public FileAppender() {
         }
 
-        public FileAppender(Layout layout, String filename, boolean append)
-                throws IOException {
+        public FileAppender(Layout layout, String filename, boolean append) throws IOException {
             this.layout = layout;
             this.setFile(filename, append, false, bufferSize);
         }
@@ -623,8 +586,7 @@ public class LoggingBuilder {
                 try {
                     setFile(fileName, fileAppend, bufferedIO, bufferSize);
                 } catch (IOException e) {
-                    handleError("setFile(" + fileName + "," + fileAppend + ") call failed.",
-                            e, CODE_FILE_OPEN_FAILURE);
+                    handleError("setFile(" + fileName + "," + fileAppend + ") call failed.", e, CODE_FILE_OPEN_FAILURE);
                 }
             } else {
                 SysLogger.warn("File option not set for appender [" + name + "].");
@@ -664,8 +626,7 @@ public class LoggingBuilder {
             this.bufferSize = bufferSize;
         }
 
-        public synchronized void setFile(String fileName, boolean append, boolean bufferedIO, int bufferSize)
-                throws IOException {
+        public synchronized void setFile(String fileName, boolean append, boolean bufferedIO, int bufferSize) throws IOException {
             SysLogger.debug("setFile called: " + fileName + ", " + append);
 
             if (bufferedIO) {
@@ -803,8 +764,7 @@ public class LoggingBuilder {
             }
         }
 
-        public synchronized void setFile(String fileName, boolean append, boolean bufferedIO, int bufferSize)
-                throws IOException {
+        public synchronized void setFile(String fileName, boolean append, boolean bufferedIO, int bufferSize) throws IOException {
             super.setFile(fileName, append, this.bufferedIO, this.bufferSize);
             if (append) {
                 File f = new File(fileName);

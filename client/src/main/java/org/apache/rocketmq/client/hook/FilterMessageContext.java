@@ -54,7 +54,6 @@ public class FilterMessageContext {
 
     @Override
     public String toString() {
-        return "ConsumeMessageContext [consumerGroup=" + consumerGroup + ", msgList=" + msgList + ", mq="
-                + mq + ", arg=" + arg + "]";
+        return "ConsumeMessageContext [consumerGroup=" + consumerGroup + ", msgList=" + msgList + ", mq=" + mq + ", arg=" + arg + "]";
     }
 }

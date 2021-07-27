@@ -111,50 +111,33 @@ public class SubscriptionData implements Comparable<SubscriptionData> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         SubscriptionData other = (SubscriptionData) obj;
-        if (classFilterMode != other.classFilterMode)
-            return false;
+        if (classFilterMode != other.classFilterMode) return false;
         if (codeSet == null) {
-            if (other.codeSet != null)
-                return false;
-        } else if (!codeSet.equals(other.codeSet))
-            return false;
+            if (other.codeSet != null) return false;
+        } else if (!codeSet.equals(other.codeSet)) return false;
         if (subString == null) {
-            if (other.subString != null)
-                return false;
-        } else if (!subString.equals(other.subString))
-            return false;
-        if (subVersion != other.subVersion)
-            return false;
+            if (other.subString != null) return false;
+        } else if (!subString.equals(other.subString)) return false;
+        if (subVersion != other.subVersion) return false;
         if (tagsSet == null) {
-            if (other.tagsSet != null)
-                return false;
-        } else if (!tagsSet.equals(other.tagsSet))
-            return false;
+            if (other.tagsSet != null) return false;
+        } else if (!tagsSet.equals(other.tagsSet)) return false;
         if (topic == null) {
-            if (other.topic != null)
-                return false;
-        } else if (!topic.equals(other.topic))
-            return false;
+            if (other.topic != null) return false;
+        } else if (!topic.equals(other.topic)) return false;
         if (expressionType == null) {
-            if (other.expressionType != null)
-                return false;
-        } else if (!expressionType.equals(other.expressionType))
-            return false;
+            if (other.expressionType != null) return false;
+        } else if (!expressionType.equals(other.expressionType)) return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "SubscriptionData [classFilterMode=" + classFilterMode + ", topic=" + topic + ", subString="
-                + subString + ", tagsSet=" + tagsSet + ", codeSet=" + codeSet + ", subVersion=" + subVersion
-                + ", expressionType=" + expressionType + "]";
+        return "SubscriptionData [classFilterMode=" + classFilterMode + ", topic=" + topic + ", subString=" + subString + ", tagsSet=" + tagsSet + ", codeSet=" + codeSet + ", subVersion=" + subVersion + ", expressionType=" + expressionType + "]";
     }
 
     @Override

@@ -112,8 +112,7 @@ public class Configuration {
                 this.storePathObject = object;
                 // check
                 this.storePathField = object.getClass().getDeclaredField(fieldName);
-                assert this.storePathField != null
-                        && !Modifier.isStatic(this.storePathField.getModifiers());
+                assert this.storePathField != null && !Modifier.isStatic(this.storePathField.getModifiers());
                 this.storePathField.setAccessible(true);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);

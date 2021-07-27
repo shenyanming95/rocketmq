@@ -24,8 +24,7 @@ public class ResponseFuture {
     private volatile boolean sendRequestOK = true;
     private volatile Throwable cause;
 
-    public ResponseFuture(Channel channel, int opaque, long timeoutMillis, InvokeCallback invokeCallback,
-                          SemaphoreReleaseOnlyOnce once) {
+    public ResponseFuture(Channel channel, int opaque, long timeoutMillis, InvokeCallback invokeCallback, SemaphoreReleaseOnlyOnce once) {
         this.opaque = opaque;
         this.processChannel = channel;
         this.timeoutMillis = timeoutMillis;
@@ -108,14 +107,6 @@ public class ResponseFuture {
 
     @Override
     public String toString() {
-        return "ResponseFuture [responseCommand=" + responseCommand
-                + ", sendRequestOK=" + sendRequestOK
-                + ", cause=" + cause
-                + ", opaque=" + opaque
-                + ", processChannel=" + processChannel
-                + ", timeoutMillis=" + timeoutMillis
-                + ", invokeCallback=" + invokeCallback
-                + ", beginTimestamp=" + beginTimestamp
-                + ", countDownLatch=" + countDownLatch + "]";
+        return "ResponseFuture [responseCommand=" + responseCommand + ", sendRequestOK=" + sendRequestOK + ", cause=" + cause + ", opaque=" + opaque + ", processChannel=" + processChannel + ", timeoutMillis=" + timeoutMillis + ", invokeCallback=" + invokeCallback + ", beginTimestamp=" + beginTimestamp + ", countDownLatch=" + countDownLatch + "]";
     }
 }

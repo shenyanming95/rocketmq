@@ -6,27 +6,13 @@ import org.apache.rocketmq.common.help.FAQUrl;
 import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.net.*;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class MixAll {
@@ -213,8 +199,7 @@ public class MixAll {
         printObjectProperties(logger, object, false);
     }
 
-    public static void printObjectProperties(final InternalLogger logger, final Object object,
-                                             final boolean onlyImportantField) {
+    public static void printObjectProperties(final InternalLogger logger, final Object object, final boolean onlyImportantField) {
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (!Modifier.isStatic(field.getModifiers())) {
@@ -364,8 +349,7 @@ public class MixAll {
         } catch (Throwable e) {
             try {
                 String candidatesHost = getLocalhostByNetworkInterface();
-                if (candidatesHost != null)
-                    return candidatesHost;
+                if (candidatesHost != null) return candidatesHost;
 
             } catch (Exception ignored) {
             }
@@ -410,8 +394,7 @@ public class MixAll {
         long prev = target.get();
         while (value > prev) {
             boolean updated = target.compareAndSet(prev, value);
-            if (updated)
-                return true;
+            if (updated) return true;
 
             prev = target.get();
         }
@@ -421,8 +404,7 @@ public class MixAll {
 
     public static String humanReadableByteCount(long bytes, boolean si) {
         int unit = si ? 1000 : 1024;
-        if (bytes < unit)
-            return bytes + " B";
+        if (bytes < unit) return bytes + " B";
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);

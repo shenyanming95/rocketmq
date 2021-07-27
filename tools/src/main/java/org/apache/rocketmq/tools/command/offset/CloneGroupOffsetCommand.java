@@ -77,8 +77,7 @@ public class CloneGroupOffsetCommand implements SubCommand {
                     }
                 }
             }
-            System.out.printf("clone group offset success. srcGroup[%s], destGroup=[%s], topic[%s]",
-                    srcGroup, destGroup, topic);
+            System.out.printf("clone group offset success. srcGroup[%s], destGroup=[%s], topic[%s]", srcGroup, destGroup, topic);
         } catch (Exception e) {
             throw new SubCommandException(this.getClass().getSimpleName() + " command failed", e);
         } finally {

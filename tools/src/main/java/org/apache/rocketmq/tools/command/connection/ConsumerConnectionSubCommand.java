@@ -51,13 +51,7 @@ public class ConsumerConnectionSubCommand implements SubCommand {
 
             int i = 1;
             for (Connection conn : cc.getConnectionSet()) {
-                System.out.printf("%03d  %-32s %-22s %-8s %s%n",
-                        i++,
-                        conn.getClientId(),
-                        conn.getClientAddr(),
-                        conn.getLanguage(),
-                        MQVersion.getVersionDesc(conn.getVersion())
-                );
+                System.out.printf("%03d  %-32s %-22s %-8s %s%n", i++, conn.getClientId(), conn.getClientAddr(), conn.getLanguage(), MQVersion.getVersionDesc(conn.getVersion()));
             }
 
             System.out.printf("%nBelow is subscription:");
@@ -66,11 +60,7 @@ public class ConsumerConnectionSubCommand implements SubCommand {
             while (it.hasNext()) {
                 Entry<String, SubscriptionData> entry = it.next();
                 SubscriptionData sd = entry.getValue();
-                System.out.printf("%03d  Topic: %-40s SubExpression: %s%n",
-                        i++,
-                        sd.getTopic(),
-                        sd.getSubString()
-                );
+                System.out.printf("%03d  Topic: %-40s SubExpression: %s%n", i++, sd.getTopic(), sd.getSubString());
             }
 
             System.out.printf("");

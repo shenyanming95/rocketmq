@@ -4,13 +4,7 @@ import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ThreadUtils {
@@ -24,8 +18,7 @@ public final class ThreadUtils {
 
     }
 
-    public static ExecutorService newThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-                                                        TimeUnit unit, BlockingQueue<Runnable> workQueue, String processName, boolean isDaemon) {
+    public static ExecutorService newThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, String processName, boolean isDaemon) {
         return new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, newThreadFactory(processName, isDaemon));
     }
 
@@ -37,8 +30,7 @@ public final class ThreadUtils {
         return Executors.newSingleThreadScheduledExecutor(newThreadFactory(processName, isDaemon));
     }
 
-    public static ScheduledExecutorService newFixedThreadScheduledPool(int nThreads, String processName,
-                                                                       boolean isDaemon) {
+    public static ScheduledExecutorService newFixedThreadScheduledPool(int nThreads, String processName, boolean isDaemon) {
         return Executors.newScheduledThreadPool(nThreads, newThreadFactory(processName, isDaemon));
     }
 
@@ -67,8 +59,7 @@ public final class ThreadUtils {
         };
     }
 
-    public static ThreadFactory newGenericThreadFactory(final String processName, final int threads,
-                                                        final boolean isDaemon) {
+    public static ThreadFactory newGenericThreadFactory(final String processName, final int threads, final boolean isDaemon) {
         return new ThreadFactory() {
             private AtomicInteger threadIndex = new AtomicInteger(0);
 
@@ -116,8 +107,7 @@ public final class ThreadUtils {
      * @param t      Thread to stop
      */
     public static void shutdownGracefully(final Thread t, final long millis) {
-        if (t == null)
-            return;
+        if (t == null) return;
         while (t.isAlive()) {
             try {
                 t.interrupt();

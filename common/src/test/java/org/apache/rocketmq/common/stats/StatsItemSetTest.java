@@ -4,11 +4,7 @@ import org.apache.rocketmq.common.ThreadFactoryImpl;
 import org.junit.After;
 import org.junit.Test;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertEquals;
@@ -33,8 +29,7 @@ public class StatsItemSetTest {
         final String tpsStatKey = "tpsTest";
         final String rtStatKey = "rtTest";
         final StatsItemSet statsItemSet = new StatsItemSet(tpsStatKey, scheduler, null);
-        executor = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(100), new ThreadFactoryImpl("testMultiThread"));
+        executor = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(100), new ThreadFactoryImpl("testMultiThread"));
         for (int i = 0; i < 10; i++) {
             executor.submit(new Runnable() {
                 @Override
@@ -81,8 +76,7 @@ public class StatsItemSetTest {
 
     private AtomicLong test_unit() throws InterruptedException {
         final StatsItemSet statsItemSet = new StatsItemSet("topicTest", scheduler, null);
-        executor = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(100), new ThreadFactoryImpl("testMultiThread"));
+        executor = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(100), new ThreadFactoryImpl("testMultiThread"));
         for (int i = 0; i < 10; i++) {
             executor.submit(new Runnable() {
                 @Override
@@ -102,8 +96,7 @@ public class StatsItemSetTest {
 
     private AtomicLong test_unit_moment() throws InterruptedException {
         final MomentStatsItemSet statsItemSet = new MomentStatsItemSet("topicTest", scheduler, null);
-        executor = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(100), new ThreadFactoryImpl("testMultiThread"));
+        executor = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(100), new ThreadFactoryImpl("testMultiThread"));
         for (int i = 0; i < 10; i++) {
             executor.submit(new Runnable() {
                 @Override

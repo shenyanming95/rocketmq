@@ -25,8 +25,7 @@ public class AllocateMachineRoomNearby implements AllocateMessageQueueStrategy {
     private final AllocateMessageQueueStrategy allocateMessageQueueStrategy;//actual allocate strategy
     private final MachineRoomResolver machineRoomResolver;
 
-    public AllocateMachineRoomNearby(AllocateMessageQueueStrategy allocateMessageQueueStrategy,
-                                     MachineRoomResolver machineRoomResolver) throws NullPointerException {
+    public AllocateMachineRoomNearby(AllocateMessageQueueStrategy allocateMessageQueueStrategy, MachineRoomResolver machineRoomResolver) throws NullPointerException {
         if (allocateMessageQueueStrategy == null) {
             throw new NullPointerException("allocateMessageQueueStrategy is null");
         }
@@ -40,8 +39,7 @@ public class AllocateMachineRoomNearby implements AllocateMessageQueueStrategy {
     }
 
     @Override
-    public List<MessageQueue> allocate(String consumerGroup, String currentCID, List<MessageQueue> mqAll,
-                                       List<String> cidAll) {
+    public List<MessageQueue> allocate(String consumerGroup, String currentCID, List<MessageQueue> mqAll, List<String> cidAll) {
         if (currentCID == null || currentCID.length() < 1) {
             throw new IllegalArgumentException("currentCID is empty");
         }
@@ -54,10 +52,7 @@ public class AllocateMachineRoomNearby implements AllocateMessageQueueStrategy {
 
         List<MessageQueue> result = new ArrayList<MessageQueue>();
         if (!cidAll.contains(currentCID)) {
-            log.info("[BUG] ConsumerGroup: {} The consumerId: {} not in cidAll: {}",
-                    consumerGroup,
-                    currentCID,
-                    cidAll);
+            log.info("[BUG] ConsumerGroup: {} The consumerId: {} not in cidAll: {}", consumerGroup, currentCID, cidAll);
             return result;
         }
 

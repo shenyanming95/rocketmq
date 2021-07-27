@@ -46,8 +46,7 @@ public class DeleteAccessConfigSubCommand implements SubCommand {
     }
 
     @Override
-    public void execute(CommandLine commandLine, Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(CommandLine commandLine, Options options, RPCHook rpcHook) throws SubCommandException {
 
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -71,8 +70,7 @@ public class DeleteAccessConfigSubCommand implements SubCommand {
 
                 defaultMQAdminExt.start();
 
-                Set<String> masterSet =
-                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String addr : masterSet) {
                     defaultMQAdminExt.deletePlainAccessConfig(addr, accessKey);
                     System.out.printf("delete plain access config account to %s success.%n", addr);

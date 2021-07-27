@@ -9,12 +9,8 @@ import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
 import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,8 +18,7 @@ public class ConsumerOffsetManager extends ConfigManager {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private static final String TOPIC_GROUP_SEPARATOR = "@";
 
-    private ConcurrentMap<String/* topic@group */, ConcurrentMap<Integer, Long>> offsetTable =
-            new ConcurrentHashMap<String, ConcurrentMap<Integer, Long>>(512);
+    private ConcurrentMap<String/* topic@group */, ConcurrentMap<Integer, Long>> offsetTable = new ConcurrentHashMap<String, ConcurrentMap<Integer, Long>>(512);
 
     private transient BrokerController brokerController;
 
@@ -44,8 +39,7 @@ public class ConsumerOffsetManager extends ConfigManager {
                 String topic = arrays[0];
                 String group = arrays[1];
 
-                if (null == brokerController.getConsumerManager().findSubscriptionData(group, topic)
-                        && this.offsetBehindMuchThanData(topic, next.getValue())) {
+                if (null == brokerController.getConsumerManager().findSubscriptionData(group, topic) && this.offsetBehindMuchThanData(topic, next.getValue())) {
                     it.remove();
                     log.warn("remove topic offset, {}", topicAtGroup);
                 }
@@ -103,8 +97,7 @@ public class ConsumerOffsetManager extends ConfigManager {
         return groups;
     }
 
-    public void commitOffset(final String clientHost, final String group, final String topic, final int queueId,
-                             final long offset) {
+    public void commitOffset(final String clientHost, final String group, final String topic, final int queueId, final long offset) {
         // topic@group
         String key = topic + TOPIC_GROUP_SEPARATOR + group;
         this.commitOffset(clientHost, key, queueId, offset);
@@ -130,8 +123,7 @@ public class ConsumerOffsetManager extends ConfigManager {
         ConcurrentMap<Integer, Long> map = this.offsetTable.get(key);
         if (null != map) {
             Long offset = map.get(queueId);
-            if (offset != null)
-                return offset;
+            if (offset != null) return offset;
         }
 
         return -1;

@@ -9,12 +9,7 @@ import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.SortedMap;
@@ -43,10 +38,8 @@ public class AclUtils {
     public static byte[] combineBytes(byte[] b1, byte[] b2) {
         int size = (null != b1 ? b1.length : 0) + (null != b2 ? b2.length : 0);
         byte[] total = new byte[size];
-        if (null != b1)
-            System.arraycopy(b1, 0, total, 0, b1.length);
-        if (null != b2)
-            System.arraycopy(b2, 0, total, b1.length, b2.length);
+        if (null != b1) System.arraycopy(b1, 0, total, 0, b1.length);
+        if (null != b2) System.arraycopy(b2, 0, total, b1.length, b2.length);
         return total;
     }
 
@@ -292,8 +285,7 @@ public class AclUtils {
     public static RPCHook getAclRPCHook(String fileName) {
         JSONObject yamlDataObject = null;
         try {
-            yamlDataObject = AclUtils.getYamlDataObject(fileName,
-                    JSONObject.class);
+            yamlDataObject = AclUtils.getYamlDataObject(fileName, JSONObject.class);
         } catch (Exception e) {
             log.error("Convert yaml file to data object error, ", e);
             return null;

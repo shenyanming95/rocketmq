@@ -11,8 +11,7 @@ public class PullResult {
     private final long maxOffset;
     private List<MessageExt> msgFoundList;
 
-    public PullResult(PullStatus pullStatus, long nextBeginOffset, long minOffset, long maxOffset,
-                      List<MessageExt> msgFoundList) {
+    public PullResult(PullStatus pullStatus, long nextBeginOffset, long minOffset, long maxOffset, List<MessageExt> msgFoundList) {
         super();
         this.pullStatus = pullStatus;
         this.nextBeginOffset = nextBeginOffset;
@@ -47,8 +46,6 @@ public class PullResult {
 
     @Override
     public String toString() {
-        return "PullResult [pullStatus=" + pullStatus + ", nextBeginOffset=" + nextBeginOffset
-                + ", minOffset=" + minOffset + ", maxOffset=" + maxOffset + ", msgFoundList="
-                + (msgFoundList == null ? 0 : msgFoundList.size()) + "]";
+        return "PullResult [pullStatus=" + pullStatus + ", nextBeginOffset=" + nextBeginOffset + ", minOffset=" + minOffset + ", maxOffset=" + maxOffset + ", msgFoundList=" + (msgFoundList == null ? 0 : msgFoundList.size()) + "]";
     }
 }

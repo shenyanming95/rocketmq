@@ -11,9 +11,7 @@ public class MessageStorePluginContext {
     private MessageArrivingListener messageArrivingListener;
     private BrokerConfig brokerConfig;
 
-    public MessageStorePluginContext(MessageStoreConfig messageStoreConfig,
-                                     BrokerStatsManager brokerStatsManager, MessageArrivingListener messageArrivingListener,
-                                     BrokerConfig brokerConfig) {
+    public MessageStorePluginContext(MessageStoreConfig messageStoreConfig, BrokerStatsManager brokerStatsManager, MessageArrivingListener messageArrivingListener, BrokerConfig brokerConfig) {
         super();
         this.messageStoreConfig = messageStoreConfig;
         this.brokerStatsManager = brokerStatsManager;

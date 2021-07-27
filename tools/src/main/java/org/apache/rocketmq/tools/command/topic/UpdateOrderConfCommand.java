@@ -41,8 +41,7 @@ public class UpdateOrderConfCommand implements SubCommand {
     }
 
     @Override
-    public void execute(final CommandLine commandLine, final Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(final CommandLine commandLine, final Options options, RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
 
@@ -53,8 +52,7 @@ public class UpdateOrderConfCommand implements SubCommand {
             if ("get".equals(type)) {
 
                 defaultMQAdminExt.start();
-                String orderConf =
-                        defaultMQAdminExt.getKVConfig(NamesrvUtil.NAMESPACE_ORDER_TOPIC_CONFIG, topic);
+                String orderConf = defaultMQAdminExt.getKVConfig(NamesrvUtil.NAMESPACE_ORDER_TOPIC_CONFIG, topic);
                 System.out.printf("get orderConf success. topic=[%s], orderConf=[%s] ", topic, orderConf);
 
                 return;
@@ -70,8 +68,7 @@ public class UpdateOrderConfCommand implements SubCommand {
                 }
 
                 defaultMQAdminExt.createOrUpdateOrderConf(topic, orderConf, true);
-                System.out.printf("update orderConf success. topic=[%s], orderConf=[%s]", topic,
-                        orderConf.toString());
+                System.out.printf("update orderConf success. topic=[%s], orderConf=[%s]", topic, orderConf.toString());
                 return;
             } else if ("delete".equals(type)) {
 

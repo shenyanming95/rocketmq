@@ -11,8 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class StatsItemSet {
-    private final ConcurrentMap<String/* key */, StatsItem> statsItemTable =
-            new ConcurrentHashMap<String, StatsItem>(128);
+    private final ConcurrentMap<String/* key */, StatsItem> statsItemTable = new ConcurrentHashMap<String, StatsItem>(128);
 
     private final String statsName;
     private final ScheduledExecutorService scheduledExecutorService;

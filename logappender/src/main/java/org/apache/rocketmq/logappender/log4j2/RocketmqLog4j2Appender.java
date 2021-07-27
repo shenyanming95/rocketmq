@@ -1,10 +1,6 @@
 package org.apache.rocketmq.logappender.log4j2;
 
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.ErrorHandler;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
@@ -23,10 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Log4j2 Appender Component
  */
-@Plugin(name = "RocketMQ",
-        category = Node.CATEGORY,
-        elementType = Appender.ELEMENT_TYPE,
-        printObject = true)
+@Plugin(name = "RocketMQ", category = Node.CATEGORY, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class RocketmqLog4j2Appender extends AbstractAppender {
 
     /**
@@ -54,9 +47,7 @@ public class RocketmqLog4j2Appender extends AbstractAppender {
      */
     private String topic;
 
-    protected RocketmqLog4j2Appender(String name, Filter filter, Layout<? extends Serializable> layout,
-                                     boolean ignoreExceptions, String nameServerAddress, String producerGroup,
-                                     String topic, String tag) {
+    protected RocketmqLog4j2Appender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, String nameServerAddress, String producerGroup, String topic, String tag) {
         super(name, filter, layout, ignoreExceptions);
         this.producer = producer;
         this.topic = topic;
@@ -68,8 +59,7 @@ public class RocketmqLog4j2Appender extends AbstractAppender {
         } catch (Exception e) {
             ErrorHandler handler = this.getHandler();
             if (handler != null) {
-                handler.error("Starting RocketmqLog4j2Appender [" + this.getName()
-                        + "] nameServerAddress:" + nameServerAddress + " group:" + producerGroup + " " + e.getMessage());
+                handler.error("Starting RocketmqLog4j2Appender [" + this.getName() + "] nameServerAddress:" + nameServerAddress + " group:" + producerGroup + " " + e.getMessage());
             }
         }
     }
@@ -116,8 +106,7 @@ public class RocketmqLog4j2Appender extends AbstractAppender {
         } catch (Exception e) {
             ErrorHandler handler = this.getHandler();
             if (handler != null) {
-                handler.error("Closeing RocketmqLog4j2Appender [" + this.getName()
-                        + "] nameServerAddress:" + nameServerAddress + " group:" + producerGroup + " " + e.getMessage());
+                handler.error("Closeing RocketmqLog4j2Appender [" + this.getName() + "] nameServerAddress:" + nameServerAddress + " group:" + producerGroup + " " + e.getMessage());
             }
         }
 
@@ -203,8 +192,7 @@ public class RocketmqLog4j2Appender extends AbstractAppender {
         }
 
         public RocketmqLog4j2Appender build() {
-            return new RocketmqLog4j2Appender(name, filter, layout, ignoreExceptions,
-                    nameServerAddress, producerGroup, topic, tag);
+            return new RocketmqLog4j2Appender(name, filter, layout, ignoreExceptions, nameServerAddress, producerGroup, topic, tag);
         }
     }
 }

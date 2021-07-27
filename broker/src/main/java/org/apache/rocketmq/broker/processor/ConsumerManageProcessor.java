@@ -6,13 +6,7 @@ import org.apache.rocketmq.broker.client.ConsumerGroupInfo;
 import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.common.protocol.RequestCode;
 import org.apache.rocketmq.common.protocol.ResponseCode;
-import org.apache.rocketmq.common.protocol.header.GetConsumerListByGroupRequestHeader;
-import org.apache.rocketmq.common.protocol.header.GetConsumerListByGroupResponseBody;
-import org.apache.rocketmq.common.protocol.header.GetConsumerListByGroupResponseHeader;
-import org.apache.rocketmq.common.protocol.header.QueryConsumerOffsetRequestHeader;
-import org.apache.rocketmq.common.protocol.header.QueryConsumerOffsetResponseHeader;
-import org.apache.rocketmq.common.protocol.header.UpdateConsumerOffsetRequestHeader;
-import org.apache.rocketmq.common.protocol.header.UpdateConsumerOffsetResponseHeader;
+import org.apache.rocketmq.common.protocol.header.*;
 import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
@@ -33,8 +27,7 @@ public class ConsumerManageProcessor extends AsyncNettyRequestProcessor implemen
     }
 
     @Override
-    public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand request)
-            throws RemotingCommandException {
+    public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
         switch (request.getCode()) {
             case RequestCode.GET_CONSUMER_LIST_BY_GROUP:
                 return this.getConsumerListByGroup(ctx, request);
@@ -53,17 +46,11 @@ public class ConsumerManageProcessor extends AsyncNettyRequestProcessor implemen
         return false;
     }
 
-    public RemotingCommand getConsumerListByGroup(ChannelHandlerContext ctx, RemotingCommand request)
-            throws RemotingCommandException {
-        final RemotingCommand response =
-                RemotingCommand.createResponseCommand(GetConsumerListByGroupResponseHeader.class);
-        final GetConsumerListByGroupRequestHeader requestHeader =
-                (GetConsumerListByGroupRequestHeader) request
-                        .decodeCommandCustomHeader(GetConsumerListByGroupRequestHeader.class);
+    public RemotingCommand getConsumerListByGroup(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
+        final RemotingCommand response = RemotingCommand.createResponseCommand(GetConsumerListByGroupResponseHeader.class);
+        final GetConsumerListByGroupRequestHeader requestHeader = (GetConsumerListByGroupRequestHeader) request.decodeCommandCustomHeader(GetConsumerListByGroupRequestHeader.class);
 
-        ConsumerGroupInfo consumerGroupInfo =
-                this.brokerController.getConsumerManager().getConsumerGroupInfo(
-                        requestHeader.getConsumerGroup());
+        ConsumerGroupInfo consumerGroupInfo = this.brokerController.getConsumerManager().getConsumerGroupInfo(requestHeader.getConsumerGroup());
         if (consumerGroupInfo != null) {
             List<String> clientIds = consumerGroupInfo.getAllClientId();
             if (!clientIds.isEmpty()) {
@@ -74,12 +61,10 @@ public class ConsumerManageProcessor extends AsyncNettyRequestProcessor implemen
                 response.setRemark(null);
                 return response;
             } else {
-                log.warn("getAllClientId failed, {} {}", requestHeader.getConsumerGroup(),
-                        RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
+                log.warn("getAllClientId failed, {} {}", requestHeader.getConsumerGroup(), RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
             }
         } else {
-            log.warn("getConsumerGroupInfo failed, {} {}", requestHeader.getConsumerGroup(),
-                    RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
+            log.warn("getConsumerGroupInfo failed, {} {}", requestHeader.getConsumerGroup(), RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
         }
 
         response.setCode(ResponseCode.SYSTEM_ERROR);
@@ -87,45 +72,29 @@ public class ConsumerManageProcessor extends AsyncNettyRequestProcessor implemen
         return response;
     }
 
-    private RemotingCommand updateConsumerOffset(ChannelHandlerContext ctx, RemotingCommand request)
-            throws RemotingCommandException {
-        final RemotingCommand response =
-                RemotingCommand.createResponseCommand(UpdateConsumerOffsetResponseHeader.class);
-        final UpdateConsumerOffsetRequestHeader requestHeader =
-                (UpdateConsumerOffsetRequestHeader) request
-                        .decodeCommandCustomHeader(UpdateConsumerOffsetRequestHeader.class);
-        this.brokerController.getConsumerOffsetManager().commitOffset(RemotingHelper.parseChannelRemoteAddr(ctx.channel()), requestHeader.getConsumerGroup(),
-                requestHeader.getTopic(), requestHeader.getQueueId(), requestHeader.getCommitOffset());
+    private RemotingCommand updateConsumerOffset(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
+        final RemotingCommand response = RemotingCommand.createResponseCommand(UpdateConsumerOffsetResponseHeader.class);
+        final UpdateConsumerOffsetRequestHeader requestHeader = (UpdateConsumerOffsetRequestHeader) request.decodeCommandCustomHeader(UpdateConsumerOffsetRequestHeader.class);
+        this.brokerController.getConsumerOffsetManager().commitOffset(RemotingHelper.parseChannelRemoteAddr(ctx.channel()), requestHeader.getConsumerGroup(), requestHeader.getTopic(), requestHeader.getQueueId(), requestHeader.getCommitOffset());
         response.setCode(ResponseCode.SUCCESS);
         response.setRemark(null);
         return response;
     }
 
-    private RemotingCommand queryConsumerOffset(ChannelHandlerContext ctx, RemotingCommand request)
-            throws RemotingCommandException {
-        final RemotingCommand response =
-                RemotingCommand.createResponseCommand(QueryConsumerOffsetResponseHeader.class);
-        final QueryConsumerOffsetResponseHeader responseHeader =
-                (QueryConsumerOffsetResponseHeader) response.readCustomHeader();
-        final QueryConsumerOffsetRequestHeader requestHeader =
-                (QueryConsumerOffsetRequestHeader) request
-                        .decodeCommandCustomHeader(QueryConsumerOffsetRequestHeader.class);
+    private RemotingCommand queryConsumerOffset(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
+        final RemotingCommand response = RemotingCommand.createResponseCommand(QueryConsumerOffsetResponseHeader.class);
+        final QueryConsumerOffsetResponseHeader responseHeader = (QueryConsumerOffsetResponseHeader) response.readCustomHeader();
+        final QueryConsumerOffsetRequestHeader requestHeader = (QueryConsumerOffsetRequestHeader) request.decodeCommandCustomHeader(QueryConsumerOffsetRequestHeader.class);
 
-        long offset =
-                this.brokerController.getConsumerOffsetManager().queryOffset(
-                        requestHeader.getConsumerGroup(), requestHeader.getTopic(), requestHeader.getQueueId());
+        long offset = this.brokerController.getConsumerOffsetManager().queryOffset(requestHeader.getConsumerGroup(), requestHeader.getTopic(), requestHeader.getQueueId());
 
         if (offset >= 0) {
             responseHeader.setOffset(offset);
             response.setCode(ResponseCode.SUCCESS);
             response.setRemark(null);
         } else {
-            long minOffset =
-                    this.brokerController.getMessageStore().getMinOffsetInQueue(requestHeader.getTopic(),
-                            requestHeader.getQueueId());
-            if (minOffset <= 0
-                    && !this.brokerController.getMessageStore().checkInDiskByConsumeOffset(
-                    requestHeader.getTopic(), requestHeader.getQueueId(), 0)) {
+            long minOffset = this.brokerController.getMessageStore().getMinOffsetInQueue(requestHeader.getTopic(), requestHeader.getQueueId());
+            if (minOffset <= 0 && !this.brokerController.getMessageStore().checkInDiskByConsumeOffset(requestHeader.getTopic(), requestHeader.getQueueId(), 0)) {
                 responseHeader.setOffset(0L);
                 response.setCode(ResponseCode.SUCCESS);
                 response.setRemark(null);

@@ -90,16 +90,14 @@ public class DefaultPromise<V> implements Promise<V> {
 
     @Override
     public boolean set(final V value) {
-        if (value == null)
-            return false;
+        if (value == null) return false;
         this.result = value;
         return done();
     }
 
     @Override
     public boolean setFailure(final Throwable cause) {
-        if (cause == null)
-            return false;
+        if (cause == null) return false;
         this.exception = cause;
         return done();
     }

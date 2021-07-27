@@ -369,8 +369,7 @@ public class Logger implements Appender.AppenderPipeline {
             int length = name.length();
             boolean parentFound = false;
 
-            for (int i = name.lastIndexOf('.', length - 1); i >= 0;
-                 i = name.lastIndexOf('.', i - 1)) {
+            for (int i = name.lastIndexOf('.', length - 1); i >= 0; i = name.lastIndexOf('.', i - 1)) {
                 String substr = name.substring(0, i);
 
                 CategoryKey key = new CategoryKey(substr);

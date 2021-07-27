@@ -104,10 +104,7 @@ public class NamespaceUtil {
             return null;
         }
 
-        return new StringBuffer()
-                .append(MixAll.RETRY_GROUP_TOPIC_PREFIX)
-                .append(wrapNamespace(namespace, consumerGroup))
-                .toString();
+        return new StringBuffer().append(MixAll.RETRY_GROUP_TOPIC_PREFIX).append(wrapNamespace(namespace, consumerGroup)).toString();
     }
 
     public static String getNamespaceFromResource(String resource) {

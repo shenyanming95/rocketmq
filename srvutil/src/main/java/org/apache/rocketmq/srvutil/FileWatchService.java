@@ -25,8 +25,7 @@ public class FileWatchService extends ServiceThread {
     private final Listener listener;
     private MessageDigest md = MessageDigest.getInstance("MD5");
 
-    public FileWatchService(final String[] watchFiles,
-                            final Listener listener) throws Exception {
+    public FileWatchService(final String[] watchFiles, final Listener listener) throws Exception {
         this.listener = listener;
         this.watchFiles = new ArrayList<>();
         this.fileCurrentHash = new ArrayList<>();

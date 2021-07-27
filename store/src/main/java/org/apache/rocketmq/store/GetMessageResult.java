@@ -8,8 +8,7 @@ import java.util.List;
 
 public class GetMessageResult {
 
-    private final List<SelectMappedBufferResult> messageMapedList =
-            new ArrayList<SelectMappedBufferResult>(100);
+    private final List<SelectMappedBufferResult> messageMapedList = new ArrayList<SelectMappedBufferResult>(100);
 
     private final List<ByteBuffer> messageBufferList = new ArrayList<ByteBuffer>(100);
 
@@ -71,8 +70,7 @@ public class GetMessageResult {
         this.messageMapedList.add(mapedBuffer);
         this.messageBufferList.add(mapedBuffer.getByteBuffer());
         this.bufferTotalSize += mapedBuffer.getSize();
-        this.msgCount4Commercial += (int) Math.ceil(
-                mapedBuffer.getSize() / BrokerStatsManager.SIZE_PER_COUNT);
+        this.msgCount4Commercial += (int) Math.ceil(mapedBuffer.getSize() / BrokerStatsManager.SIZE_PER_COUNT);
     }
 
     public void release() {
@@ -111,9 +109,7 @@ public class GetMessageResult {
 
     @Override
     public String toString() {
-        return "GetMessageResult [status=" + status + ", nextBeginOffset=" + nextBeginOffset + ", minOffset="
-                + minOffset + ", maxOffset=" + maxOffset + ", bufferTotalSize=" + bufferTotalSize
-                + ", suggestPullingFromSlave=" + suggestPullingFromSlave + "]";
+        return "GetMessageResult [status=" + status + ", nextBeginOffset=" + nextBeginOffset + ", minOffset=" + minOffset + ", maxOffset=" + maxOffset + ", bufferTotalSize=" + bufferTotalSize + ", suggestPullingFromSlave=" + suggestPullingFromSlave + "]";
     }
 
 }

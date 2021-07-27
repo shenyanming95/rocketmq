@@ -23,8 +23,7 @@ public class ExpressionMessageFilter implements MessageFilter {
     protected final ConsumerFilterManager consumerFilterManager;
     protected final boolean bloomDataValid;
 
-    public ExpressionMessageFilter(SubscriptionData subscriptionData, ConsumerFilterData consumerFilterData,
-                                   ConsumerFilterManager consumerFilterManager) {
+    public ExpressionMessageFilter(SubscriptionData subscriptionData, ConsumerFilterData consumerFilterData, ConsumerFilterManager consumerFilterManager) {
         this.subscriptionData = subscriptionData;
         this.consumerFilterData = consumerFilterData;
         this.consumerFilterManager = consumerFilterManager;
@@ -64,8 +63,7 @@ public class ExpressionMessageFilter implements MessageFilter {
             return subscriptionData.getCodeSet().contains(tagsCode.intValue());
         } else {
             // no expression or no bloom
-            if (consumerFilterData == null || consumerFilterData.getExpression() == null
-                    || consumerFilterData.getCompiledExpression() == null || consumerFilterData.getBloomFilterData() == null) {
+            if (consumerFilterData == null || consumerFilterData.getExpression() == null || consumerFilterData.getCompiledExpression() == null || consumerFilterData.getBloomFilterData() == null) {
                 return true;
             }
 
@@ -77,8 +75,7 @@ public class ExpressionMessageFilter implements MessageFilter {
 
             byte[] filterBitMap = cqExtUnit.getFilterBitMap();
             BloomFilter bloomFilter = this.consumerFilterManager.getBloomFilter();
-            if (filterBitMap == null || !this.bloomDataValid
-                    || filterBitMap.length * Byte.SIZE != consumerFilterData.getBloomFilterData().getBitNum()) {
+            if (filterBitMap == null || !this.bloomDataValid || filterBitMap.length * Byte.SIZE != consumerFilterData.getBloomFilterData().getBitNum()) {
                 return true;
             }
 
@@ -89,8 +86,7 @@ public class ExpressionMessageFilter implements MessageFilter {
                 log.debug("Pull {} by bit map:{}, {}, {}", ret, consumerFilterData, bitsArray, cqExtUnit);
                 return ret;
             } catch (Throwable e) {
-                log.error("bloom filter error, sub=" + subscriptionData
-                        + ", filter=" + consumerFilterData + ", bitMap=" + bitsArray, e);
+                log.error("bloom filter error, sub=" + subscriptionData + ", filter=" + consumerFilterData + ", bitMap=" + bitsArray, e);
             }
         }
 
@@ -115,8 +111,7 @@ public class ExpressionMessageFilter implements MessageFilter {
         Map<String, String> tempProperties = properties;
 
         // no expression
-        if (realFilterData == null || realFilterData.getExpression() == null
-                || realFilterData.getCompiledExpression() == null) {
+        if (realFilterData == null || realFilterData.getExpression() == null || realFilterData.getCompiledExpression() == null) {
             return true;
         }
 

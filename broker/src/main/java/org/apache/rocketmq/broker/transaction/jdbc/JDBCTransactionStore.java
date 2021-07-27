@@ -8,12 +8,7 @@ import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,8 +31,7 @@ public class JDBCTransactionStore implements TransactionStore {
             props.put("password", jdbcTransactionStoreConfig.getJdbcPassword());
 
             try {
-                this.connection =
-                        DriverManager.getConnection(this.jdbcTransactionStoreConfig.getJdbcURL(), props);
+                this.connection = DriverManager.getConnection(this.jdbcTransactionStoreConfig.getJdbcURL(), props);
 
                 this.connection.setAutoCommit(false);
 
@@ -57,8 +51,7 @@ public class JDBCTransactionStore implements TransactionStore {
     private boolean loadDriver() {
         try {
             Class.forName(this.jdbcTransactionStoreConfig.getJdbcDriverClass()).newInstance();
-            log.info("Loaded the appropriate driver, {}",
-                    this.jdbcTransactionStoreConfig.getJdbcDriverClass());
+            log.info("Loaded the appropriate driver, {}", this.jdbcTransactionStoreConfig.getJdbcDriverClass());
             return true;
         } catch (Exception e) {
             log.info("Loaded the appropriate driver Exception", e);

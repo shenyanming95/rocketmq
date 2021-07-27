@@ -59,8 +59,7 @@ public class RocketMQSerializable {
 
     public static byte[] mapSerialize(HashMap<String, String> map) {
         // keySize+key+valSize+val
-        if (null == map || map.isEmpty())
-            return null;
+        if (null == map || map.isEmpty()) return null;
 
         int totalLength = 0;
         int kvLength;
@@ -149,8 +148,7 @@ public class RocketMQSerializable {
     }
 
     public static HashMap<String, String> mapDeserialize(byte[] bytes) {
-        if (bytes == null || bytes.length <= 0)
-            return null;
+        if (bytes == null || bytes.length <= 0) return null;
 
         HashMap<String, String> map = new HashMap<String, String>();
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);

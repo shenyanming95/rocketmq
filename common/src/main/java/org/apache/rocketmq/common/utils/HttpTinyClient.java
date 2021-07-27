@@ -13,8 +13,7 @@ import java.util.List;
 
 public class HttpTinyClient {
 
-    static public HttpResult httpGet(String url, List<String> headers, List<String> paramValues,
-                                     String encoding, long readTimeoutMs) throws IOException {
+    static public HttpResult httpGet(String url, List<String> headers, List<String> paramValues, String encoding, long readTimeoutMs) throws IOException {
         String encodedContent = encodingParams(paramValues, encoding);
         url += (null == encodedContent) ? "" : ("?" + encodedContent);
 
@@ -43,8 +42,7 @@ public class HttpTinyClient {
         }
     }
 
-    static private String encodingParams(List<String> paramValues, String encoding)
-            throws UnsupportedEncodingException {
+    static private String encodingParams(List<String> paramValues, String encoding) throws UnsupportedEncodingException {
         StringBuilder sb = new StringBuilder();
         if (null == paramValues) {
             return null;
@@ -76,8 +74,7 @@ public class HttpTinyClient {
     /**
      * @return the http response of given http post request
      */
-    static public HttpResult httpPost(String url, List<String> headers, List<String> paramValues,
-                                      String encoding, long readTimeoutMs) throws IOException {
+    static public HttpResult httpPost(String url, List<String> headers, List<String> paramValues, String encoding, long readTimeoutMs) throws IOException {
         String encodedContent = encodingParams(paramValues, encoding);
 
         HttpURLConnection conn = null;

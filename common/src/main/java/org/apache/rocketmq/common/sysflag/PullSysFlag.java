@@ -7,8 +7,7 @@ public class PullSysFlag {
     private final static int FLAG_CLASS_FILTER = 0x1 << 3;
     private final static int FLAG_LITE_PULL_MESSAGE = 0x1 << 4;
 
-    public static int buildSysFlag(final boolean commitOffset, final boolean suspend,
-                                   final boolean subscription, final boolean classFilter) {
+    public static int buildSysFlag(final boolean commitOffset, final boolean suspend, final boolean subscription, final boolean classFilter) {
         int flag = 0;
 
         if (commitOffset) {
@@ -30,8 +29,7 @@ public class PullSysFlag {
         return flag;
     }
 
-    public static int buildSysFlag(final boolean commitOffset, final boolean suspend,
-                                   final boolean subscription, final boolean classFilter, final boolean litePull) {
+    public static int buildSysFlag(final boolean commitOffset, final boolean suspend, final boolean subscription, final boolean classFilter, final boolean litePull) {
         int flag = buildSysFlag(commitOffset, suspend, subscription, classFilter);
 
         if (litePull) {

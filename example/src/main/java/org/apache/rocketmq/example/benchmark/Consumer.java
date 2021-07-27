@@ -49,8 +49,7 @@ public class Consumer {
             group = groupPrefix + "_" + (System.currentTimeMillis() % 100);
         }
 
-        System.out.printf("topic: %s, threadCount %d, group: %s, suffix: %s, filterType: %s, expression: %s, msgTraceEnable: %s, aclEnable: %s%n",
-                topic, threadCount, group, isSuffixEnable, filterType, expression, msgTraceEnable, aclEnable);
+        System.out.printf("topic: %s, threadCount %d, group: %s, suffix: %s, filterType: %s, expression: %s, msgTraceEnable: %s, aclEnable: %s%n", topic, threadCount, group, isSuffixEnable, filterType, expression, msgTraceEnable, aclEnable);
 
         final StatsBenchmarkConsumer statsBenchmarkConsumer = new StatsBenchmarkConsumer();
 
@@ -74,8 +73,7 @@ public class Consumer {
                     Long[] begin = snapshotList.getFirst();
                     Long[] end = snapshotList.getLast();
 
-                    final long consumeTps =
-                            (long) (((end[1] - begin[1]) / (double) (end[0] - begin[0])) * 1000L);
+                    final long consumeTps = (long) (((end[1] - begin[1]) / (double) (end[0] - begin[0])) * 1000L);
                     final double averageB2CRT = (end[2] - begin[2]) / (double) (end[1] - begin[1]);
                     final double averageS2CRT = (end[3] - begin[3]) / (double) (end[1] - begin[1]);
                     final long failCount = end[4] - begin[4];
@@ -85,9 +83,7 @@ public class Consumer {
                     statsBenchmarkConsumer.getBorn2ConsumerMaxRT().set(0);
                     statsBenchmarkConsumer.getStore2ConsumerMaxRT().set(0);
 
-                    System.out.printf("Current Time: %s TPS: %d FAIL: %d AVG(B2C) RT(ms): %7.3f AVG(S2C) RT(ms): %7.3f MAX(B2C) RT(ms): %d MAX(S2C) RT(ms): %d%n",
-                            System.currentTimeMillis(), consumeTps, failCount, averageB2CRT, averageS2CRT, b2cMax, s2cMax
-                    );
+                    System.out.printf("Current Time: %s TPS: %d FAIL: %d AVG(B2C) RT(ms): %7.3f AVG(S2C) RT(ms): %7.3f MAX(B2C) RT(ms): %d MAX(S2C) RT(ms): %d%n", System.currentTimeMillis(), consumeTps, failCount, averageB2CRT, averageS2CRT, b2cMax, s2cMax);
                 }
             }
 
@@ -129,8 +125,7 @@ public class Consumer {
 
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             @Override
-            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs,
-                                                            ConsumeConcurrentlyContext context) {
+            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                 MessageExt msg = msgs.get(0);
                 long now = System.currentTimeMillis();
 
@@ -204,8 +199,7 @@ public class Consumer {
         long prev = target.get();
         while (value > prev) {
             boolean updated = target.compareAndSet(prev, value);
-            if (updated)
-                break;
+            if (updated) break;
 
             prev = target.get();
         }
@@ -226,13 +220,7 @@ class StatsBenchmarkConsumer {
     private final AtomicLong failCount = new AtomicLong(0L);
 
     public Long[] createSnapshot() {
-        Long[] snap = new Long[]{
-                System.currentTimeMillis(),
-                this.receiveMessageTotalCount.get(),
-                this.born2ConsumerTotalRT.get(),
-                this.store2ConsumerTotalRT.get(),
-                this.failCount.get()
-        };
+        Long[] snap = new Long[]{System.currentTimeMillis(), this.receiveMessageTotalCount.get(), this.born2ConsumerTotalRT.get(), this.store2ConsumerTotalRT.get(), this.failCount.get()};
 
         return snap;
     }

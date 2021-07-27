@@ -14,8 +14,7 @@ public class SessionCredentials {
     public static final String SIGNATURE = "Signature";
     public static final String SECURITY_TOKEN = "SecurityToken";
 
-    public static final String KEY_FILE = System.getProperty("rocketmq.client.keyFile",
-            System.getProperty("user.home") + File.separator + "key");
+    public static final String KEY_FILE = System.getProperty("rocketmq.client.keyFile", System.getProperty("user.home") + File.separator + "key");
 
     private String accessKey;
     private String secretKey;
@@ -111,38 +110,28 @@ public class SessionCredentials {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
 
         SessionCredentials other = (SessionCredentials) obj;
         if (accessKey == null) {
-            if (other.accessKey != null)
-                return false;
-        } else if (!accessKey.equals(other.accessKey))
-            return false;
+            if (other.accessKey != null) return false;
+        } else if (!accessKey.equals(other.accessKey)) return false;
 
         if (secretKey == null) {
-            if (other.secretKey != null)
-                return false;
-        } else if (!secretKey.equals(other.secretKey))
-            return false;
+            if (other.secretKey != null) return false;
+        } else if (!secretKey.equals(other.secretKey)) return false;
 
         if (signature == null) {
-            if (other.signature != null)
-                return false;
-        } else if (!signature.equals(other.signature))
-            return false;
+            if (other.signature != null) return false;
+        } else if (!signature.equals(other.signature)) return false;
 
         return true;
     }
 
     @Override
     public String toString() {
-        return "SessionCredentials [accessKey=" + accessKey + ", secretKey=" + secretKey + ", signature="
-                + signature + ", SecurityToken=" + securityToken + "]";
+        return "SessionCredentials [accessKey=" + accessKey + ", secretKey=" + secretKey + ", signature=" + signature + ", SecurityToken=" + securityToken + "]";
     }
 }

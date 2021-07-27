@@ -52,30 +52,22 @@ public class PullRequest {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         PullRequest other = (PullRequest) obj;
         if (consumerGroup == null) {
-            if (other.consumerGroup != null)
-                return false;
-        } else if (!consumerGroup.equals(other.consumerGroup))
-            return false;
+            if (other.consumerGroup != null) return false;
+        } else if (!consumerGroup.equals(other.consumerGroup)) return false;
         if (messageQueue == null) {
-            if (other.messageQueue != null)
-                return false;
-        } else if (!messageQueue.equals(other.messageQueue))
-            return false;
+            if (other.messageQueue != null) return false;
+        } else if (!messageQueue.equals(other.messageQueue)) return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "PullRequest [consumerGroup=" + consumerGroup + ", messageQueue=" + messageQueue
-                + ", nextOffset=" + nextOffset + "]";
+        return "PullRequest [consumerGroup=" + consumerGroup + ", messageQueue=" + messageQueue + ", nextOffset=" + nextOffset + "]";
     }
 
     public ProcessQueue getProcessQueue() {

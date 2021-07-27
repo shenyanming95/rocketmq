@@ -10,16 +10,14 @@ public class MQBrokerException extends Exception {
     private final String brokerAddr;
 
     public MQBrokerException(int responseCode, String errorMessage) {
-        super(FAQUrl.attachDefaultURL("CODE: " + UtilAll.responseCode2String(responseCode) + "  DESC: "
-                + errorMessage));
+        super(FAQUrl.attachDefaultURL("CODE: " + UtilAll.responseCode2String(responseCode) + "  DESC: " + errorMessage));
         this.responseCode = responseCode;
         this.errorMessage = errorMessage;
         this.brokerAddr = null;
     }
 
     public MQBrokerException(int responseCode, String errorMessage, String brokerAddr) {
-        super(FAQUrl.attachDefaultURL("CODE: " + UtilAll.responseCode2String(responseCode) + "  DESC: "
-                + errorMessage + (brokerAddr != null ? " BROKER: " + brokerAddr : "")));
+        super(FAQUrl.attachDefaultURL("CODE: " + UtilAll.responseCode2String(responseCode) + "  DESC: " + errorMessage + (brokerAddr != null ? " BROKER: " + brokerAddr : "")));
         this.responseCode = responseCode;
         this.errorMessage = errorMessage;
         this.brokerAddr = brokerAddr;

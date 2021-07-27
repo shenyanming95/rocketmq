@@ -37,8 +37,7 @@ public class UpdateNamesrvConfigCommand implements SubCommand {
     }
 
     @Override
-    public void execute(final CommandLine commandLine, final Options options,
-                        final RPCHook rpcHook) throws SubCommandException {
+    public void execute(final CommandLine commandLine, final Options options, final RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
         try {
@@ -64,8 +63,7 @@ public class UpdateNamesrvConfigCommand implements SubCommand {
 
             defaultMQAdminExt.updateNameServerConfig(properties, serverList);
 
-            System.out.printf("update name server config success!%s\n%s : %s\n",
-                    serverList == null ? "" : serverList, key, value);
+            System.out.printf("update name server config success!%s\n%s : %s\n", serverList == null ? "" : serverList, key, value);
         } catch (Exception e) {
             throw new SubCommandException(this.getClass().getSimpleName() + " command failed", e);
         } finally {

@@ -44,9 +44,7 @@ public class Validators {
         }
 
         if (!regularExpressionMatcher(group, PATTERN)) {
-            throw new MQClientException(String.format(
-                    "the specified group[%s] contains illegal characters, allowing only %s", group,
-                    VALID_PATTERN_STR), null);
+            throw new MQClientException(String.format("the specified group[%s] contains illegal characters, allowing only %s", group, VALID_PATTERN_STR), null);
         }
 
     }
@@ -62,8 +60,7 @@ public class Validators {
         return matcher.matches();
     }
 
-    public static void checkMessage(Message msg, DefaultMQProducer defaultMQProducer)
-            throws MQClientException {
+    public static void checkMessage(Message msg, DefaultMQProducer defaultMQProducer) throws MQClientException {
         if (null == msg) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message is null");
         }
@@ -81,8 +78,7 @@ public class Validators {
         }
 
         if (msg.getBody().length > defaultMQProducer.getMaxMessageSize()) {
-            throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL,
-                    "the message body size over max value, MAX: " + defaultMQProducer.getMaxMessageSize());
+            throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message body size over max value, MAX: " + defaultMQProducer.getMaxMessageSize());
         }
     }
 
@@ -92,28 +88,23 @@ public class Validators {
         }
 
         if (!regularExpressionMatcher(topic, PATTERN)) {
-            throw new MQClientException(String.format(
-                    "The specified topic[%s] contains illegal characters, allowing only %s", topic,
-                    VALID_PATTERN_STR), null);
+            throw new MQClientException(String.format("The specified topic[%s] contains illegal characters, allowing only %s", topic, VALID_PATTERN_STR), null);
         }
 
         if (topic.length() > TOPIC_MAX_LENGTH) {
-            throw new MQClientException(
-                    String.format("The specified topic is longer than topic max length %d.", TOPIC_MAX_LENGTH), null);
+            throw new MQClientException(String.format("The specified topic is longer than topic max length %d.", TOPIC_MAX_LENGTH), null);
         }
     }
 
     public static void isSystemTopic(String topic) throws MQClientException {
         if (TopicValidator.isSystemTopic(topic)) {
-            throw new MQClientException(
-                    String.format("The topic[%s] is conflict with system topic.", topic), null);
+            throw new MQClientException(String.format("The topic[%s] is conflict with system topic.", topic), null);
         }
     }
 
     public static void isNotAllowedSendTopic(String topic) throws MQClientException {
         if (TopicValidator.isNotAllowedSendTopic(topic)) {
-            throw new MQClientException(
-                    String.format("Sending message to topic[%s] is forbidden.", topic), null);
+            throw new MQClientException(String.format("Sending message to topic[%s] is forbidden.", topic), null);
         }
     }
 

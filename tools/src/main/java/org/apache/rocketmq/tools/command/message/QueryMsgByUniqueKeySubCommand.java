@@ -26,82 +26,38 @@ public class QueryMsgByUniqueKeySubCommand implements SubCommand {
 
     private DefaultMQAdminExt defaultMQAdminExt;
 
-    public static void queryById(final DefaultMQAdminExt admin, final String topic,
-                                 final String msgId) throws MQClientException,
-            RemotingException, MQBrokerException, InterruptedException, IOException {
+    public static void queryById(final DefaultMQAdminExt admin, final String topic, final String msgId) throws MQClientException, RemotingException, MQBrokerException, InterruptedException, IOException {
         MessageExt msg = admin.viewMessage(topic, msgId);
 
         String bodyTmpFilePath = createBodyFile(msg);
 
-        System.out.printf("%-20s %s%n",
-                "Topic:",
-                msg.getTopic()
-        );
+        System.out.printf("%-20s %s%n", "Topic:", msg.getTopic());
 
-        System.out.printf("%-20s %s%n",
-                "Tags:",
-                "[" + msg.getTags() + "]"
-        );
+        System.out.printf("%-20s %s%n", "Tags:", "[" + msg.getTags() + "]");
 
-        System.out.printf("%-20s %s%n",
-                "Keys:",
-                "[" + msg.getKeys() + "]"
-        );
+        System.out.printf("%-20s %s%n", "Keys:", "[" + msg.getKeys() + "]");
 
-        System.out.printf("%-20s %d%n",
-                "Queue ID:",
-                msg.getQueueId()
-        );
+        System.out.printf("%-20s %d%n", "Queue ID:", msg.getQueueId());
 
-        System.out.printf("%-20s %d%n",
-                "Queue Offset:",
-                msg.getQueueOffset()
-        );
+        System.out.printf("%-20s %d%n", "Queue Offset:", msg.getQueueOffset());
 
-        System.out.printf("%-20s %d%n",
-                "CommitLog Offset:",
-                msg.getCommitLogOffset()
-        );
+        System.out.printf("%-20s %d%n", "CommitLog Offset:", msg.getCommitLogOffset());
 
-        System.out.printf("%-20s %d%n",
-                "Reconsume Times:",
-                msg.getReconsumeTimes()
-        );
+        System.out.printf("%-20s %d%n", "Reconsume Times:", msg.getReconsumeTimes());
 
-        System.out.printf("%-20s %s%n",
-                "Born Timestamp:",
-                UtilAll.timeMillisToHumanString2(msg.getBornTimestamp())
-        );
+        System.out.printf("%-20s %s%n", "Born Timestamp:", UtilAll.timeMillisToHumanString2(msg.getBornTimestamp()));
 
-        System.out.printf("%-20s %s%n",
-                "Store Timestamp:",
-                UtilAll.timeMillisToHumanString2(msg.getStoreTimestamp())
-        );
+        System.out.printf("%-20s %s%n", "Store Timestamp:", UtilAll.timeMillisToHumanString2(msg.getStoreTimestamp()));
 
-        System.out.printf("%-20s %s%n",
-                "Born Host:",
-                RemotingHelper.parseSocketAddressAddr(msg.getBornHost())
-        );
+        System.out.printf("%-20s %s%n", "Born Host:", RemotingHelper.parseSocketAddressAddr(msg.getBornHost()));
 
-        System.out.printf("%-20s %s%n",
-                "Store Host:",
-                RemotingHelper.parseSocketAddressAddr(msg.getStoreHost())
-        );
+        System.out.printf("%-20s %s%n", "Store Host:", RemotingHelper.parseSocketAddressAddr(msg.getStoreHost()));
 
-        System.out.printf("%-20s %d%n",
-                "System Flag:",
-                msg.getSysFlag()
-        );
+        System.out.printf("%-20s %d%n", "System Flag:", msg.getSysFlag());
 
-        System.out.printf("%-20s %s%n",
-                "Properties:",
-                msg.getProperties() != null ? msg.getProperties().toString() : ""
-        );
+        System.out.printf("%-20s %s%n", "Properties:", msg.getProperties() != null ? msg.getProperties().toString() : "");
 
-        System.out.printf("%-20s %s%n",
-                "Message Body Path:",
-                bodyTmpFilePath
-        );
+        System.out.printf("%-20s %s%n", "Message Body Path:", bodyTmpFilePath);
 
         try {
             List<MessageTrack> mtdList = admin.messageTrackDetail(msg);
@@ -131,8 +87,7 @@ public class QueryMsgByUniqueKeySubCommand implements SubCommand {
             dos.write(msg.getBody());
             return bodyTmpFilePath;
         } finally {
-            if (dos != null)
-                dos.close();
+            if (dos != null) dos.close();
         }
     }
 
@@ -194,8 +149,7 @@ public class QueryMsgByUniqueKeySubCommand implements SubCommand {
             if (commandLine.hasOption('g') && commandLine.hasOption('d')) {
                 final String consumerGroup = commandLine.getOptionValue('g').trim();
                 final String clientId = commandLine.getOptionValue('d').trim();
-                ConsumeMessageDirectlyResult result =
-                        defaultMQAdminExt.consumeMessageDirectly(consumerGroup, clientId, topic, msgId);
+                ConsumeMessageDirectlyResult result = defaultMQAdminExt.consumeMessageDirectly(consumerGroup, clientId, topic, msgId);
                 System.out.printf("%s", result);
             } else {
                 queryById(defaultMQAdminExt, topic, msgId);

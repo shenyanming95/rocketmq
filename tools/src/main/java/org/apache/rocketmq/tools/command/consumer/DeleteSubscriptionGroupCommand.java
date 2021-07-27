@@ -55,8 +55,7 @@ public class DeleteSubscriptionGroupCommand implements SubCommand {
                 adminExt.start();
 
                 adminExt.deleteSubscriptionGroup(addr, groupName);
-                System.out.printf("delete subscription group [%s] from broker [%s] success.%n", groupName,
-                        addr);
+                System.out.printf("delete subscription group [%s] from broker [%s] success.%n", groupName, addr);
 
                 return;
             } else if (commandLine.hasOption('c')) {
@@ -66,16 +65,12 @@ public class DeleteSubscriptionGroupCommand implements SubCommand {
                 Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(adminExt, clusterName);
                 for (String master : masterSet) {
                     adminExt.deleteSubscriptionGroup(master, groupName);
-                    System.out.printf(
-                            "delete subscription group [%s] from broker [%s] in cluster [%s] success.%n",
-                            groupName, master, clusterName);
+                    System.out.printf("delete subscription group [%s] from broker [%s] in cluster [%s] success.%n", groupName, master, clusterName);
                 }
 
                 try {
-                    DeleteTopicSubCommand.deleteTopic(adminExt, clusterName, MixAll.RETRY_GROUP_TOPIC_PREFIX
-                            + groupName);
-                    DeleteTopicSubCommand.deleteTopic(adminExt, clusterName, MixAll.DLQ_GROUP_TOPIC_PREFIX
-                            + groupName);
+                    DeleteTopicSubCommand.deleteTopic(adminExt, clusterName, MixAll.RETRY_GROUP_TOPIC_PREFIX + groupName);
+                    DeleteTopicSubCommand.deleteTopic(adminExt, clusterName, MixAll.DLQ_GROUP_TOPIC_PREFIX + groupName);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

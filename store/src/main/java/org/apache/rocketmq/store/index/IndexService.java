@@ -35,8 +35,7 @@ public class IndexService {
         this.defaultMessageStore = store;
         this.hashSlotNum = store.getMessageStoreConfig().getMaxHashSlotNum();
         this.indexNum = store.getMessageStoreConfig().getMaxIndexNum();
-        this.storePath =
-                StorePathConfigHelper.getStorePathIndex(store.getMessageStoreConfig().getStorePathRootDir());
+        this.storePath = StorePathConfigHelper.getStorePathIndex(store.getMessageStoreConfig().getStorePathRootDir());
     }
 
     public boolean load(final boolean lastExitOK) {
@@ -51,8 +50,7 @@ public class IndexService {
                     f.load();
 
                     if (!lastExitOK) {
-                        if (f.getEndTimestamp() > this.defaultMessageStore.getStoreCheckpoint()
-                                .getIndexMsgTimestamp()) {
+                        if (f.getEndTimestamp() > this.defaultMessageStore.getStoreCheckpoint().getIndexMsgTimestamp()) {
                             f.destroy(0);
                             continue;
                         }
@@ -255,8 +253,7 @@ public class IndexService {
 
         for (int times = 0; null == indexFile && times < MAX_TRY_IDX_CREATE; times++) {
             indexFile = this.getAndCreateLastIndexFile();
-            if (null != indexFile)
-                break;
+            if (null != indexFile) break;
 
             try {
                 log.info("Tried to create index file " + times + " times");
@@ -298,12 +295,8 @@ public class IndexService {
 
         if (indexFile == null) {
             try {
-                String fileName =
-                        this.storePath + File.separator
-                                + UtilAll.timeMillisToHumanString(System.currentTimeMillis());
-                indexFile =
-                        new IndexFile(fileName, this.hashSlotNum, this.indexNum, lastUpdateEndPhyOffset,
-                                lastUpdateIndexTimestamp);
+                String fileName = this.storePath + File.separator + UtilAll.timeMillisToHumanString(System.currentTimeMillis());
+                indexFile = new IndexFile(fileName, this.hashSlotNum, this.indexNum, lastUpdateEndPhyOffset, lastUpdateIndexTimestamp);
                 this.readWriteLock.writeLock().lock();
                 this.indexFileList.add(indexFile);
             } catch (Exception e) {
@@ -330,8 +323,7 @@ public class IndexService {
     }
 
     public void flush(final IndexFile f) {
-        if (null == f)
-            return;
+        if (null == f) return;
 
         long indexMsgTimestamp = 0;
 

@@ -14,8 +14,7 @@ import java.util.Map;
  * <br>It will decode properties first in order to get real topic.
  */
 public class ExpressionForRetryMessageFilter extends ExpressionMessageFilter {
-    public ExpressionForRetryMessageFilter(SubscriptionData subscriptionData, ConsumerFilterData consumerFilterData,
-                                           ConsumerFilterManager consumerFilterManager) {
+    public ExpressionForRetryMessageFilter(SubscriptionData subscriptionData, ConsumerFilterData consumerFilterData, ConsumerFilterManager consumerFilterManager) {
         super(subscriptionData, consumerFilterData, consumerFilterManager);
     }
 
@@ -51,8 +50,7 @@ public class ExpressionForRetryMessageFilter extends ExpressionMessageFilter {
         }
 
         // no expression
-        if (realFilterData == null || realFilterData.getExpression() == null
-                || realFilterData.getCompiledExpression() == null) {
+        if (realFilterData == null || realFilterData.getExpression() == null || realFilterData.getCompiledExpression() == null) {
             return true;
         }
 

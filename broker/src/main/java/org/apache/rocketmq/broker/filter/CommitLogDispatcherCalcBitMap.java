@@ -42,9 +42,7 @@ public class CommitLogDispatcherCalcBitMap implements CommitLogDispatcher {
             }
 
             Iterator<ConsumerFilterData> iterator = filterDatas.iterator();
-            BitsArray filterBitMap = BitsArray.create(
-                    this.consumerFilterManager.getBloomFilter().getM()
-            );
+            BitsArray filterBitMap = BitsArray.create(this.consumerFilterManager.getBloomFilter().getM());
 
             long startTime = System.currentTimeMillis();
             while (iterator.hasNext()) {
@@ -73,10 +71,7 @@ public class CommitLogDispatcherCalcBitMap implements CommitLogDispatcher {
 
                 // eval true
                 if (ret != null && ret instanceof Boolean && (Boolean) ret) {
-                    consumerFilterManager.getBloomFilter().hashTo(
-                            filterData.getBloomFilterData(),
-                            filterBitMap
-                    );
+                    consumerFilterManager.getBloomFilter().hashTo(filterData.getBloomFilterData(), filterBitMap);
                 }
             }
 

@@ -247,8 +247,7 @@ public class DefaultLitePullConsumer extends ClientConfig implements LitePullCon
     }
 
     @Override
-    public void registerTopicMessageQueueChangeListener(String topic,
-                                                        TopicMessageQueueChangeListener topicMessageQueueChangeListener) throws MQClientException {
+    public void registerTopicMessageQueueChangeListener(String topic, TopicMessageQueueChangeListener topicMessageQueueChangeListener) throws MQClientException {
         this.defaultLitePullConsumerImpl.registerTopicMessageQueueChangeListener(withNamespace(topic), topicMessageQueueChangeListener);
     }
 
@@ -450,9 +449,7 @@ public class DefaultLitePullConsumer extends ClientConfig implements LitePullCon
     }
 
     public void setConsumeFromWhere(ConsumeFromWhere consumeFromWhere) {
-        if (consumeFromWhere != ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET
-                && consumeFromWhere != ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET
-                && consumeFromWhere != ConsumeFromWhere.CONSUME_FROM_TIMESTAMP) {
+        if (consumeFromWhere != ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET && consumeFromWhere != ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET && consumeFromWhere != ConsumeFromWhere.CONSUME_FROM_TIMESTAMP) {
             throw new RuntimeException("Invalid ConsumeFromWhere Value", null);
         }
         this.consumeFromWhere = consumeFromWhere;

@@ -82,21 +82,15 @@ public class PlainAccessValidator implements AccessValidator {
                     }
                     break;
                 case RequestCode.UNREGISTER_CLIENT:
-                    final UnregisterClientRequestHeader unregisterClientRequestHeader =
-                            (UnregisterClientRequestHeader) request
-                                    .decodeCommandCustomHeader(UnregisterClientRequestHeader.class);
+                    final UnregisterClientRequestHeader unregisterClientRequestHeader = (UnregisterClientRequestHeader) request.decodeCommandCustomHeader(UnregisterClientRequestHeader.class);
                     accessResource.addResourceAndPerm(getRetryTopic(unregisterClientRequestHeader.getConsumerGroup()), Permission.SUB);
                     break;
                 case RequestCode.GET_CONSUMER_LIST_BY_GROUP:
-                    final GetConsumerListByGroupRequestHeader getConsumerListByGroupRequestHeader =
-                            (GetConsumerListByGroupRequestHeader) request
-                                    .decodeCommandCustomHeader(GetConsumerListByGroupRequestHeader.class);
+                    final GetConsumerListByGroupRequestHeader getConsumerListByGroupRequestHeader = (GetConsumerListByGroupRequestHeader) request.decodeCommandCustomHeader(GetConsumerListByGroupRequestHeader.class);
                     accessResource.addResourceAndPerm(getRetryTopic(getConsumerListByGroupRequestHeader.getConsumerGroup()), Permission.SUB);
                     break;
                 case RequestCode.UPDATE_CONSUMER_OFFSET:
-                    final UpdateConsumerOffsetRequestHeader updateConsumerOffsetRequestHeader =
-                            (UpdateConsumerOffsetRequestHeader) request
-                                    .decodeCommandCustomHeader(UpdateConsumerOffsetRequestHeader.class);
+                    final UpdateConsumerOffsetRequestHeader updateConsumerOffsetRequestHeader = (UpdateConsumerOffsetRequestHeader) request.decodeCommandCustomHeader(UpdateConsumerOffsetRequestHeader.class);
                     accessResource.addResourceAndPerm(getRetryTopic(updateConsumerOffsetRequestHeader.getConsumerGroup()), Permission.SUB);
                     accessResource.addResourceAndPerm(updateConsumerOffsetRequestHeader.getTopic(), Permission.SUB);
                     break;
@@ -111,8 +105,7 @@ public class PlainAccessValidator implements AccessValidator {
         // Content
         SortedMap<String, String> map = new TreeMap<String, String>();
         for (Map.Entry<String, String> entry : request.getExtFields().entrySet()) {
-            if (!SessionCredentials.SIGNATURE.equals(entry.getKey())
-                    && !MixAll.UNIQUE_MSG_QUERY_FLAG.equals(entry.getKey())) {
+            if (!SessionCredentials.SIGNATURE.equals(entry.getKey()) && !MixAll.UNIQUE_MSG_QUERY_FLAG.equals(entry.getKey())) {
                 map.put(entry.getKey(), entry.getValue());
             }
         }

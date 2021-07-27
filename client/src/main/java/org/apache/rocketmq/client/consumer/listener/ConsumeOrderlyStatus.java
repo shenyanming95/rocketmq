@@ -8,13 +8,11 @@ public enum ConsumeOrderlyStatus {
     /**
      * Rollback consumption(only for binlog consumption)
      */
-    @Deprecated
-    ROLLBACK,
+    @Deprecated ROLLBACK,
     /**
      * Commit offset(only for binlog consumption)
      */
-    @Deprecated
-    COMMIT,
+    @Deprecated COMMIT,
     /**
      * Suspend current queue a moment
      */

@@ -46,8 +46,7 @@ public class ClusterListSubCommand implements SubCommand {
     }
 
     @Override
-    public void execute(final CommandLine commandLine, final Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(final CommandLine commandLine, final Options options, RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
 
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -72,8 +71,7 @@ public class ClusterListSubCommand implements SubCommand {
                 } else {
                     this.printClusterBaseInfo(defaultMQAdminExt);
                 }
-            }
-            while (enableInterval);
+            } while (enableInterval);
         } catch (Exception e) {
             throw new SubCommandException(this.getClass().getSimpleName() + " command failed", e);
         } finally {
@@ -81,19 +79,11 @@ public class ClusterListSubCommand implements SubCommand {
         }
     }
 
-    private void printClusterMoreStats(final DefaultMQAdminExt defaultMQAdminExt) throws RemotingConnectException,
-            RemotingTimeoutException, RemotingSendRequestException, InterruptedException, MQBrokerException {
+    private void printClusterMoreStats(final DefaultMQAdminExt defaultMQAdminExt) throws RemotingConnectException, RemotingTimeoutException, RemotingSendRequestException, InterruptedException, MQBrokerException {
 
         ClusterInfo clusterInfoSerializeWrapper = defaultMQAdminExt.examineBrokerClusterInfo();
 
-        System.out.printf("%-16s  %-32s %14s %14s %14s %14s%n",
-                "#Cluster Name",
-                "#Broker Name",
-                "#InTotalYest",
-                "#OutTotalYest",
-                "#InTotalToday",
-                "#OutTotalToday"
-        );
+        System.out.printf("%-16s  %-32s %14s %14s %14s %14s%n", "#Cluster Name", "#Broker Name", "#InTotalYest", "#OutTotalYest", "#InTotalToday", "#OutTotalToday");
 
         Iterator<Map.Entry<String, Set<String>>> itCluster = clusterInfoSerializeWrapper.getClusterAddrTable().entrySet().iterator();
         while (itCluster.hasNext()) {
@@ -132,14 +122,7 @@ public class ClusterListSubCommand implements SubCommand {
                         } catch (Exception e) {
                         }
 
-                        System.out.printf("%-16s  %-32s %14d %14d %14d %14d%n",
-                                clusterName,
-                                brokerName,
-                                inTotalYest,
-                                outTotalYest,
-                                inTotalToday,
-                                outTotalToday
-                        );
+                        System.out.printf("%-16s  %-32s %14d %14d %14d %14d%n", clusterName, brokerName, inTotalYest, outTotalYest, inTotalToday, outTotalToday);
                     }
                 }
             }
@@ -150,24 +133,11 @@ public class ClusterListSubCommand implements SubCommand {
         }
     }
 
-    private void printClusterBaseInfo(
-            final DefaultMQAdminExt defaultMQAdminExt) throws RemotingConnectException, RemotingTimeoutException,
-            RemotingSendRequestException, InterruptedException, MQBrokerException {
+    private void printClusterBaseInfo(final DefaultMQAdminExt defaultMQAdminExt) throws RemotingConnectException, RemotingTimeoutException, RemotingSendRequestException, InterruptedException, MQBrokerException {
 
         ClusterInfo clusterInfoSerializeWrapper = defaultMQAdminExt.examineBrokerClusterInfo();
 
-        System.out.printf("%-16s  %-22s  %-4s  %-22s %-16s %19s %19s %10s %5s %6s%n",
-                "#Cluster Name",
-                "#Broker Name",
-                "#BID",
-                "#Addr",
-                "#Version",
-                "#InTPS(LOAD)",
-                "#OutTPS(LOAD)",
-                "#PCWait(ms)",
-                "#Hour",
-                "#SPACE"
-        );
+        System.out.printf("%-16s  %-22s  %-4s  %-22s %-16s %19s %19s %10s %5s %6s%n", "#Cluster Name", "#Broker Name", "#BID", "#Addr", "#Version", "#InTPS(LOAD)", "#OutTPS(LOAD)", "#PCWait(ms)", "#Hour", "#SPACE");
 
         Iterator<Map.Entry<String, Set<String>>> itCluster = clusterInfoSerializeWrapper.getClusterAddrTable().entrySet().iterator();
         while (itCluster.hasNext()) {
@@ -239,18 +209,7 @@ public class ClusterListSubCommand implements SubCommand {
                             space = Double.valueOf(commitLogDiskRatio);
                         }
 
-                        System.out.printf("%-16s  %-22s  %-4s  %-22s %-16s %19s %19s %10s %5s %6s%n",
-                                clusterName,
-                                brokerName,
-                                next1.getKey(),
-                                next1.getValue(),
-                                version,
-                                String.format("%9.2f(%s,%sms)", in, sendThreadPoolQueueSize, sendThreadPoolQueueHeadWaitTimeMills),
-                                String.format("%9.2f(%s,%sms)", out, pullThreadPoolQueueSize, pullThreadPoolQueueHeadWaitTimeMills),
-                                pageCacheLockTimeMills,
-                                String.format("%2.2f", hour),
-                                String.format("%.4f", space)
-                        );
+                        System.out.printf("%-16s  %-22s  %-4s  %-22s %-16s %19s %19s %10s %5s %6s%n", clusterName, brokerName, next1.getKey(), next1.getValue(), version, String.format("%9.2f(%s,%sms)", in, sendThreadPoolQueueSize, sendThreadPoolQueueHeadWaitTimeMills), String.format("%9.2f(%s,%sms)", out, pullThreadPoolQueueSize, pullThreadPoolQueueHeadWaitTimeMills), pageCacheLockTimeMills, String.format("%2.2f", hour), String.format("%.4f", space));
                     }
                 }
             }

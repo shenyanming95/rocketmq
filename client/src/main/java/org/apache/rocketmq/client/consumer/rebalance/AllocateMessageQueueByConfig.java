@@ -9,8 +9,7 @@ public class AllocateMessageQueueByConfig implements AllocateMessageQueueStrateg
     private List<MessageQueue> messageQueueList;
 
     @Override
-    public List<MessageQueue> allocate(String consumerGroup, String currentCID, List<MessageQueue> mqAll,
-                                       List<String> cidAll) {
+    public List<MessageQueue> allocate(String consumerGroup, String currentCID, List<MessageQueue> mqAll, List<String> cidAll) {
         return this.messageQueueList;
     }
 

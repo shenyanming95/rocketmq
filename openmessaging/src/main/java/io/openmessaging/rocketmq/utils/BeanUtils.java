@@ -99,8 +99,7 @@ public final class BeanUtils {
         return null;
     }
 
-    public static void setProperties(Class<?> clazz, Object obj, String methodName,
-                                     Object value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static void setProperties(Class<?> clazz, Object obj, String methodName, Object value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Class<?> parameterClass = getMethodClass(clazz, methodName);
         Method setterMethod = clazz.getMethod(methodName, parameterClass);
         if (parameterClass == Boolean.TYPE) {
@@ -113,8 +112,7 @@ public final class BeanUtils {
             setterMethod.invoke(obj, Float.valueOf(value.toString()));
         } else if (parameterClass == Long.TYPE) {
             setterMethod.invoke(obj, Long.valueOf(value.toString()));
-        } else
-            setterMethod.invoke(obj, value);
+        } else setterMethod.invoke(obj, value);
     }
 
     public static <T> T populate(final Properties properties, final T obj) {

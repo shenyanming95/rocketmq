@@ -77,8 +77,7 @@ public class UpdateAccessConfigSubCommand implements SubCommand {
     }
 
     @Override
-    public void execute(CommandLine commandLine, Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(CommandLine commandLine, Options options, RPCHook rpcHook) throws SubCommandException {
 
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -149,8 +148,7 @@ public class UpdateAccessConfigSubCommand implements SubCommand {
                 String clusterName = commandLine.getOptionValue('c').trim();
 
                 defaultMQAdminExt.start();
-                Set<String> masterSet =
-                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String addr : masterSet) {
                     defaultMQAdminExt.createAndUpdatePlainAccessConfig(addr, accessConfig);
                     System.out.printf("create or update plain access config to %s success.%n", addr);

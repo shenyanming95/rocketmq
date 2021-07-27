@@ -14,8 +14,7 @@ public class PutMessageSpinLock implements PutMessageLock {
         boolean flag;
         do {
             flag = this.putMessageSpinLock.compareAndSet(true, false);
-        }
-        while (!flag);
+        } while (!flag);
     }
 
     @Override

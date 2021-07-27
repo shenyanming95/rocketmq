@@ -51,8 +51,7 @@ public class ClusterAclConfigVersionListSubCommand implements SubCommand {
     }
 
     @Override
-    public void execute(CommandLine commandLine, Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(CommandLine commandLine, Options options, RPCHook rpcHook) throws SubCommandException {
 
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -72,15 +71,8 @@ public class ClusterAclConfigVersionListSubCommand implements SubCommand {
 
                 defaultMQAdminExt.start();
 
-                Set<String> masterSet =
-                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
-                System.out.printf("%-16s  %-22s  %-22s  %-20s  %-22s%n",
-                        "#Cluster Name",
-                        "#Broker Name",
-                        "#Broker Addr",
-                        "#AclConfigVersionNum",
-                        "#AclLastUpdateTime"
-                );
+                Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                System.out.printf("%-16s  %-22s  %-22s  %-20s  %-22s%n", "#Cluster Name", "#Broker Name", "#Broker Addr", "#AclConfigVersionNum", "#AclLastUpdateTime");
                 for (String addr : masterSet) {
                     printClusterBaseInfo(defaultMQAdminExt, addr);
                 }
@@ -97,9 +89,7 @@ public class ClusterAclConfigVersionListSubCommand implements SubCommand {
         }
     }
 
-    private void printClusterBaseInfo(
-            final DefaultMQAdminExt defaultMQAdminExt, final String addr) throws
-            InterruptedException, MQBrokerException, RemotingException, MQClientException {
+    private void printClusterBaseInfo(final DefaultMQAdminExt defaultMQAdminExt, final String addr) throws InterruptedException, MQBrokerException, RemotingException, MQClientException {
 
 
         ClusterAclVersionInfo clusterAclVersionInfo = defaultMQAdminExt.examineBrokerClusterAclVersionInfo(addr);
@@ -109,12 +99,6 @@ public class ClusterAclConfigVersionListSubCommand implements SubCommand {
         DateFormat sdf = new SimpleDateFormat(UtilAll.YYYY_MM_DD_HH_MM_SS);
         String timeStampStr = sdf.format(new Timestamp(aclDataVersion.getTimestamp()));
 
-        System.out.printf("%-16s  %-22s  %-22s  %-20s  %-22s%n",
-                clusterAclVersionInfo.getClusterName(),
-                clusterAclVersionInfo.getBrokerName(),
-                clusterAclVersionInfo.getBrokerAddr(),
-                versionNum,
-                timeStampStr
-        );
+        System.out.printf("%-16s  %-22s  %-22s  %-20s  %-22s%n", clusterAclVersionInfo.getClusterName(), clusterAclVersionInfo.getBrokerName(), clusterAclVersionInfo.getBrokerAddr(), versionNum, timeStampStr);
     }
 }

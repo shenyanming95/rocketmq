@@ -15,8 +15,7 @@ public class AllocateMessageQueueAveragelyByCircle implements AllocateMessageQue
     private final InternalLogger log = ClientLogger.getLog();
 
     @Override
-    public List<MessageQueue> allocate(String consumerGroup, String currentCID, List<MessageQueue> mqAll,
-                                       List<String> cidAll) {
+    public List<MessageQueue> allocate(String consumerGroup, String currentCID, List<MessageQueue> mqAll, List<String> cidAll) {
         if (currentCID == null || currentCID.length() < 1) {
             throw new IllegalArgumentException("currentCID is empty");
         }
@@ -29,10 +28,7 @@ public class AllocateMessageQueueAveragelyByCircle implements AllocateMessageQue
 
         List<MessageQueue> result = new ArrayList<MessageQueue>();
         if (!cidAll.contains(currentCID)) {
-            log.info("[BUG] ConsumerGroup: {} The consumerId: {} not in cidAll: {}",
-                    consumerGroup,
-                    currentCID,
-                    cidAll);
+            log.info("[BUG] ConsumerGroup: {} The consumerId: {} not in cidAll: {}", consumerGroup, currentCID, cidAll);
             return result;
         }
 

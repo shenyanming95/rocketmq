@@ -3,11 +3,7 @@ package org.apache.rocketmq.client.trace.hook;
 import org.apache.rocketmq.client.hook.SendMessageContext;
 import org.apache.rocketmq.client.hook.SendMessageHook;
 import org.apache.rocketmq.client.producer.SendStatus;
-import org.apache.rocketmq.client.trace.AsyncTraceDispatcher;
-import org.apache.rocketmq.client.trace.TraceBean;
-import org.apache.rocketmq.client.trace.TraceContext;
-import org.apache.rocketmq.client.trace.TraceDispatcher;
-import org.apache.rocketmq.client.trace.TraceType;
+import org.apache.rocketmq.client.trace.*;
 import org.apache.rocketmq.common.protocol.NamespaceUtil;
 
 import java.util.ArrayList;
@@ -52,16 +48,14 @@ public class SendMessageTraceHookImpl implements SendMessageHook {
     @Override
     public void sendMessageAfter(SendMessageContext context) {
         //if it is message trace data,then it doesn't recorded
-        if (context == null || context.getMessage().getTopic().startsWith(((AsyncTraceDispatcher) localDispatcher).getTraceTopicName())
-                || context.getMqTraceContext() == null) {
+        if (context == null || context.getMessage().getTopic().startsWith(((AsyncTraceDispatcher) localDispatcher).getTraceTopicName()) || context.getMqTraceContext() == null) {
             return;
         }
         if (context.getSendResult() == null) {
             return;
         }
 
-        if (context.getSendResult().getRegionId() == null
-                || !context.getSendResult().isTraceOn()) {
+        if (context.getSendResult().getRegionId() == null || !context.getSendResult().isTraceOn()) {
             // if switch is false,skip it
             return;
         }

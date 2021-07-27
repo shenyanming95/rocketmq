@@ -31,7 +31,6 @@ public class MessageTrack {
 
     @Override
     public String toString() {
-        return "MessageTrack [consumerGroup=" + consumerGroup + ", trackType=" + trackType
-                + ", exceptionDesc=" + exceptionDesc + "]";
+        return "MessageTrack [consumerGroup=" + consumerGroup + ", trackType=" + trackType + ", exceptionDesc=" + exceptionDesc + "]";
     }
 }

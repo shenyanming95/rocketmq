@@ -48,8 +48,7 @@ public class GetAccessConfigSubCommand implements SubCommand {
     }
 
     @Override
-    public void execute(CommandLine commandLine, Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(CommandLine commandLine, Options options, RPCHook rpcHook) throws SubCommandException {
 
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -67,8 +66,7 @@ public class GetAccessConfigSubCommand implements SubCommand {
 
                 defaultMQAdminExt.start();
 
-                Set<String> masterSet =
-                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String addr : masterSet) {
                     printClusterBaseInfo(defaultMQAdminExt, addr);
                 }
@@ -83,9 +81,7 @@ public class GetAccessConfigSubCommand implements SubCommand {
         }
     }
 
-    private void printClusterBaseInfo(
-            final DefaultMQAdminExt defaultMQAdminExt, final String addr) throws
-            InterruptedException, MQBrokerException, RemotingException, MQClientException, IllegalAccessException {
+    private void printClusterBaseInfo(final DefaultMQAdminExt defaultMQAdminExt, final String addr) throws InterruptedException, MQBrokerException, RemotingException, MQClientException, IllegalAccessException {
         AclConfig aclConfig = defaultMQAdminExt.examineBrokerClusterAclConfig(addr);
         List<PlainAccessConfig> configs = aclConfig.getPlainAccessConfigs();
         List<String> globalWhiteAddrs = aclConfig.getGlobalWhiteAddrs();

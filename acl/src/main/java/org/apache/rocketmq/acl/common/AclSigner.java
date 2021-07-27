@@ -20,13 +20,11 @@ public class AclSigner {
         return calSignature(data, key, DEFAULT_ALGORITHM, DEFAULT_CHARSET);
     }
 
-    public static String calSignature(String data, String key, SigningAlgorithm algorithm,
-                                      Charset charset) throws AclException {
+    public static String calSignature(String data, String key, SigningAlgorithm algorithm, Charset charset) throws AclException {
         return signAndBase64Encode(data, key, algorithm, charset);
     }
 
-    private static String signAndBase64Encode(String data, String key, SigningAlgorithm algorithm, Charset charset)
-            throws AclException {
+    private static String signAndBase64Encode(String data, String key, SigningAlgorithm algorithm, Charset charset) throws AclException {
         try {
             byte[] signature = sign(data.getBytes(charset), key.getBytes(charset), algorithm);
             return new String(Base64.encodeBase64(signature), DEFAULT_CHARSET);
@@ -53,13 +51,11 @@ public class AclSigner {
         return calSignature(data, key, DEFAULT_ALGORITHM, DEFAULT_CHARSET);
     }
 
-    public static String calSignature(byte[] data, String key, SigningAlgorithm algorithm,
-                                      Charset charset) throws AclException {
+    public static String calSignature(byte[] data, String key, SigningAlgorithm algorithm, Charset charset) throws AclException {
         return signAndBase64Encode(data, key, algorithm, charset);
     }
 
-    private static String signAndBase64Encode(byte[] data, String key, SigningAlgorithm algorithm, Charset charset)
-            throws AclException {
+    private static String signAndBase64Encode(byte[] data, String key, SigningAlgorithm algorithm, Charset charset) throws AclException {
         try {
             byte[] signature = sign(data, key.getBytes(charset), algorithm);
             return new String(Base64.encodeBase64(signature), DEFAULT_CHARSET);

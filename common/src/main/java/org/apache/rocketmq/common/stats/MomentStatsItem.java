@@ -16,8 +16,7 @@ public class MomentStatsItem {
     private final ScheduledExecutorService scheduledExecutorService;
     private final InternalLogger log;
 
-    public MomentStatsItem(String statsName, String statsKey,
-                           ScheduledExecutorService scheduledExecutorService, InternalLogger log) {
+    public MomentStatsItem(String statsName, String statsKey, ScheduledExecutorService scheduledExecutorService, InternalLogger log) {
         this.statsName = statsName;
         this.statsKey = statsKey;
         this.scheduledExecutorService = scheduledExecutorService;
@@ -39,10 +38,7 @@ public class MomentStatsItem {
     }
 
     public void printAtMinutes() {
-        log.info(String.format("[%s] [%s] Stats Every 5 Minutes, Value: %d",
-                this.statsName,
-                this.statsKey,
-                this.value.get()));
+        log.info(String.format("[%s] [%s] Stats Every 5 Minutes, Value: %d", this.statsName, this.statsKey, this.value.get()));
     }
 
     public AtomicLong getValue() {

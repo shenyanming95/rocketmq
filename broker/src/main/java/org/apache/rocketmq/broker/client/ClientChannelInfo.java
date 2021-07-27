@@ -59,16 +59,12 @@ public class ClientChannelInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         ClientChannelInfo other = (ClientChannelInfo) obj;
         if (channel == null) {
-            if (other.channel != null)
-                return false;
+            if (other.channel != null) return false;
         } else if (this.channel != other.channel) {
             return false;
         }
@@ -78,7 +74,6 @@ public class ClientChannelInfo {
 
     @Override
     public String toString() {
-        return "ClientChannelInfo [channel=" + channel + ", clientId=" + clientId + ", language=" + language
-                + ", version=" + version + ", lastUpdateTimestamp=" + lastUpdateTimestamp + "]";
+        return "ClientChannelInfo [channel=" + channel + ", clientId=" + clientId + ", language=" + language + ", version=" + version + ", lastUpdateTimestamp=" + lastUpdateTimestamp + "]";
     }
 }

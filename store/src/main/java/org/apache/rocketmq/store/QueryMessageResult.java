@@ -6,8 +6,7 @@ import java.util.List;
 
 public class QueryMessageResult {
 
-    private final List<SelectMappedBufferResult> messageMapedList =
-            new ArrayList<SelectMappedBufferResult>(100);
+    private final List<SelectMappedBufferResult> messageMapedList = new ArrayList<SelectMappedBufferResult>(100);
 
     private final List<ByteBuffer> messageBufferList = new ArrayList<ByteBuffer>(100);
     private long indexLastUpdateTimestamp;

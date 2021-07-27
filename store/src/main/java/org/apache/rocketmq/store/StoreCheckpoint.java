@@ -36,12 +36,9 @@ public class StoreCheckpoint {
             this.logicsMsgTimestamp = this.mappedByteBuffer.getLong(8);
             this.indexMsgTimestamp = this.mappedByteBuffer.getLong(16);
 
-            log.info("store checkpoint file physicMsgTimestamp " + this.physicMsgTimestamp + ", "
-                    + UtilAll.timeMillisToHumanString(this.physicMsgTimestamp));
-            log.info("store checkpoint file logicsMsgTimestamp " + this.logicsMsgTimestamp + ", "
-                    + UtilAll.timeMillisToHumanString(this.logicsMsgTimestamp));
-            log.info("store checkpoint file indexMsgTimestamp " + this.indexMsgTimestamp + ", "
-                    + UtilAll.timeMillisToHumanString(this.indexMsgTimestamp));
+            log.info("store checkpoint file physicMsgTimestamp " + this.physicMsgTimestamp + ", " + UtilAll.timeMillisToHumanString(this.physicMsgTimestamp));
+            log.info("store checkpoint file logicsMsgTimestamp " + this.logicsMsgTimestamp + ", " + UtilAll.timeMillisToHumanString(this.logicsMsgTimestamp));
+            log.info("store checkpoint file indexMsgTimestamp " + this.indexMsgTimestamp + ", " + UtilAll.timeMillisToHumanString(this.indexMsgTimestamp));
         } else {
             log.info("store checkpoint file not exists, " + scpPath);
         }
@@ -91,8 +88,7 @@ public class StoreCheckpoint {
         long min = Math.min(this.physicMsgTimestamp, this.logicsMsgTimestamp);
 
         min -= 1000 * 3;
-        if (min < 0)
-            min = 0;
+        if (min < 0) min = 0;
 
         return min;
     }

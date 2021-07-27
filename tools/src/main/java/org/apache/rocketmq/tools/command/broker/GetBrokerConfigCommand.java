@@ -44,8 +44,7 @@ public class GetBrokerConfigCommand implements SubCommand {
     }
 
     @Override
-    public void execute(final CommandLine commandLine, final Options options,
-                        final RPCHook rpcHook) throws SubCommandException {
+    public void execute(final CommandLine commandLine, final Options options, final RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
 
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -56,31 +55,20 @@ public class GetBrokerConfigCommand implements SubCommand {
                 String brokerAddr = commandLine.getOptionValue('b').trim();
                 defaultMQAdminExt.start();
 
-                getAndPrint(defaultMQAdminExt,
-                        String.format("============%s============\n", brokerAddr),
-                        brokerAddr);
+                getAndPrint(defaultMQAdminExt, String.format("============%s============\n", brokerAddr), brokerAddr);
 
             } else if (commandLine.hasOption('c')) {
                 String clusterName = commandLine.getOptionValue('c').trim();
                 defaultMQAdminExt.start();
 
-                Map<String, List<String>> masterAndSlaveMap
-                        = CommandUtil.fetchMasterAndSlaveDistinguish(defaultMQAdminExt, clusterName);
+                Map<String, List<String>> masterAndSlaveMap = CommandUtil.fetchMasterAndSlaveDistinguish(defaultMQAdminExt, clusterName);
 
                 for (String masterAddr : masterAndSlaveMap.keySet()) {
 
-                    getAndPrint(
-                            defaultMQAdminExt,
-                            String.format("============Master: %s============\n", masterAddr),
-                            masterAddr
-                    );
+                    getAndPrint(defaultMQAdminExt, String.format("============Master: %s============\n", masterAddr), masterAddr);
                     for (String slaveAddr : masterAndSlaveMap.get(masterAddr)) {
 
-                        getAndPrint(
-                                defaultMQAdminExt,
-                                String.format("============My Master: %s=====Slave: %s============\n", masterAddr, slaveAddr),
-                                slaveAddr
-                        );
+                        getAndPrint(defaultMQAdminExt, String.format("============My Master: %s=====Slave: %s============\n", masterAddr, slaveAddr), slaveAddr);
                     }
                 }
             }
@@ -92,10 +80,7 @@ public class GetBrokerConfigCommand implements SubCommand {
         }
     }
 
-    protected void getAndPrint(final MQAdminExt defaultMQAdminExt, final String printPrefix, final String addr)
-            throws InterruptedException, RemotingConnectException,
-            UnsupportedEncodingException, RemotingTimeoutException,
-            MQBrokerException, RemotingSendRequestException {
+    protected void getAndPrint(final MQAdminExt defaultMQAdminExt, final String printPrefix, final String addr) throws InterruptedException, RemotingConnectException, UnsupportedEncodingException, RemotingTimeoutException, MQBrokerException, RemotingSendRequestException {
 
         System.out.print(printPrefix);
 

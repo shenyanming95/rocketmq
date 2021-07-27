@@ -20,9 +20,7 @@ public class QueryConsumeQueueCommand implements SubCommand {
 
         Options options = ServerUtil.buildCommandlineOptions(new Options());
         String[] subargs = new String[]{"-t TopicTest", "-q 0", "-i 6447", "-b 100.81.165.119:10911"};
-        final CommandLine commandLine =
-                ServerUtil.parseCmdLine("mqadmin " + cmd.commandName(), subargs, cmd.buildCommandlineOptions(options),
-                        new PosixParser());
+        final CommandLine commandLine = ServerUtil.parseCmdLine("mqadmin " + cmd.commandName(), subargs, cmd.buildCommandlineOptions(options), new PosixParser());
         cmd.execute(commandLine, options, null);
     }
 
@@ -90,17 +88,14 @@ public class QueryConsumeQueueCommand implements SubCommand {
             if (broker == null || broker == "") {
                 TopicRouteData topicRouteData = defaultMQAdminExt.examineTopicRouteInfo(topic);
 
-                if (topicRouteData == null || topicRouteData.getBrokerDatas() == null
-                        || topicRouteData.getBrokerDatas().isEmpty()) {
+                if (topicRouteData == null || topicRouteData.getBrokerDatas() == null || topicRouteData.getBrokerDatas().isEmpty()) {
                     throw new Exception("No topic route data!");
                 }
 
                 broker = topicRouteData.getBrokerDatas().get(0).getBrokerAddrs().get(0L);
             }
 
-            QueryConsumeQueueResponseBody queryConsumeQueueResponseBody = defaultMQAdminExt.queryConsumeQueue(
-                    broker, topic, queueId, index, count, consumerGroup
-            );
+            QueryConsumeQueueResponseBody queryConsumeQueueResponseBody = defaultMQAdminExt.queryConsumeQueue(broker, topic, queueId, index, count, consumerGroup);
 
             if (queryConsumeQueueResponseBody.getSubscriptionData() != null) {
                 System.out.printf("Subscription data: \n%s\n", JSON.toJSONString(queryConsumeQueueResponseBody.getSubscriptionData(), true));
@@ -112,8 +107,7 @@ public class QueryConsumeQueueCommand implements SubCommand {
                 System.out.print("======================================\n");
             }
 
-            System.out.printf("Queue data: \nmax: %d, min: %d\n", queryConsumeQueueResponseBody.getMaxQueueIndex(),
-                    queryConsumeQueueResponseBody.getMinQueueIndex());
+            System.out.printf("Queue data: \nmax: %d, min: %d\n", queryConsumeQueueResponseBody.getMaxQueueIndex(), queryConsumeQueueResponseBody.getMinQueueIndex());
             System.out.print("======================================\n");
 
             if (queryConsumeQueueResponseBody.getQueueData() != null) {

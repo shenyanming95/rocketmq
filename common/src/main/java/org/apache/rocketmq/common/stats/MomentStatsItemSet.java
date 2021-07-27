@@ -11,8 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MomentStatsItemSet {
-    private final ConcurrentMap<String/* key */, MomentStatsItem> statsItemTable =
-            new ConcurrentHashMap<String, MomentStatsItem>(128);
+    private final ConcurrentMap<String/* key */, MomentStatsItem> statsItemTable = new ConcurrentHashMap<String, MomentStatsItem>(128);
     private final String statsName;
     private final ScheduledExecutorService scheduledExecutorService;
     private final InternalLogger log;
@@ -81,8 +80,7 @@ public class MomentStatsItemSet {
     public MomentStatsItem getAndCreateStatsItem(final String statsKey) {
         MomentStatsItem statsItem = this.statsItemTable.get(statsKey);
         if (null == statsItem) {
-            statsItem =
-                    new MomentStatsItem(this.statsName, statsKey, this.scheduledExecutorService, this.log);
+            statsItem = new MomentStatsItem(this.statsName, statsKey, this.scheduledExecutorService, this.log);
             MomentStatsItem prev = this.statsItemTable.putIfAbsent(statsKey, statsItem);
 
             if (null != prev) {

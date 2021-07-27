@@ -50,10 +50,7 @@ public class ParseException extends Exception {
      * a new object of this type with the fields "currentToken",
      * "expectedTokenSequences", and "TOKEN_IMAGE" set.
      */
-    public ParseException(Token currentTokenVal,
-                          int[][] expectedTokenSequencesVal,
-                          String[] tokenImageVal
-    ) {
+    public ParseException(Token currentTokenVal, int[][] expectedTokenSequencesVal, String[] tokenImageVal) {
         super(initialise(currentTokenVal, expectedTokenSequencesVal, tokenImageVal));
         currentToken = currentTokenVal;
         expectedTokenSequences = expectedTokenSequencesVal;
@@ -88,9 +85,7 @@ public class ParseException extends Exception {
      * from the parser) the correct error message
      * gets displayed.
      */
-    private static String initialise(Token currentToken,
-                                     int[][] expectedTokenSequences,
-                                     String[] tokenImage) {
+    private static String initialise(Token currentToken, int[][] expectedTokenSequences, String[] tokenImage) {
         String eol = System.getProperty("line.separator", "\n");
         StringBuffer expected = new StringBuffer();
         int maxSize = 0;
@@ -109,8 +104,7 @@ public class ParseException extends Exception {
         String retval = "Encountered \"";
         Token tok = currentToken.next;
         for (int i = 0; i < maxSize; i++) {
-            if (i != 0)
-                retval += " ";
+            if (i != 0) retval += " ";
             if (tok.kind == 0) {
                 retval += tokenImage[0];
                 break;

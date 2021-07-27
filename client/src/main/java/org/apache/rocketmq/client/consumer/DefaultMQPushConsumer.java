@@ -301,8 +301,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      * @param rpcHook                      RPC hook to execute before each remoting command.
      * @param allocateMessageQueueStrategy Message queue allocating algorithm.
      */
-    public DefaultMQPushConsumer(final String consumerGroup, RPCHook rpcHook,
-                                 AllocateMessageQueueStrategy allocateMessageQueueStrategy) {
+    public DefaultMQPushConsumer(final String consumerGroup, RPCHook rpcHook, AllocateMessageQueueStrategy allocateMessageQueueStrategy) {
         this(null, consumerGroup, rpcHook, allocateMessageQueueStrategy);
     }
 
@@ -314,8 +313,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      * @param rpcHook                      RPC hook to execute before each remoting command.
      * @param allocateMessageQueueStrategy Message queue allocating algorithm.
      */
-    public DefaultMQPushConsumer(final String namespace, final String consumerGroup, RPCHook rpcHook,
-                                 AllocateMessageQueueStrategy allocateMessageQueueStrategy) {
+    public DefaultMQPushConsumer(final String namespace, final String consumerGroup, RPCHook rpcHook, AllocateMessageQueueStrategy allocateMessageQueueStrategy) {
         this.consumerGroup = consumerGroup;
         this.namespace = namespace;
         this.allocateMessageQueueStrategy = allocateMessageQueueStrategy;
@@ -353,8 +351,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      * @param enableMsgTrace               Switch flag instance for message trace.
      * @param customizedTraceTopic         The name value of message trace topic.If you don't config,you can use the default trace topic name.
      */
-    public DefaultMQPushConsumer(final String consumerGroup, RPCHook rpcHook,
-                                 AllocateMessageQueueStrategy allocateMessageQueueStrategy, boolean enableMsgTrace, final String customizedTraceTopic) {
+    public DefaultMQPushConsumer(final String consumerGroup, RPCHook rpcHook, AllocateMessageQueueStrategy allocateMessageQueueStrategy, boolean enableMsgTrace, final String customizedTraceTopic) {
         this(null, consumerGroup, rpcHook, allocateMessageQueueStrategy, enableMsgTrace, customizedTraceTopic);
     }
 
@@ -368,8 +365,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      * @param enableMsgTrace               Switch flag instance for message trace.
      * @param customizedTraceTopic         The name value of message trace topic.If you don't config,you can use the default trace topic name.
      */
-    public DefaultMQPushConsumer(final String namespace, final String consumerGroup, RPCHook rpcHook,
-                                 AllocateMessageQueueStrategy allocateMessageQueueStrategy, boolean enableMsgTrace, final String customizedTraceTopic) {
+    public DefaultMQPushConsumer(final String namespace, final String consumerGroup, RPCHook rpcHook, AllocateMessageQueueStrategy allocateMessageQueueStrategy, boolean enableMsgTrace, final String customizedTraceTopic) {
         this.consumerGroup = consumerGroup;
         this.namespace = namespace;
         this.allocateMessageQueueStrategy = allocateMessageQueueStrategy;
@@ -379,8 +375,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
                 AsyncTraceDispatcher dispatcher = new AsyncTraceDispatcher(consumerGroup, TraceDispatcher.Type.CONSUME, customizedTraceTopic, rpcHook);
                 dispatcher.setHostConsumer(this.getDefaultMQPushConsumerImpl());
                 traceDispatcher = dispatcher;
-                this.getDefaultMQPushConsumerImpl().registerConsumeMessageHook(
-                        new ConsumeMessageTraceHookImpl(traceDispatcher));
+                this.getDefaultMQPushConsumerImpl().registerConsumeMessageHook(new ConsumeMessageTraceHookImpl(traceDispatcher));
             } catch (Throwable e) {
                 log.error("system mqtrace hook init failed ,maybe can't send msg trace data");
             }
@@ -446,8 +441,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      */
     @Deprecated
     @Override
-    public MessageExt viewMessage(
-            String offsetMsgId) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
+    public MessageExt viewMessage(String offsetMsgId) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
         return this.defaultMQPushConsumerImpl.viewMessage(offsetMsgId);
     }
 
@@ -456,8 +450,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      */
     @Deprecated
     @Override
-    public QueryResult queryMessage(String topic, String key, int maxNum, long begin, long end)
-            throws MQClientException, InterruptedException {
+    public QueryResult queryMessage(String topic, String key, int maxNum, long begin, long end) throws MQClientException, InterruptedException {
         return this.defaultMQPushConsumerImpl.queryMessage(withNamespace(topic), key, maxNum, begin, end);
     }
 
@@ -466,8 +459,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      */
     @Deprecated
     @Override
-    public MessageExt viewMessage(String topic,
-                                  String msgId) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
+    public MessageExt viewMessage(String topic, String msgId) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
         try {
             MessageDecoder.decodeMessageId(msgId);
             return this.viewMessage(msgId);
@@ -636,8 +628,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      */
     @Deprecated
     @Override
-    public void sendMessageBack(MessageExt msg, int delayLevel)
-            throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
+    public void sendMessageBack(MessageExt msg, int delayLevel) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
         msg.setTopic(withNamespace(msg.getTopic()));
         this.defaultMQPushConsumerImpl.sendMessageBack(msg, delayLevel, null);
     }
@@ -659,8 +650,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      */
     @Deprecated
     @Override
-    public void sendMessageBack(MessageExt msg, int delayLevel, String brokerName)
-            throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
+    public void sendMessageBack(MessageExt msg, int delayLevel, String brokerName) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
         msg.setTopic(withNamespace(msg.getTopic()));
         this.defaultMQPushConsumerImpl.sendMessageBack(msg, delayLevel, brokerName);
     }

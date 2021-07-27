@@ -9,8 +9,7 @@ import java.util.Map;
 @Deprecated
 public class GetConsumerStatusBody extends RemotingSerializable {
     private Map<MessageQueue, Long> messageQueueTable = new HashMap<MessageQueue, Long>();
-    private Map<String, Map<MessageQueue, Long>> consumerTable =
-            new HashMap<String, Map<MessageQueue, Long>>();
+    private Map<String, Map<MessageQueue, Long>> consumerTable = new HashMap<String, Map<MessageQueue, Long>>();
 
     public Map<MessageQueue, Long> getMessageQueueTable() {
         return messageQueueTable;

@@ -89,8 +89,7 @@ public interface MessageStore {
      * @param messageFilter Message filter used to screen desired messages.
      * @return Matched messages.
      */
-    GetMessageResult getMessage(final String group, final String topic, final int queueId,
-                                final long offset, final int maxMsgNums, final MessageFilter messageFilter);
+    GetMessageResult getMessage(final String group, final String topic, final int queueId, final long offset, final int maxMsgNums, final MessageFilter messageFilter);
 
     /**
      * Get maximum offset of the topic queue.
@@ -249,8 +248,7 @@ public interface MessageStore {
      * @param begin  begin timestamp.
      * @param end    end timestamp.
      */
-    QueryMessageResult queryMessage(final String topic, final String key, final int maxNum, final long begin,
-                                    final long end);
+    QueryMessageResult queryMessage(final String topic, final String key, final int maxNum, final long begin, final long end);
 
     /**
      * Update HA master address.

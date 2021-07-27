@@ -20,9 +20,7 @@ public class AsyncRequestProducer {
         producer.start();
 
         try {
-            Message msg = new Message(topic,
-                    "",
-                    "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
+            Message msg = new Message(topic, "", "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
 
             long begin = System.currentTimeMillis();
             producer.request(msg, new RequestCallback() {

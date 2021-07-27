@@ -38,8 +38,7 @@ public class AllocateMessageQueueConsistentHash implements AllocateMessageQueueS
     }
 
     @Override
-    public List<MessageQueue> allocate(String consumerGroup, String currentCID, List<MessageQueue> mqAll,
-                                       List<String> cidAll) {
+    public List<MessageQueue> allocate(String consumerGroup, String currentCID, List<MessageQueue> mqAll, List<String> cidAll) {
 
         if (currentCID == null || currentCID.length() < 1) {
             throw new IllegalArgumentException("currentCID is empty");
@@ -53,10 +52,7 @@ public class AllocateMessageQueueConsistentHash implements AllocateMessageQueueS
 
         List<MessageQueue> result = new ArrayList<MessageQueue>();
         if (!cidAll.contains(currentCID)) {
-            log.info("[BUG] ConsumerGroup: {} The consumerId: {} not in cidAll: {}",
-                    consumerGroup,
-                    currentCID,
-                    cidAll);
+            log.info("[BUG] ConsumerGroup: {} The consumerId: {} not in cidAll: {}", consumerGroup, currentCID, cidAll);
             return result;
         }
 

@@ -113,27 +113,12 @@ public class SendMessageCommand implements SubCommand {
             producer.shutdown();
         }
 
-        System.out.printf("%-32s  %-4s  %-20s    %s%n",
-                "#Broker Name",
-                "#QID",
-                "#Send Result",
-                "#MsgId"
-        );
+        System.out.printf("%-32s  %-4s  %-20s    %s%n", "#Broker Name", "#QID", "#Send Result", "#MsgId");
 
         if (result != null) {
-            System.out.printf("%-32s  %-4s  %-20s    %s%n",
-                    result.getMessageQueue().getBrokerName(),
-                    result.getMessageQueue().getQueueId(),
-                    result.getSendStatus(),
-                    result.getMsgId()
-            );
+            System.out.printf("%-32s  %-4s  %-20s    %s%n", result.getMessageQueue().getBrokerName(), result.getMessageQueue().getQueueId(), result.getSendStatus(), result.getMsgId());
         } else {
-            System.out.printf("%-32s  %-4s  %-20s    %s%n",
-                    "Unknown",
-                    "Unknown",
-                    "Failed",
-                    "None"
-            );
+            System.out.printf("%-32s  %-4s  %-20s    %s%n", "Unknown", "Unknown", "Failed", "None");
         }
     }
 }

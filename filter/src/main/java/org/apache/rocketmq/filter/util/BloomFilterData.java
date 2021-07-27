@@ -38,17 +38,13 @@ public class BloomFilterData {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof BloomFilterData))
-            return false;
+        if (this == o) return true;
+        if (!(o instanceof BloomFilterData)) return false;
 
         final BloomFilterData that = (BloomFilterData) o;
 
-        if (bitNum != that.bitNum)
-            return false;
-        if (!Arrays.equals(bitPos, that.bitPos))
-            return false;
+        if (bitNum != that.bitNum) return false;
+        if (!Arrays.equals(bitPos, that.bitPos)) return false;
 
         return true;
     }
@@ -62,9 +58,6 @@ public class BloomFilterData {
 
     @Override
     public String toString() {
-        return "BloomFilterData{" +
-                "bitPos=" + Arrays.toString(bitPos) +
-                ", bitNum=" + bitNum +
-                '}';
+        return "BloomFilterData{" + "bitPos=" + Arrays.toString(bitPos) + ", bitNum=" + bitNum + '}';
     }
 }

@@ -25,8 +25,7 @@ public class StatsItem {
     private final ScheduledExecutorService scheduledExecutorService;
     private final InternalLogger log;
 
-    public StatsItem(String statsName, String statsKey, ScheduledExecutorService scheduledExecutorService,
-                     InternalLogger log) {
+    public StatsItem(String statsName, String statsKey, ScheduledExecutorService scheduledExecutorService, InternalLogger log) {
         this.statsName = statsName;
         this.statsKey = statsKey;
         this.scheduledExecutorService = scheduledExecutorService;
@@ -141,8 +140,7 @@ public class StatsItem {
             if (this.csListMinute.size() == 0) {
                 this.csListMinute.add(new CallSnapshot(System.currentTimeMillis() - 10 * 1000, 0, 0));
             }
-            this.csListMinute.add(new CallSnapshot(System.currentTimeMillis(), this.times.get(), this.value
-                    .get()));
+            this.csListMinute.add(new CallSnapshot(System.currentTimeMillis(), this.times.get(), this.value.get()));
             if (this.csListMinute.size() > 7) {
                 this.csListMinute.removeFirst();
             }
@@ -154,8 +152,7 @@ public class StatsItem {
             if (this.csListHour.size() == 0) {
                 this.csListHour.add(new CallSnapshot(System.currentTimeMillis() - 10 * 60 * 1000, 0, 0));
             }
-            this.csListHour.add(new CallSnapshot(System.currentTimeMillis(), this.times.get(), this.value
-                    .get()));
+            this.csListHour.add(new CallSnapshot(System.currentTimeMillis(), this.times.get(), this.value.get()));
             if (this.csListHour.size() > 7) {
                 this.csListHour.removeFirst();
             }
@@ -167,8 +164,7 @@ public class StatsItem {
             if (this.csListDay.size() == 0) {
                 this.csListDay.add(new CallSnapshot(System.currentTimeMillis() - 1 * 60 * 60 * 1000, 0, 0));
             }
-            this.csListDay.add(new CallSnapshot(System.currentTimeMillis(), this.times.get(), this.value
-                    .get()));
+            this.csListDay.add(new CallSnapshot(System.currentTimeMillis(), this.times.get(), this.value.get()));
             if (this.csListDay.size() > 25) {
                 this.csListDay.removeFirst();
             }
@@ -192,10 +188,7 @@ public class StatsItem {
     }
 
     protected String statPrintDetail(StatsSnapshot ss) {
-        return String.format("SUM: %d TPS: %.2f AVGPT: %.2f",
-                ss.getSum(),
-                ss.getTps(),
-                ss.getAvgpt());
+        return String.format("SUM: %d TPS: %.2f AVGPT: %.2f", ss.getSum(), ss.getTps(), ss.getAvgpt());
     }
 
     public AtomicLong getValue() {

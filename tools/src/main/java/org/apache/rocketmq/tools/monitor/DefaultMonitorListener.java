@@ -42,9 +42,7 @@ public class DefaultMonitorListener implements MonitorListener {
         {
             boolean result = ConsumerRunningInfo.analyzeSubscription(criTable);
             if (!result) {
-                log.info(String.format(LOG_NOTIFY
-                        + "reportConsumerRunningInfo: ConsumerGroup: %s, Subscription different", criTable
-                        .firstEntry().getValue().getProperties().getProperty("consumerGroup")));
+                log.info(String.format(LOG_NOTIFY + "reportConsumerRunningInfo: ConsumerGroup: %s, Subscription different", criTable.firstEntry().getValue().getProperties().getProperty("consumerGroup")));
             }
         }
 
@@ -54,11 +52,7 @@ public class DefaultMonitorListener implements MonitorListener {
                 Entry<String, ConsumerRunningInfo> next = it.next();
                 String result = ConsumerRunningInfo.analyzeProcessQueue(next.getKey(), next.getValue());
                 if (!result.isEmpty()) {
-                    log.info(String.format(LOG_NOTIFY
-                                    + "reportConsumerRunningInfo: ConsumerGroup: %s, ClientId: %s, %s",
-                            criTable.firstEntry().getValue().getProperties().getProperty("consumerGroup"),
-                            next.getKey(),
-                            result));
+                    log.info(String.format(LOG_NOTIFY + "reportConsumerRunningInfo: ConsumerGroup: %s, ClientId: %s, %s", criTable.firstEntry().getValue().getProperties().getProperty("consumerGroup"), next.getKey(), result));
                 }
             }
         }

@@ -8,16 +8,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class SubscriptionGroupWrapper extends RemotingSerializable {
-    private ConcurrentMap<String, SubscriptionGroupConfig> subscriptionGroupTable =
-            new ConcurrentHashMap<String, SubscriptionGroupConfig>(1024);
+    private ConcurrentMap<String, SubscriptionGroupConfig> subscriptionGroupTable = new ConcurrentHashMap<String, SubscriptionGroupConfig>(1024);
     private DataVersion dataVersion = new DataVersion();
 
     public ConcurrentMap<String, SubscriptionGroupConfig> getSubscriptionGroupTable() {
         return subscriptionGroupTable;
     }
 
-    public void setSubscriptionGroupTable(
-            ConcurrentMap<String, SubscriptionGroupConfig> subscriptionGroupTable) {
+    public void setSubscriptionGroupTable(ConcurrentMap<String, SubscriptionGroupConfig> subscriptionGroupTable) {
         this.subscriptionGroupTable = subscriptionGroupTable;
     }
 

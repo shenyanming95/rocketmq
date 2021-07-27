@@ -9,12 +9,7 @@ import io.openmessaging.rocketmq.config.ClientConfig;
 import io.openmessaging.rocketmq.domain.ConsumeRequest;
 import io.openmessaging.rocketmq.utils.BeanUtils;
 import io.openmessaging.rocketmq.utils.OMSUtil;
-import org.apache.rocketmq.client.consumer.DefaultMQPullConsumer;
-import org.apache.rocketmq.client.consumer.MQPullConsumer;
-import org.apache.rocketmq.client.consumer.MQPullConsumerScheduleService;
-import org.apache.rocketmq.client.consumer.PullResult;
-import org.apache.rocketmq.client.consumer.PullTaskCallback;
-import org.apache.rocketmq.client.consumer.PullTaskContext;
+import org.apache.rocketmq.client.consumer.*;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.impl.consumer.ProcessQueue;
 import org.apache.rocketmq.client.log.ClientLogger;
@@ -132,10 +127,8 @@ public class PullConsumerImpl implements PullConsumer {
                 try {
                     long offset = localMessageCache.nextPullOffset(mq);
 
-                    PullResult pullResult = consumer.pull(mq, "*",
-                            offset, localMessageCache.nextPullBatchNums());
-                    ProcessQueue pq = rocketmqPullConsumer.getDefaultMQPullConsumerImpl().getRebalanceImpl()
-                            .getProcessQueueTable().get(mq);
+                    PullResult pullResult = consumer.pull(mq, "*", offset, localMessageCache.nextPullBatchNums());
+                    ProcessQueue pq = rocketmqPullConsumer.getDefaultMQPullConsumerImpl().getRebalanceImpl().getProcessQueueTable().get(mq);
                     switch (pullResult.getPullStatus()) {
                         case FOUND:
                             if (pq != null) {

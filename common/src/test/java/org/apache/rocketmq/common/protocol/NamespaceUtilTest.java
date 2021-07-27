@@ -17,11 +17,9 @@ public class NamespaceUtilTest {
     private static final String GROUP_ID_WITH_NAMESPACE = INSTANCE_ID + NamespaceUtil.NAMESPACE_SEPARATOR + GROUP_ID;
     private static final String TOPIC_WITH_NAMESPACE = INSTANCE_ID + NamespaceUtil.NAMESPACE_SEPARATOR + TOPIC;
     private static final String RETRY_TOPIC = MixAll.RETRY_GROUP_TOPIC_PREFIX + GROUP_ID;
-    private static final String RETRY_TOPIC_WITH_NAMESPACE =
-            MixAll.RETRY_GROUP_TOPIC_PREFIX + INSTANCE_ID + NamespaceUtil.NAMESPACE_SEPARATOR + GROUP_ID;
+    private static final String RETRY_TOPIC_WITH_NAMESPACE = MixAll.RETRY_GROUP_TOPIC_PREFIX + INSTANCE_ID + NamespaceUtil.NAMESPACE_SEPARATOR + GROUP_ID;
     private static final String DLQ_TOPIC = MixAll.DLQ_GROUP_TOPIC_PREFIX + GROUP_ID;
-    private static final String DLQ_TOPIC_WITH_NAMESPACE =
-            MixAll.DLQ_GROUP_TOPIC_PREFIX + INSTANCE_ID + NamespaceUtil.NAMESPACE_SEPARATOR + GROUP_ID;
+    private static final String DLQ_TOPIC_WITH_NAMESPACE = MixAll.DLQ_GROUP_TOPIC_PREFIX + INSTANCE_ID + NamespaceUtil.NAMESPACE_SEPARATOR + GROUP_ID;
 
     @Test
     public void testWithoutNamespace() {

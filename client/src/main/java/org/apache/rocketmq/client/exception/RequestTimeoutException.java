@@ -14,8 +14,7 @@ public class RequestTimeoutException extends Exception {
     }
 
     public RequestTimeoutException(int responseCode, String errorMessage) {
-        super("CODE: " + UtilAll.responseCode2String(responseCode) + "  DESC: "
-                + errorMessage);
+        super("CODE: " + UtilAll.responseCode2String(responseCode) + "  DESC: " + errorMessage);
         this.responseCode = responseCode;
         this.errorMessage = errorMessage;
     }

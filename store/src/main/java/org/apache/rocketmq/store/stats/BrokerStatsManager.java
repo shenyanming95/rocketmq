@@ -47,10 +47,8 @@ public class BrokerStatsManager {
      */
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.ROCKETMQ_STATS_LOGGER_NAME);
     private static final InternalLogger COMMERCIAL_LOG = InternalLoggerFactory.getLogger(LoggerName.COMMERCIAL_LOGGER_NAME);
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
-            "BrokerStatsThread"));
-    private final ScheduledExecutorService commercialExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
-            "CommercialStatsThread"));
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("BrokerStatsThread"));
+    private final ScheduledExecutorService commercialExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("CommercialStatsThread"));
     private final HashMap<String, StatsItemSet> statsTable = new HashMap<String, StatsItemSet>();
     private final String clusterName;
     private final MomentStatsItemSet momentStatsItemSetFallSize = new MomentStatsItemSet(GROUP_GET_FALL_SIZE, scheduledExecutorService, log);
@@ -183,20 +181,17 @@ public class BrokerStatsManager {
         return this.statsTable.get(GROUP_GET_NUMS).getStatsDataInMinute(statsKey).getTps();
     }
 
-    public void recordDiskFallBehindTime(final String group, final String topic, final int queueId,
-                                         final long fallBehind) {
+    public void recordDiskFallBehindTime(final String group, final String topic, final int queueId, final long fallBehind) {
         final String statsKey = String.format("%d@%s@%s", queueId, topic, group);
         this.momentStatsItemSetFallTime.getAndCreateStatsItem(statsKey).getValue().set(fallBehind);
     }
 
-    public void recordDiskFallBehindSize(final String group, final String topic, final int queueId,
-                                         final long fallBehind) {
+    public void recordDiskFallBehindSize(final String group, final String topic, final int queueId, final long fallBehind) {
         final String statsKey = String.format("%d@%s@%s", queueId, topic, group);
         this.momentStatsItemSetFallSize.getAndCreateStatsItem(statsKey).getValue().set(fallBehind);
     }
 
-    public void incCommercialValue(final String key, final String owner, final String group,
-                                   final String topic, final String type, final int incValue) {
+    public void incCommercialValue(final String key, final String owner, final String group, final String topic, final String type, final int incValue) {
         final String statsKey = buildCommercialStatsKey(owner, topic, group, type);
         this.statsTable.get(key).addValue(statsKey, incValue, 1);
     }
@@ -214,13 +209,6 @@ public class BrokerStatsManager {
     }
 
     public enum StatsType {
-        SEND_SUCCESS,
-        SEND_FAILURE,
-        SEND_BACK,
-        SEND_TIMER,
-        SEND_TRANSACTION,
-        RCV_SUCCESS,
-        RCV_EPOLLS,
-        PERM_FAILURE
+        SEND_SUCCESS, SEND_FAILURE, SEND_BACK, SEND_TIMER, SEND_TRANSACTION, RCV_SUCCESS, RCV_EPOLLS, PERM_FAILURE
     }
 }

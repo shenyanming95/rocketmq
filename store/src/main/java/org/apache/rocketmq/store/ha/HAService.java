@@ -13,11 +13,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,8 +42,7 @@ public class HAService {
 
     public HAService(final DefaultMessageStore defaultMessageStore) throws IOException {
         this.defaultMessageStore = defaultMessageStore;
-        this.acceptSocketService =
-                new AcceptSocketService(defaultMessageStore.getMessageStoreConfig().getHaListenPort());
+        this.acceptSocketService = new AcceptSocketService(defaultMessageStore.getMessageStoreConfig().getHaListenPort());
         this.groupTransferService = new GroupTransferService();
         this.haClient = new HAClient();
     }
@@ -64,10 +59,7 @@ public class HAService {
 
     public boolean isSlaveOK(final long masterPutWhere) {
         boolean result = this.connectionCount.get() > 0;
-        result =
-                result
-                        && ((masterPutWhere - this.push2SlaveMaxOffset.get()) < this.defaultMessageStore
-                        .getMessageStoreConfig().getHaSlaveFallbehindMax());
+        result = result && ((masterPutWhere - this.push2SlaveMaxOffset.get()) < this.defaultMessageStore.getMessageStoreConfig().getHaSlaveFallbehindMax());
         return result;
     }
 
@@ -197,8 +189,7 @@ public class HAService {
                                 SocketChannel sc = ((ServerSocketChannel) k.channel()).accept();
 
                                 if (sc != null) {
-                                    HAService.log.info("HAService receive new connection, "
-                                            + sc.socket().getRemoteSocketAddress());
+                                    HAService.log.info("HAService receive new connection, " + sc.socket().getRemoteSocketAddress());
 
                                     try {
                                         HAConnection conn = new HAConnection(HAService.this, sc);
@@ -264,8 +255,7 @@ public class HAService {
                 if (!this.requestsRead.isEmpty()) {
                     for (CommitLog.GroupCommitRequest req : this.requestsRead) {
                         boolean transferOK = HAService.this.push2SlaveMaxOffset.get() >= req.getNextOffset();
-                        long waitUntilWhen = HAService.this.defaultMessageStore.getSystemClock().now()
-                                + HAService.this.defaultMessageStore.getMessageStoreConfig().getSyncFlushTimeout();
+                        long waitUntilWhen = HAService.this.defaultMessageStore.getSystemClock().now() + HAService.this.defaultMessageStore.getMessageStoreConfig().getSyncFlushTimeout();
                         while (!transferOK && HAService.this.defaultMessageStore.getSystemClock().now() < waitUntilWhen) {
                             this.notifyTransferObject.waitForRunning(1000);
                             transferOK = HAService.this.push2SlaveMaxOffset.get() >= req.getNextOffset();
@@ -335,10 +325,8 @@ public class HAService {
         }
 
         private boolean isTimeToReportOffset() {
-            long interval =
-                    HAService.this.defaultMessageStore.getSystemClock().now() - this.lastWriteTimestamp;
-            boolean needHeart = interval > HAService.this.defaultMessageStore.getMessageStoreConfig()
-                    .getHaSendHeartbeatInterval();
+            long interval = HAService.this.defaultMessageStore.getSystemClock().now() - this.lastWriteTimestamp;
+            boolean needHeart = interval > HAService.this.defaultMessageStore.getMessageStoreConfig().getHaSendHeartbeatInterval();
 
             return needHeart;
         }
@@ -354,8 +342,7 @@ public class HAService {
                 try {
                     this.socketChannel.write(this.reportOffset);
                 } catch (IOException e) {
-                    log.error(this.getServiceName()
-                            + "reportSlaveMaxOffset this.socketChannel.write exception", e);
+                    log.error(this.getServiceName() + "reportSlaveMaxOffset this.socketChannel.write exception", e);
                     return false;
                 }
             }
@@ -430,8 +417,7 @@ public class HAService {
 
                     if (slavePhyOffset != 0) {
                         if (slavePhyOffset != masterPhyOffset) {
-                            log.error("master pushed offset not equal the max phy offset in slave, SLAVE: "
-                                    + slavePhyOffset + " MASTER: " + masterPhyOffset);
+                            log.error("master pushed offset not equal the max phy offset in slave, SLAVE: " + slavePhyOffset + " MASTER: " + masterPhyOffset);
                             return false;
                         }
                     }
@@ -554,13 +540,9 @@ public class HAService {
                             continue;
                         }
 
-                        long interval =
-                                HAService.this.getDefaultMessageStore().getSystemClock().now()
-                                        - this.lastWriteTimestamp;
-                        if (interval > HAService.this.getDefaultMessageStore().getMessageStoreConfig()
-                                .getHaHousekeepingInterval()) {
-                            log.warn("HAClient, housekeeping, found this connection[" + this.masterAddress
-                                    + "] expired, " + interval);
+                        long interval = HAService.this.getDefaultMessageStore().getSystemClock().now() - this.lastWriteTimestamp;
+                        if (interval > HAService.this.getDefaultMessageStore().getMessageStoreConfig().getHaHousekeepingInterval()) {
+                            log.warn("HAClient, housekeeping, found this connection[" + this.masterAddress + "] expired, " + interval);
                             this.closeMaster();
                             log.warn("HAClient, master not response some time, so close connection");
                         }

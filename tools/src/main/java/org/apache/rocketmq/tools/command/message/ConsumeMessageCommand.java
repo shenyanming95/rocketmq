@@ -63,13 +63,11 @@ public class ConsumeMessageCommand implements SubCommand {
         opt.setRequired(false);
         options.addOption(opt);
 
-        opt = new Option("s", "beginTimestamp ", true,
-                "Begin timestamp[currentTimeMillis|yyyy-MM-dd#HH:mm:ss:SSS]");
+        opt = new Option("s", "beginTimestamp ", true, "Begin timestamp[currentTimeMillis|yyyy-MM-dd#HH:mm:ss:SSS]");
         opt.setRequired(false);
         options.addOption(opt);
 
-        opt = new Option("e", "endTimestamp ", true,
-                "End timestamp[currentTimeMillis|yyyy-MM-dd#HH:mm:ss:SSS]");
+        opt = new Option("e", "endTimestamp ", true, "End timestamp[currentTimeMillis|yyyy-MM-dd#HH:mm:ss:SSS]");
         opt.setRequired(false);
         options.addOption(opt);
 
@@ -195,17 +193,14 @@ public class ConsumeMessageCommand implements SubCommand {
                 switch (pullResult.getPullStatus()) {
                     case FOUND:
                         System.out.print("Consume ok\n");
-                        PrintMessageByQueueCommand.printMessage(pullResult.getMsgFoundList(), "UTF-8",
-                                true, true);
+                        PrintMessageByQueueCommand.printMessage(pullResult.getMsgFoundList(), "UTF-8", true, true);
                         break;
                     case NO_MATCHED_MSG:
-                        System.out.printf("%s no matched msg. status=%s, offset=%s\n", mq, pullResult.getPullStatus(),
-                                offset);
+                        System.out.printf("%s no matched msg. status=%s, offset=%s\n", mq, pullResult.getPullStatus(), offset);
                         break;
                     case NO_NEW_MSG:
                     case OFFSET_ILLEGAL:
-                        System.out.printf("%s print msg finished. status=%s, offset=%s\n", mq,
-                                pullResult.getPullStatus(), offset);
+                        System.out.printf("%s print msg finished. status=%s, offset=%s\n", mq, pullResult.getPullStatus(), offset);
                         break READQ;
                     default:
                         break;

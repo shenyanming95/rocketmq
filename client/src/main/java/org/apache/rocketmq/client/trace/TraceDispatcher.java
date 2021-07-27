@@ -35,7 +35,6 @@ public interface TraceDispatcher {
     void shutdown();
 
     enum Type {
-        PRODUCE,
-        CONSUME
+        PRODUCE, CONSUME
     }
 }

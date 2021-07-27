@@ -43,11 +43,7 @@ public class ConsumeQueueExt {
      * @param mappedFileSize file size
      * @param bitMapLength   bit map length.
      */
-    public ConsumeQueueExt(final String topic,
-                           final int queueId,
-                           final String storePath,
-                           final int mappedFileSize,
-                           final int bitMapLength) {
+    public ConsumeQueueExt(final String topic, final int queueId, final String storePath, final int mappedFileSize, final int bitMapLength) {
 
         this.storePath = storePath;
         this.mappedFileSize = mappedFileSize;
@@ -55,16 +51,12 @@ public class ConsumeQueueExt {
         this.topic = topic;
         this.queueId = queueId;
 
-        String queueDir = this.storePath
-                + File.separator + topic
-                + File.separator + queueId;
+        String queueDir = this.storePath + File.separator + topic + File.separator + queueId;
 
         this.mappedFileQueue = new MappedFileQueue(queueDir, mappedFileSize, null);
 
         if (bitMapLength > 0) {
-            this.tempContainer = ByteBuffer.allocate(
-                    bitMapLength / Byte.SIZE
-            );
+            this.tempContainer = ByteBuffer.allocate(bitMapLength / Byte.SIZE);
         }
     }
 
@@ -199,8 +191,7 @@ public class ConsumeQueueExt {
                 // check whether has enough space.
                 if (size > blankSize) {
                     fullFillToEnd(mappedFile, wrotePosition);
-                    log.info("No enough space(need:{}, has:{}) of file {}, so fill to end",
-                            size, blankSize, mappedFile.getFileName());
+                    log.info("No enough space(need:{}, has:{}) of file {}, so fill to end", size, blankSize, mappedFile.getFileName());
                     continue;
                 }
 
@@ -277,8 +268,7 @@ public class ConsumeQueueExt {
                 continue;
             }
 
-            log.info("All files of consume queue extend has been recovered over, last mapped file "
-                    + mappedFile.getFileName());
+            log.info("All files of consume queue extend has been recovered over, last mapped file " + mappedFile.getFileName());
             break;
         }
 
@@ -309,8 +299,7 @@ public class ConsumeQueueExt {
             long fileTailOffset = file.getFileFromOffset() + this.mappedFileSize;
 
             if (fileTailOffset < realOffset) {
-                log.info("Destroy consume queue ext by min: file={}, fileTailOffset={}, minOffset={}", file.getFileName(),
-                        fileTailOffset, realOffset);
+                log.info("Destroy consume queue ext by min: file={}, fileTailOffset={}, minOffset={}", file.getFileName(), fileTailOffset, realOffset);
                 if (file.destroy(1000)) {
                     willRemoveFiles.add(file);
                 }
@@ -387,8 +376,7 @@ public class ConsumeQueueExt {
      * Store unit.
      */
     public static class CqExtUnit {
-        public static final short MIN_EXT_UNIT_SIZE
-                = 2 * 1 // size, 32k max
+        public static final short MIN_EXT_UNIT_SIZE = 2 * 1 // size, 32k max
                 + 8 * 2 // msg time + tagCode
                 + 2; // bitMapSize
 
@@ -549,23 +537,16 @@ public class ConsumeQueueExt {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (!(o instanceof CqExtUnit))
-                return false;
+            if (this == o) return true;
+            if (!(o instanceof CqExtUnit)) return false;
 
             CqExtUnit cqExtUnit = (CqExtUnit) o;
 
-            if (bitMapSize != cqExtUnit.bitMapSize)
-                return false;
-            if (msgStoreTime != cqExtUnit.msgStoreTime)
-                return false;
-            if (size != cqExtUnit.size)
-                return false;
-            if (tagsCode != cqExtUnit.tagsCode)
-                return false;
-            if (!Arrays.equals(filterBitMap, cqExtUnit.filterBitMap))
-                return false;
+            if (bitMapSize != cqExtUnit.bitMapSize) return false;
+            if (msgStoreTime != cqExtUnit.msgStoreTime) return false;
+            if (size != cqExtUnit.size) return false;
+            if (tagsCode != cqExtUnit.tagsCode) return false;
+            if (!Arrays.equals(filterBitMap, cqExtUnit.filterBitMap)) return false;
 
             return true;
         }
@@ -582,13 +563,7 @@ public class ConsumeQueueExt {
 
         @Override
         public String toString() {
-            return "CqExtUnit{" +
-                    "size=" + size +
-                    ", tagsCode=" + tagsCode +
-                    ", msgStoreTime=" + msgStoreTime +
-                    ", bitMapSize=" + bitMapSize +
-                    ", filterBitMap=" + Arrays.toString(filterBitMap) +
-                    '}';
+            return "CqExtUnit{" + "size=" + size + ", tagsCode=" + tagsCode + ", msgStoreTime=" + msgStoreTime + ", bitMapSize=" + bitMapSize + ", filterBitMap=" + Arrays.toString(filterBitMap) + '}';
         }
     }
 }

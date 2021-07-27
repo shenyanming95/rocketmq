@@ -59,8 +59,7 @@ public class DLedgerRoleChangeHandler implements DLedgerLeaderElector.RoleChange
                                 if (dLegerServer.getdLedgerStore().getLedgerEndIndex() == -1) {
                                     break;
                                 }
-                                if (dLegerServer.getdLedgerStore().getLedgerEndIndex() == dLegerServer.getdLedgerStore().getCommittedIndex()
-                                        && messageStore.dispatchBehindBytes() == 0) {
+                                if (dLegerServer.getdLedgerStore().getLedgerEndIndex() == dLegerServer.getdLedgerStore().getCommittedIndex() && messageStore.dispatchBehindBytes() == 0) {
                                     break;
                                 }
                                 Thread.sleep(100);

@@ -12,8 +12,7 @@ public class MessageStoreConfig {
 
     //The directory in which the commitlog is kept
     @ImportantField
-    private String storePathCommitLog = System.getProperty("user.dir") + File.separator + "workdir" + File.separator + "store"
-            + File.separator + "commitlog";
+    private String storePathCommitLog = System.getProperty("user.dir") + File.separator + "workdir" + File.separator + "store" + File.separator + "commitlog";
 
     // CommitLog file size,default is 1G
     private int mappedFileSizeCommitLog = 1024 * 1024 * 1024;
@@ -288,11 +287,9 @@ public class MessageStoreConfig {
     }
 
     public int getDiskMaxUsedSpaceRatio() {
-        if (this.diskMaxUsedSpaceRatio < 10)
-            return 10;
+        if (this.diskMaxUsedSpaceRatio < 10) return 10;
 
-        if (this.diskMaxUsedSpaceRatio > 95)
-            return 95;
+        if (this.diskMaxUsedSpaceRatio > 95) return 95;
 
         return diskMaxUsedSpaceRatio;
     }
@@ -604,8 +601,7 @@ public class MessageStoreConfig {
      * @return <tt>true</tt> or <tt>false</tt>
      */
     public boolean isTransientStorePoolEnable() {
-        return transientStorePoolEnable && FlushDiskType.ASYNC_FLUSH == getFlushDiskType()
-                && BrokerRole.SLAVE != getBrokerRole();
+        return transientStorePoolEnable && FlushDiskType.ASYNC_FLUSH == getFlushDiskType() && BrokerRole.SLAVE != getBrokerRole();
     }
 
     public void setTransientStorePoolEnable(final boolean transientStorePoolEnable) {

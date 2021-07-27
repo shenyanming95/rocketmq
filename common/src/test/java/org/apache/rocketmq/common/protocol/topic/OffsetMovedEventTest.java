@@ -30,12 +30,9 @@ public class OffsetMovedEventTest {
 
     private void assertEquals(OffsetMovedEvent srcData, OffsetMovedEvent decodeData) {
         assertThat(decodeData.getConsumerGroup()).isEqualTo(srcData.getConsumerGroup());
-        assertThat(decodeData.getMessageQueue().getTopic())
-                .isEqualTo(srcData.getMessageQueue().getTopic());
-        assertThat(decodeData.getMessageQueue().getBrokerName())
-                .isEqualTo(srcData.getMessageQueue().getBrokerName());
-        assertThat(decodeData.getMessageQueue().getQueueId())
-                .isEqualTo(srcData.getMessageQueue().getQueueId());
+        assertThat(decodeData.getMessageQueue().getTopic()).isEqualTo(srcData.getMessageQueue().getTopic());
+        assertThat(decodeData.getMessageQueue().getBrokerName()).isEqualTo(srcData.getMessageQueue().getBrokerName());
+        assertThat(decodeData.getMessageQueue().getQueueId()).isEqualTo(srcData.getMessageQueue().getQueueId());
         assertThat(decodeData.getOffsetRequest()).isEqualTo(srcData.getOffsetRequest());
         assertThat(decodeData.getOffsetNew()).isEqualTo(srcData.getOffsetNew());
     }

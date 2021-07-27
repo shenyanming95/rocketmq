@@ -56,18 +56,11 @@ public class CheckMsgSendRTCommand implements SubCommand {
             long timeElapsed = 0;
             boolean sendSuccess = false;
             String topic = commandLine.getOptionValue('t').trim();
-            long amount = !commandLine.hasOption('a') ? 100 : Long.parseLong(commandLine
-                    .getOptionValue('a').trim());
-            long msgSize = !commandLine.hasOption('s') ? 128 : Long.parseLong(commandLine
-                    .getOptionValue('s').trim());
+            long amount = !commandLine.hasOption('a') ? 100 : Long.parseLong(commandLine.getOptionValue('a').trim());
+            long msgSize = !commandLine.hasOption('s') ? 128 : Long.parseLong(commandLine.getOptionValue('s').trim());
             Message msg = new Message(topic, getStringBySize(msgSize).getBytes(MixAll.DEFAULT_CHARSET));
 
-            System.out.printf("%-32s  %-4s  %-20s    %s%n",
-                    "#Broker Name",
-                    "#QID",
-                    "#Send Result",
-                    "#RT"
-            );
+            System.out.printf("%-32s  %-4s  %-20s    %s%n", "#Broker Name", "#QID", "#Send Result", "#RT");
             for (int i = 0; i < amount; i++) {
                 start = System.currentTimeMillis();
                 try {
@@ -92,12 +85,7 @@ public class CheckMsgSendRTCommand implements SubCommand {
                     timeElapsed += end - start;
                 }
 
-                System.out.printf("%-32s  %-4s  %-20s    %s%n",
-                        brokerName,
-                        queueId,
-                        sendSuccess,
-                        end - start
-                );
+                System.out.printf("%-32s  %-4s  %-20s    %s%n", brokerName, queueId, sendSuccess, end - start);
             }
 
             double rt = (double) timeElapsed / (amount - 1);

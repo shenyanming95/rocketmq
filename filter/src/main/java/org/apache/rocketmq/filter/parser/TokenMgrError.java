@@ -58,8 +58,7 @@ public class TokenMgrError extends Error {
     /**
      * Full Constructor.
      */
-    public TokenMgrError(boolean eofSeen, int lexState, int errorLine, int errorColumn, String errorAfter, char curChar,
-                         int reason) {
+    public TokenMgrError(boolean eofSeen, int lexState, int errorLine, int errorColumn, String errorAfter, char curChar, int reason) {
         this(LexicalError(eofSeen, lexState, errorLine, errorColumn, errorAfter, curChar), reason);
     }
 
@@ -127,15 +126,8 @@ public class TokenMgrError extends Error {
      * curchar     : the offending character
      * Note: You can customize the lexical error message by modifying this method.
      */
-    protected static String LexicalError(boolean eofSeen, int lexState, int errorLine, int errorColumn,
-                                         String errorAfter, char curChar) {
-        return "Lexical error at line " +
-                errorLine + ", column " +
-                errorColumn + ".  Encountered: " +
-                (eofSeen ?
-                        "<EOF> " :
-                        ("\"" + addEscapes(String.valueOf(curChar)) + "\"") + " (" + (int) curChar + "), ") +
-                "after : \"" + addEscapes(errorAfter) + "\"";
+    protected static String LexicalError(boolean eofSeen, int lexState, int errorLine, int errorColumn, String errorAfter, char curChar) {
+        return "Lexical error at line " + errorLine + ", column " + errorColumn + ".  Encountered: " + (eofSeen ? "<EOF> " : ("\"" + addEscapes(String.valueOf(curChar)) + "\"") + " (" + (int) curChar + "), ") + "after : \"" + addEscapes(errorAfter) + "\"";
     }
 
     /**

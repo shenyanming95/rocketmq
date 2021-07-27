@@ -8,8 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class TopicConfigSerializeWrapper extends RemotingSerializable {
-    private ConcurrentMap<String, TopicConfig> topicConfigTable =
-            new ConcurrentHashMap<String, TopicConfig>();
+    private ConcurrentMap<String, TopicConfig> topicConfigTable = new ConcurrentHashMap<String, TopicConfig>();
     private DataVersion dataVersion = new DataVersion();
 
     public ConcurrentMap<String, TopicConfig> getTopicConfigTable() {

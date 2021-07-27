@@ -59,8 +59,7 @@ public class Permission {
         }
     }
 
-    public static void parseResourcePerms(PlainAccessResource plainAccessResource, Boolean isTopic,
-                                          List<String> resources) {
+    public static void parseResourcePerms(PlainAccessResource plainAccessResource, Boolean isTopic, List<String> resources) {
         if (resources == null || resources.isEmpty()) {
             return;
         }

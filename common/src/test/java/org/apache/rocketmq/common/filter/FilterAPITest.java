@@ -15,8 +15,7 @@ public class FilterAPITest {
 
     @Test
     public void testBuildSubscriptionData() throws Exception {
-        SubscriptionData subscriptionData =
-                FilterAPI.buildSubscriptionData(group, topic, subString);
+        SubscriptionData subscriptionData = FilterAPI.buildSubscriptionData(group, topic, subString);
         assertThat(subscriptionData.getTopic()).isEqualTo(topic);
         assertThat(subscriptionData.getSubString()).isEqualTo(subString);
         String[] tags = subString.split("\\|\\|");
@@ -30,9 +29,7 @@ public class FilterAPITest {
     @Test
     public void testBuildTagSome() {
         try {
-            SubscriptionData subscriptionData = FilterAPI.build(
-                    "TOPIC", "A || B", ExpressionType.TAG
-            );
+            SubscriptionData subscriptionData = FilterAPI.build("TOPIC", "A || B", ExpressionType.TAG);
 
             assertThat(subscriptionData).isNotNull();
             assertThat(subscriptionData.getTopic()).isEqualTo("TOPIC");
@@ -50,9 +47,7 @@ public class FilterAPITest {
     @Test
     public void testBuildSQL() {
         try {
-            SubscriptionData subscriptionData = FilterAPI.build(
-                    "TOPIC", "a is not null", ExpressionType.SQL92
-            );
+            SubscriptionData subscriptionData = FilterAPI.build("TOPIC", "a is not null", ExpressionType.SQL92);
 
             assertThat(subscriptionData).isNotNull();
             assertThat(subscriptionData.getTopic()).isEqualTo("TOPIC");

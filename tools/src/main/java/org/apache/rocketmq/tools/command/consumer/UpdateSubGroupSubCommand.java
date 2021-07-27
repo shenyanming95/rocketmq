@@ -75,8 +75,7 @@ public class UpdateSubGroupSubCommand implements SubCommand {
     }
 
     @Override
-    public void execute(final CommandLine commandLine, final Options options,
-                        RPCHook rpcHook) throws SubCommandException {
+    public void execute(final CommandLine commandLine, final Options options, RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
 
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
@@ -91,32 +90,27 @@ public class UpdateSubGroupSubCommand implements SubCommand {
 
             // consumeEnable
             if (commandLine.hasOption('s')) {
-                subscriptionGroupConfig.setConsumeEnable(Boolean.parseBoolean(commandLine.getOptionValue('s')
-                        .trim()));
+                subscriptionGroupConfig.setConsumeEnable(Boolean.parseBoolean(commandLine.getOptionValue('s').trim()));
             }
 
             // consumeFromMinEnable
             if (commandLine.hasOption('m')) {
-                subscriptionGroupConfig.setConsumeFromMinEnable(Boolean.parseBoolean(commandLine
-                        .getOptionValue('m').trim()));
+                subscriptionGroupConfig.setConsumeFromMinEnable(Boolean.parseBoolean(commandLine.getOptionValue('m').trim()));
             }
 
             // consumeBroadcastEnable
             if (commandLine.hasOption('d')) {
-                subscriptionGroupConfig.setConsumeBroadcastEnable(Boolean.parseBoolean(commandLine
-                        .getOptionValue('d').trim()));
+                subscriptionGroupConfig.setConsumeBroadcastEnable(Boolean.parseBoolean(commandLine.getOptionValue('d').trim()));
             }
 
             // retryQueueNums
             if (commandLine.hasOption('q')) {
-                subscriptionGroupConfig.setRetryQueueNums(Integer.parseInt(commandLine.getOptionValue('q')
-                        .trim()));
+                subscriptionGroupConfig.setRetryQueueNums(Integer.parseInt(commandLine.getOptionValue('q').trim()));
             }
 
             // retryMaxTimes
             if (commandLine.hasOption('r')) {
-                subscriptionGroupConfig.setRetryMaxTimes(Integer.parseInt(commandLine.getOptionValue('r')
-                        .trim()));
+                subscriptionGroupConfig.setRetryMaxTimes(Integer.parseInt(commandLine.getOptionValue('r').trim()));
             }
 
             // brokerId
@@ -126,14 +120,12 @@ public class UpdateSubGroupSubCommand implements SubCommand {
 
             // whichBrokerWhenConsumeSlowly
             if (commandLine.hasOption('w')) {
-                subscriptionGroupConfig.setWhichBrokerWhenConsumeSlowly(Long.parseLong(commandLine
-                        .getOptionValue('w').trim()));
+                subscriptionGroupConfig.setWhichBrokerWhenConsumeSlowly(Long.parseLong(commandLine.getOptionValue('w').trim()));
             }
 
             // notifyConsumerIdsChanged
             if (commandLine.hasOption('a')) {
-                subscriptionGroupConfig.setNotifyConsumerIdsChangedEnable(Boolean.parseBoolean(commandLine
-                        .getOptionValue('a').trim()));
+                subscriptionGroupConfig.setNotifyConsumerIdsChangedEnable(Boolean.parseBoolean(commandLine.getOptionValue('a').trim()));
             }
 
             if (commandLine.hasOption('b')) {
@@ -150,8 +142,7 @@ public class UpdateSubGroupSubCommand implements SubCommand {
                 String clusterName = commandLine.getOptionValue('c').trim();
 
                 defaultMQAdminExt.start();
-                Set<String> masterSet =
-                        CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
+                Set<String> masterSet = CommandUtil.fetchMasterAddrByClusterName(defaultMQAdminExt, clusterName);
                 for (String addr : masterSet) {
                     try {
                         defaultMQAdminExt.createAndUpdateSubscriptionGroupConfig(addr, subscriptionGroupConfig);

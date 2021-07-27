@@ -192,8 +192,7 @@ public class KVConfigManager {
                         Iterator<Entry<String, String>> itSub = next.getValue().entrySet().iterator();
                         while (itSub.hasNext()) {
                             Entry<String, String> nextSub = itSub.next();
-                            log.info("configTable NS: {} Key: {} Value: {}", next.getKey(), nextSub.getKey(),
-                                    nextSub.getValue());
+                            log.info("configTable NS: {} Key: {} Value: {}", next.getKey(), nextSub.getKey(), nextSub.getValue());
                         }
                     }
                 }

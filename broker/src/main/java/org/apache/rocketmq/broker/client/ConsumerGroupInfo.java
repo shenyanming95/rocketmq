@@ -20,17 +20,14 @@ import java.util.concurrent.ConcurrentMap;
 public class ConsumerGroupInfo {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private final String groupName;
-    private final ConcurrentMap<String/* Topic */, SubscriptionData> subscriptionTable =
-            new ConcurrentHashMap<String, SubscriptionData>();
-    private final ConcurrentMap<Channel, ClientChannelInfo> channelInfoTable =
-            new ConcurrentHashMap<Channel, ClientChannelInfo>(16);
+    private final ConcurrentMap<String/* Topic */, SubscriptionData> subscriptionTable = new ConcurrentHashMap<String, SubscriptionData>();
+    private final ConcurrentMap<Channel, ClientChannelInfo> channelInfoTable = new ConcurrentHashMap<Channel, ClientChannelInfo>(16);
     private volatile ConsumeType consumeType;
     private volatile MessageModel messageModel;
     private volatile ConsumeFromWhere consumeFromWhere;
     private volatile long lastUpdateTimestamp = System.currentTimeMillis();
 
-    public ConsumerGroupInfo(String groupName, ConsumeType consumeType, MessageModel messageModel,
-                             ConsumeFromWhere consumeFromWhere) {
+    public ConsumerGroupInfo(String groupName, ConsumeType consumeType, MessageModel messageModel, ConsumeFromWhere consumeFromWhere) {
         this.groupName = groupName;
         this.consumeType = consumeType;
         this.messageModel = messageModel;
@@ -89,17 +86,14 @@ public class ConsumerGroupInfo {
     public boolean doChannelCloseEvent(final String remoteAddr, final Channel channel) {
         final ClientChannelInfo info = this.channelInfoTable.remove(channel);
         if (info != null) {
-            log.warn(
-                    "NETTY EVENT: remove not active channel[{}] from ConsumerGroupInfo groupChannelTable, consumer group: {}",
-                    info.toString(), groupName);
+            log.warn("NETTY EVENT: remove not active channel[{}] from ConsumerGroupInfo groupChannelTable, consumer group: {}", info.toString(), groupName);
             return true;
         }
 
         return false;
     }
 
-    public boolean updateChannel(final ClientChannelInfo infoNew, ConsumeType consumeType,
-                                 MessageModel messageModel, ConsumeFromWhere consumeFromWhere) {
+    public boolean updateChannel(final ClientChannelInfo infoNew, ConsumeType consumeType, MessageModel messageModel, ConsumeFromWhere consumeFromWhere) {
         boolean updated = false;
         this.consumeType = consumeType;
         this.messageModel = messageModel;
@@ -109,18 +103,14 @@ public class ConsumerGroupInfo {
         if (null == infoOld) {
             ClientChannelInfo prev = this.channelInfoTable.put(infoNew.getChannel(), infoNew);
             if (null == prev) {
-                log.info("new consumer connected, group: {} {} {} channel: {}", this.groupName, consumeType,
-                        messageModel, infoNew.toString());
+                log.info("new consumer connected, group: {} {} {} channel: {}", this.groupName, consumeType, messageModel, infoNew.toString());
                 updated = true;
             }
 
             infoOld = infoNew;
         } else {
             if (!infoOld.getClientId().equals(infoNew.getClientId())) {
-                log.error("[BUG] consumer channel exist in broker, but clientId not equal. GROUP: {} OLD: {} NEW: {} ",
-                        this.groupName,
-                        infoOld.toString(),
-                        infoNew.toString());
+                log.error("[BUG] consumer channel exist in broker, but clientId not equal. GROUP: {} OLD: {} NEW: {} ", this.groupName, infoOld.toString(), infoNew.toString());
                 this.channelInfoTable.put(infoNew.getChannel(), infoNew);
             }
         }
@@ -140,17 +130,11 @@ public class ConsumerGroupInfo {
                 SubscriptionData prev = this.subscriptionTable.putIfAbsent(sub.getTopic(), sub);
                 if (null == prev) {
                     updated = true;
-                    log.info("subscription changed, add new topic, group: {} {}",
-                            this.groupName,
-                            sub.toString());
+                    log.info("subscription changed, add new topic, group: {} {}", this.groupName, sub.toString());
                 }
             } else if (sub.getSubVersion() > old.getSubVersion()) {
                 if (this.consumeType == ConsumeType.CONSUME_PASSIVELY) {
-                    log.info("subscription changed, group: {} OLD: {} NEW: {}",
-                            this.groupName,
-                            old.toString(),
-                            sub.toString()
-                    );
+                    log.info("subscription changed, group: {} OLD: {} NEW: {}", this.groupName, old.toString(), sub.toString());
                 }
 
                 this.subscriptionTable.put(sub.getTopic(), sub);
@@ -171,11 +155,7 @@ public class ConsumerGroupInfo {
             }
 
             if (!exist) {
-                log.warn("subscription changed, group: {} remove topic {} {}",
-                        this.groupName,
-                        oldTopic,
-                        next.getValue().toString()
-                );
+                log.warn("subscription changed, group: {} remove topic {} {}", this.groupName, oldTopic, next.getValue().toString());
 
                 it.remove();
                 updated = true;

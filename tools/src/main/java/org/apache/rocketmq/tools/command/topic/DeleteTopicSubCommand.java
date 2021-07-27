@@ -18,10 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DeleteTopicSubCommand implements SubCommand {
-    public static void deleteTopic(final DefaultMQAdminExt adminExt,
-                                   final String clusterName,
-                                   final String topic
-    ) throws InterruptedException, MQBrokerException, RemotingException, MQClientException {
+    public static void deleteTopic(final DefaultMQAdminExt adminExt, final String clusterName, final String topic) throws InterruptedException, MQBrokerException, RemotingException, MQClientException {
 
         Set<String> brokerAddressSet = CommandUtil.fetchMasterAndSlaveAddrByClusterName(adminExt, clusterName);
         adminExt.deleteTopicInBroker(brokerAddressSet, topic);

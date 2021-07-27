@@ -30,8 +30,7 @@ public class GetNamesrvConfigCommand implements SubCommand {
     }
 
     @Override
-    public void execute(final CommandLine commandLine, final Options options,
-                        final RPCHook rpcHook) throws SubCommandException {
+    public void execute(final CommandLine commandLine, final Options options, final RPCHook rpcHook) throws SubCommandException {
         DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
         defaultMQAdminExt.setInstanceName(Long.toString(System.currentTimeMillis()));
         try {
@@ -51,8 +50,7 @@ public class GetNamesrvConfigCommand implements SubCommand {
             Map<String, Properties> nameServerConfigs = defaultMQAdminExt.getNameServerConfig(serverList);
 
             for (String server : nameServerConfigs.keySet()) {
-                System.out.printf("============%s============\n",
-                        server);
+                System.out.printf("============%s============\n", server);
                 for (Object key : nameServerConfigs.get(server).keySet()) {
                     System.out.printf("%-50s=  %s\n", key, nameServerConfigs.get(server).get(key));
                 }

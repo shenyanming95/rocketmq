@@ -27,30 +27,23 @@ import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MonitorService {
     private final InternalLogger log = ClientLogger.getLog();
-    private final ScheduledExecutorService scheduledExecutorService = Executors
-            .newSingleThreadScheduledExecutor(new ThreadFactoryImpl("MonitorService"));
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("MonitorService"));
 
     private final MonitorConfig monitorConfig;
 
     private final MonitorListener monitorListener;
 
     private final DefaultMQAdminExt defaultMQAdminExt;
-    private final DefaultMQPullConsumer defaultMQPullConsumer = new DefaultMQPullConsumer(
-            MixAll.TOOLS_CONSUMER_GROUP);
-    private final DefaultMQPushConsumer defaultMQPushConsumer = new DefaultMQPushConsumer(
-            MixAll.MONITOR_CONSUMER_GROUP);
+    private final DefaultMQPullConsumer defaultMQPullConsumer = new DefaultMQPullConsumer(MixAll.TOOLS_CONSUMER_GROUP);
+    private final DefaultMQPushConsumer defaultMQPushConsumer = new DefaultMQPushConsumer(MixAll.MONITOR_CONSUMER_GROUP);
 
     public MonitorService(MonitorConfig monitorConfig, MonitorListener monitorListener, RPCHook rpcHook) {
         this.monitorConfig = monitorConfig;
@@ -72,11 +65,9 @@ public class MonitorService {
             this.defaultMQPushConsumer.registerMessageListener(new MessageListenerConcurrently() {
 
                 @Override
-                public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs,
-                                                                ConsumeConcurrentlyContext context) {
+                public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                     try {
-                        OffsetMovedEvent ome =
-                                OffsetMovedEvent.decode(msgs.get(0).getBody(), OffsetMovedEvent.class);
+                        OffsetMovedEvent ome = OffsetMovedEvent.decode(msgs.get(0).getBody(), OffsetMovedEvent.class);
 
                         DeleteMsgsEvent deleteMsgsEvent = new DeleteMsgsEvent();
                         deleteMsgsEvent.setOffsetMovedEvent(ome);
@@ -98,8 +89,7 @@ public class MonitorService {
     }
 
     public static void main0(String[] args, RPCHook rpcHook) throws MQClientException {
-        final MonitorService monitorService =
-                new MonitorService(new MonitorConfig(), new DefaultMonitorListener(), rpcHook);
+        final MonitorService monitorService = new MonitorService(new MonitorConfig(), new DefaultMonitorListener(), rpcHook);
         monitorService.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -118,8 +108,7 @@ public class MonitorService {
     }
 
     private String instanceName() {
-        String name =
-                System.currentTimeMillis() + new Random().nextInt() + this.monitorConfig.getNamesrvAddr();
+        String name = System.currentTimeMillis() + new Random().nextInt() + this.monitorConfig.getNamesrvAddr();
 
         return "MonitorService_" + name.hashCode();
     }
@@ -226,8 +215,7 @@ public class MonitorService {
         }
     }
 
-    public void reportConsumerRunningInfo(final String consumerGroup) throws InterruptedException,
-            MQBrokerException, RemotingException, MQClientException {
+    public void reportConsumerRunningInfo(final String consumerGroup) throws InterruptedException, MQBrokerException, RemotingException, MQClientException {
         ConsumerConnection cc = defaultMQAdminExt.examineConsumerConnectionInfo(consumerGroup);
         TreeMap<String, ConsumerRunningInfo> infoMap = new TreeMap<String, ConsumerRunningInfo>();
         for (Connection c : cc.getConnectionSet()) {
@@ -238,8 +226,7 @@ public class MonitorService {
             }
 
             try {
-                ConsumerRunningInfo info =
-                        defaultMQAdminExt.getConsumerRunningInfo(consumerGroup, clientId, false);
+                ConsumerRunningInfo info = defaultMQAdminExt.getConsumerRunningInfo(consumerGroup, clientId, false);
                 infoMap.put(clientId, info);
             } catch (Exception e) {
             }
@@ -277,8 +264,7 @@ public class MonitorService {
                         PullResult pull = this.defaultMQPullConsumer.pull(mq, "*", maxOffset - 1, 1);
                         switch (pull.getPullStatus()) {
                             case FOUND:
-                                long delay =
-                                        pull.getMsgFoundList().get(0).getStoreTimestamp() - ow.getLastTimestamp();
+                                long delay = pull.getMsgFoundList().get(0).getStoreTimestamp() - ow.getLastTimestamp();
                                 if (delay > delayMax) {
                                     delayMax = delay;
                                 }

@@ -15,11 +15,7 @@ import org.apache.rocketmq.tools.command.SubCommand;
 import org.apache.rocketmq.tools.command.SubCommandException;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class PrintMessageByQueueCommand implements SubCommand {
@@ -36,10 +32,8 @@ public class PrintMessageByQueueCommand implements SubCommand {
         return timestamp;
     }
 
-    private static void calculateByTag(final List<MessageExt> msgs, final Map<String, AtomicLong> tagCalmap,
-                                       final boolean calByTag) {
-        if (!calByTag)
-            return;
+    private static void calculateByTag(final List<MessageExt> msgs, final Map<String, AtomicLong> tagCalmap, final boolean calByTag) {
+        if (!calByTag) return;
 
         for (MessageExt msg : msgs) {
             String tag = msg.getTags();
@@ -55,8 +49,7 @@ public class PrintMessageByQueueCommand implements SubCommand {
     }
 
     private static void printCalculateByTag(final Map<String, AtomicLong> tagCalmap, final boolean calByTag) {
-        if (!calByTag)
-            return;
+        if (!calByTag) return;
 
         List<TagCountBean> list = new ArrayList<TagCountBean>();
         for (Map.Entry<String, AtomicLong> entry : tagCalmap.entrySet()) {
@@ -70,15 +63,12 @@ public class PrintMessageByQueueCommand implements SubCommand {
         }
     }
 
-    public static void printMessage(final List<MessageExt> msgs, final String charsetName, boolean printMsg,
-                                    boolean printBody) {
-        if (!printMsg)
-            return;
+    public static void printMessage(final List<MessageExt> msgs, final String charsetName, boolean printMsg, boolean printBody) {
+        if (!printMsg) return;
 
         for (MessageExt msg : msgs) {
             try {
-                System.out.printf("MSGID: %s %s BODY: %s%n", msg.getMsgId(), msg.toString(),
-                        printBody ? new String(msg.getBody(), charsetName) : "NOT PRINT BODY");
+                System.out.printf("MSGID: %s %s BODY: %s%n", msg.getMsgId(), msg.toString(), printBody ? new String(msg.getBody(), charsetName) : "NOT PRINT BODY");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -145,16 +135,11 @@ public class PrintMessageByQueueCommand implements SubCommand {
         DefaultMQPullConsumer consumer = new DefaultMQPullConsumer(MixAll.TOOLS_CONSUMER_GROUP, rpcHook);
 
         try {
-            String charsetName =
-                    !commandLine.hasOption('c') ? "UTF-8" : commandLine.getOptionValue('c').trim();
-            boolean printMsg =
-                    commandLine.hasOption('p') && Boolean.parseBoolean(commandLine.getOptionValue('p').trim());
-            boolean printBody =
-                    commandLine.hasOption('d') && Boolean.parseBoolean(commandLine.getOptionValue('d').trim());
-            boolean calByTag =
-                    commandLine.hasOption('f') && Boolean.parseBoolean(commandLine.getOptionValue('f').trim());
-            String subExpression =
-                    !commandLine.hasOption('s') ? "*" : commandLine.getOptionValue('s').trim();
+            String charsetName = !commandLine.hasOption('c') ? "UTF-8" : commandLine.getOptionValue('c').trim();
+            boolean printMsg = commandLine.hasOption('p') && Boolean.parseBoolean(commandLine.getOptionValue('p').trim());
+            boolean printBody = commandLine.hasOption('d') && Boolean.parseBoolean(commandLine.getOptionValue('d').trim());
+            boolean calByTag = commandLine.hasOption('f') && Boolean.parseBoolean(commandLine.getOptionValue('f').trim());
+            String subExpression = !commandLine.hasOption('s') ? "*" : commandLine.getOptionValue('s').trim();
 
             String topic = commandLine.getOptionValue('t').trim();
             String brokerName = commandLine.getOptionValue('a').trim();

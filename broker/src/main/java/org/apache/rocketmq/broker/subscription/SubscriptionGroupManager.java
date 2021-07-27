@@ -19,8 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 public class SubscriptionGroupManager extends ConfigManager {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
 
-    private final ConcurrentMap<String, SubscriptionGroupConfig> subscriptionGroupTable =
-            new ConcurrentHashMap<String, SubscriptionGroupConfig>(1024);
+    private final ConcurrentMap<String, SubscriptionGroupConfig> subscriptionGroupTable = new ConcurrentHashMap<String, SubscriptionGroupConfig>(1024);
     private final DataVersion dataVersion = new DataVersion();
     private transient BrokerController brokerController;
 
@@ -127,8 +126,7 @@ public class SubscriptionGroupManager extends ConfigManager {
 
     @Override
     public String configFilePath() {
-        return BrokerPathConfigHelper.getSubscriptionGroupPath(this.brokerController.getMessageStoreConfig()
-                .getStorePathRootDir());
+        return BrokerPathConfigHelper.getSubscriptionGroupPath(this.brokerController.getMessageStoreConfig().getStorePathRootDir());
     }
 
     @Override

@@ -23,9 +23,7 @@ public class RebalanceLitePullImpl extends RebalanceImpl {
         this(null, null, null, null, litePullConsumerImpl);
     }
 
-    public RebalanceLitePullImpl(String consumerGroup, MessageModel messageModel,
-                                 AllocateMessageQueueStrategy allocateMessageQueueStrategy,
-                                 MQClientInstance mQClientFactory, DefaultLitePullConsumerImpl litePullConsumerImpl) {
+    public RebalanceLitePullImpl(String consumerGroup, MessageModel messageModel, AllocateMessageQueueStrategy allocateMessageQueueStrategy, MQClientInstance mQClientFactory, DefaultLitePullConsumerImpl litePullConsumerImpl) {
         super(consumerGroup, messageModel, allocateMessageQueueStrategy, mQClientFactory);
         this.litePullConsumerImpl = litePullConsumerImpl;
     }
@@ -107,8 +105,7 @@ public class RebalanceLitePullImpl extends RebalanceImpl {
                         }
                     } else {
                         try {
-                            long timestamp = UtilAll.parseDate(this.litePullConsumerImpl.getDefaultLitePullConsumer().getConsumeTimestamp(),
-                                    UtilAll.YYYYMMDDHHMMSS).getTime();
+                            long timestamp = UtilAll.parseDate(this.litePullConsumerImpl.getDefaultLitePullConsumer().getConsumeTimestamp(), UtilAll.YYYYMMDDHHMMSS).getTime();
                             result = this.mQClientFactory.getMQAdminImpl().searchOffset(mq, timestamp);
                         } catch (MQClientException e) {
                             result = -1;

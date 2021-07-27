@@ -22,8 +22,7 @@ public class PullConsumerWithNamespace {
             SINGLE_MQ:
             while (true) {
                 try {
-                    PullResult pullResult =
-                            pullConsumer.pullBlockIfNotFound(mq, null, getMessageQueueOffset(mq), 32);
+                    PullResult pullResult = pullConsumer.pullBlockIfNotFound(mq, null, getMessageQueueOffset(mq), 32);
                     System.out.printf("%s%n", pullResult);
 
                     putMessageQueueOffset(mq, pullResult.getNextBeginOffset());
@@ -62,8 +61,7 @@ public class PullConsumerWithNamespace {
         if (null == pullResult || pullResult.getMsgFoundList().isEmpty()) {
             return;
         }
-        pullResult.getMsgFoundList().stream().forEach(
-                (msg) -> System.out.printf("Topic is:%s, msgId is:%s%n", msg.getTopic(), msg.getMsgId()));
+        pullResult.getMsgFoundList().stream().forEach((msg) -> System.out.printf("Topic is:%s, msgId is:%s%n", msg.getTopic(), msg.getMsgId()));
     }
 
     private static void putMessageQueueOffset(MessageQueue mq, long offset) {

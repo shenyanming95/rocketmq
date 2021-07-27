@@ -10,11 +10,7 @@ import org.apache.rocketmq.store.config.BrokerRole;
 import java.io.File;
 import java.io.IOException;
 import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Create MappedFile in advance
@@ -22,10 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class AllocateMappedFileService extends ServiceThread {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
     private static int waitTimeOut = 1000 * 5;
-    private ConcurrentMap<String, AllocateRequest> requestTable =
-            new ConcurrentHashMap<String, AllocateRequest>();
-    private PriorityBlockingQueue<AllocateRequest> requestQueue =
-            new PriorityBlockingQueue<AllocateRequest>();
+    private ConcurrentMap<String, AllocateRequest> requestTable = new ConcurrentHashMap<String, AllocateRequest>();
+    private PriorityBlockingQueue<AllocateRequest> requestQueue = new PriorityBlockingQueue<AllocateRequest>();
     private volatile boolean hasException = false;
     private DefaultMessageStore messageStore;
 
@@ -36,8 +30,7 @@ public class AllocateMappedFileService extends ServiceThread {
     public MappedFile putRequestAndReturnMappedFile(String nextFilePath, String nextNextFilePath, int fileSize) {
         int canSubmitRequests = 2;
         if (this.messageStore.getMessageStoreConfig().isTransientStorePoolEnable()) {
-            if (this.messageStore.getMessageStoreConfig().isFastFailIfNoBufferInStorePool()
-                    && BrokerRole.SLAVE != this.messageStore.getMessageStoreConfig().getBrokerRole()) { //if broker is slave, don't fast fail even no buffer in pool
+            if (this.messageStore.getMessageStoreConfig().isFastFailIfNoBufferInStorePool() && BrokerRole.SLAVE != this.messageStore.getMessageStoreConfig().getBrokerRole()) { //if broker is slave, don't fast fail even no buffer in pool
                 canSubmitRequests = this.messageStore.getTransientStorePool().availableBufferNums() - this.requestQueue.size();
             }
         }
@@ -47,8 +40,7 @@ public class AllocateMappedFileService extends ServiceThread {
 
         if (nextPutOK) {
             if (canSubmitRequests <= 0) {
-                log.warn("[NOTIFYME]TransientStorePool is not enough, so create mapped file error, " +
-                        "RequestQueueSize : {}, StorePoolSize: {}", this.requestQueue.size(), this.messageStore.getTransientStorePool().availableBufferNums());
+                log.warn("[NOTIFYME]TransientStorePool is not enough, so create mapped file error, " + "RequestQueueSize : {}, StorePoolSize: {}", this.requestQueue.size(), this.messageStore.getTransientStorePool().availableBufferNums());
                 this.requestTable.remove(nextFilePath);
                 return null;
             }
@@ -63,8 +55,7 @@ public class AllocateMappedFileService extends ServiceThread {
         boolean nextNextPutOK = this.requestTable.putIfAbsent(nextNextFilePath, nextNextReq) == null;
         if (nextNextPutOK) {
             if (canSubmitRequests <= 0) {
-                log.warn("[NOTIFYME]TransientStorePool is not enough, so skip preallocate mapped file, " +
-                        "RequestQueueSize : {}, StorePoolSize: {}", this.requestQueue.size(), this.messageStore.getTransientStorePool().availableBufferNums());
+                log.warn("[NOTIFYME]TransientStorePool is not enough, so skip preallocate mapped file, " + "RequestQueueSize : {}, StorePoolSize: {}", this.requestQueue.size(), this.messageStore.getTransientStorePool().availableBufferNums());
                 this.requestTable.remove(nextNextFilePath);
             } else {
                 boolean offerOK = this.requestQueue.offer(nextNextReq);
@@ -135,13 +126,11 @@ public class AllocateMappedFileService extends ServiceThread {
             req = this.requestQueue.take();
             AllocateRequest expectedRequest = this.requestTable.get(req.getFilePath());
             if (null == expectedRequest) {
-                log.warn("this mmap request expired, maybe cause timeout " + req.getFilePath() + " "
-                        + req.getFileSize());
+                log.warn("this mmap request expired, maybe cause timeout " + req.getFilePath() + " " + req.getFileSize());
                 return true;
             }
             if (expectedRequest != req) {
-                log.warn("never expected here,  maybe cause timeout " + req.getFilePath() + " "
-                        + req.getFileSize() + ", req:" + req + ", expectedRequest:" + expectedRequest);
+                log.warn("never expected here,  maybe cause timeout " + req.getFilePath() + " " + req.getFileSize() + ", req:" + req + ", expectedRequest:" + expectedRequest);
                 return true;
             }
 
@@ -164,17 +153,12 @@ public class AllocateMappedFileService extends ServiceThread {
                 long elapsedTime = UtilAll.computeElapsedTimeMilliseconds(beginTime);
                 if (elapsedTime > 10) {
                     int queueSize = this.requestQueue.size();
-                    log.warn("create mappedFile spent time(ms) " + elapsedTime + " queue size " + queueSize
-                            + " " + req.getFilePath() + " " + req.getFileSize());
+                    log.warn("create mappedFile spent time(ms) " + elapsedTime + " queue size " + queueSize + " " + req.getFilePath() + " " + req.getFileSize());
                 }
 
                 // pre write mappedFile
-                if (mappedFile.getFileSize() >= this.messageStore.getMessageStoreConfig()
-                        .getMappedFileSizeCommitLog()
-                        &&
-                        this.messageStore.getMessageStoreConfig().isWarmMapedFileEnable()) {
-                    mappedFile.warmMappedFile(this.messageStore.getMessageStoreConfig().getFlushDiskType(),
-                            this.messageStore.getMessageStoreConfig().getFlushLeastPagesWhenWarmMapedFile());
+                if (mappedFile.getFileSize() >= this.messageStore.getMessageStoreConfig().getMappedFileSizeCommitLog() && this.messageStore.getMessageStoreConfig().isWarmMapedFileEnable()) {
+                    mappedFile.warmMappedFile(this.messageStore.getMessageStoreConfig().getFlushDiskType(), this.messageStore.getMessageStoreConfig().getFlushLeastPagesWhenWarmMapedFile());
                 }
 
                 req.setMappedFile(mappedFile);
@@ -196,8 +180,7 @@ public class AllocateMappedFileService extends ServiceThread {
                 }
             }
         } finally {
-            if (req != null && isSuccess)
-                req.getCountDownLatch().countDown();
+            if (req != null && isSuccess) req.getCountDownLatch().countDown();
         }
         return true;
     }
@@ -247,8 +230,7 @@ public class AllocateMappedFileService extends ServiceThread {
         }
 
         public int compareTo(AllocateRequest other) {
-            if (this.fileSize < other.fileSize)
-                return 1;
+            if (this.fileSize < other.fileSize) return 1;
             else if (this.fileSize > other.fileSize) {
                 return -1;
             } else {
@@ -279,20 +261,14 @@ public class AllocateMappedFileService extends ServiceThread {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             AllocateRequest other = (AllocateRequest) obj;
             if (filePath == null) {
-                if (other.filePath != null)
-                    return false;
-            } else if (!filePath.equals(other.filePath))
-                return false;
-            if (fileSize != other.fileSize)
-                return false;
+                if (other.filePath != null) return false;
+            } else if (!filePath.equals(other.filePath)) return false;
+            if (fileSize != other.fileSize) return false;
             return true;
         }
     }

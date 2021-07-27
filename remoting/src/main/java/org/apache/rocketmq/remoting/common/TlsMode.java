@@ -10,9 +10,7 @@ package org.apache.rocketmq.remoting.common;
  */
 public enum TlsMode {
 
-    DISABLED("disabled"),
-    PERMISSIVE("permissive"),
-    ENFORCING("enforcing");
+    DISABLED("disabled"), PERMISSIVE("permissive"), ENFORCING("enforcing");
 
     private String name;
 
