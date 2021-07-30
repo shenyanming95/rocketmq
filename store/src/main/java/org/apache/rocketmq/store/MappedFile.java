@@ -26,32 +26,71 @@ import java.security.PrivilegedAction;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * 每一个{@link MappedFile}都会映射一个【/commitlog/*】下面的每一个文件
+ */
 public class MappedFile extends ReferenceResource {
+    /**
+     * 操作系统 page cache 的大小
+     */
     public static final int OS_PAGE_SIZE = 1024 * 4;
     protected static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
 
+    /**
+     * rocketMQ 会将每一个 commit log 文件都映射成 MappedByteBuffer,
+     * 所以这个静态变量就是来统计总的映射文件的字节数.
+     */
     private static final AtomicLong TOTAL_MAPPED_VIRTUAL_MEMORY = new AtomicLong(0);
 
+    /**
+     * 同上一个参数一样, 这个参数来统计总映射的文件的数量.
+     */
     private static final AtomicInteger TOTAL_MAPPED_FILES = new AtomicInteger(0);
+
     protected final AtomicInteger wrotePosition = new AtomicInteger(0);
     protected final AtomicInteger committedPosition = new AtomicInteger(0);
     private final AtomicInteger flushedPosition = new AtomicInteger(0);
+
+    /**
+     * commit log 文件大小, 每个文件默认1G
+     */
     protected int fileSize;
+
+    /**
+     * commit log 文件名称(确切地说应该是文件路径), 文件名长度为20位, 左边补0. 比如：
+     * 00000000000000000000代表了第一个文件, 起始偏移量为0, 文件大小为1G=1073741824;
+     * 当第一个文件写满了, 第二个文件名为00000000001073741824, 起始偏移量为1073741824.
+     */
+    private String fileName;
+
+    /**
+     * commit log 文件句柄, 即 file = new File(fileName)
+     */
+    private File file;
+
+    /**
+     * rocketMQ 会把 commit log 文件使用虚拟内存的方式直接映射到用户空间上.
+     * 这样子, 对 commit log 的操作, 读写性能极高.
+     */
+    private MappedByteBuffer mappedByteBuffer;
+
+    /**
+     * commit log 文件对应的 nio 文件通道
+     */
     protected FileChannel fileChannel;
+
     /**
      * Message will put to here first, and then reput to FileChannel if writeBuffer is not null.
      */
     protected ByteBuffer writeBuffer = null;
     protected TransientStorePool transientStorePool = null;
-    private String fileName;
+
+
     private long fileFromOffset;
-    private File file;
-    private MappedByteBuffer mappedByteBuffer;
+
     private volatile long storeTimestamp = 0;
     private boolean firstCreateInQueue = false;
 
-    public MappedFile() {
-    }
 
     public MappedFile(final String fileName, final int fileSize) throws IOException {
         init(fileName, fileSize);
@@ -121,6 +160,7 @@ public class MappedFile extends ReferenceResource {
         return TOTAL_MAPPED_VIRTUAL_MEMORY.get();
     }
 
+
     public void init(final String fileName, final int fileSize, final TransientStorePool transientStorePool) throws IOException {
         init(fileName, fileSize);
         this.writeBuffer = transientStorePool.borrowBuffer();
@@ -130,17 +170,25 @@ public class MappedFile extends ReferenceResource {
     private void init(final String fileName, final int fileSize) throws IOException {
         this.fileName = fileName;
         this.fileSize = fileSize;
+        // fileName其实是filePath, 所以可以直接拿来创建一个file句柄
         this.file = new File(fileName);
+        // 前面讲过, commit log的文件命名是很有规律的, 它的文件名就是起始偏移量
         this.fileFromOffset = Long.parseLong(this.file.getName());
         boolean ok = false;
-
+        // 保证该 commit log 文件的父目录存在(若不存在, 这个方法会创建它)
         ensureDirOK(this.file.getParent());
 
         try {
+            // 获取该 commit log 文件对应的 nio 通道.
             this.fileChannel = new RandomAccessFile(this.file, "rw").getChannel();
+            // 内存映射, 直接将文件映射到用户空间中.
+            // 其中参数 0 表示起始映射偏移量, fileSize(默认1G, 即1073741824) 表示总的要映射的空间
             this.mappedByteBuffer = this.fileChannel.map(MapMode.READ_WRITE, 0, fileSize);
+
+            // 一个用来记录总的映射字节数, 另一个用来记录总的映射文件数
             TOTAL_MAPPED_VIRTUAL_MEMORY.addAndGet(fileSize);
             TOTAL_MAPPED_FILES.incrementAndGet();
+            // ok 置为true, 表示映射成功, 到这里表示 MapperFile 创建并初始化成功
             ok = true;
         } catch (FileNotFoundException e) {
             log.error("Failed to create file " + this.fileName, e);
@@ -534,11 +582,6 @@ public class MappedFile extends ReferenceResource {
         Pointer pointer = new Pointer(address);
         int ret = LibC.INSTANCE.munlock(pointer, new NativeLong(this.fileSize));
         log.info("munlock {} {} {} ret = {} time consuming = {}", address, this.fileName, this.fileSize, ret, System.currentTimeMillis() - beginTime);
-    }
-
-    //testable
-    File getFile() {
-        return this.file;
     }
 
     @Override
