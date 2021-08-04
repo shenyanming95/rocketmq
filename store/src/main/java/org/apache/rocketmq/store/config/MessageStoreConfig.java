@@ -26,10 +26,13 @@ public class MessageStoreConfig {
 
     // ConsumeQueue file size,default is 30W
     private int mappedFileSizeConsumeQueue = 300000 * ConsumeQueue.CQ_STORE_UNIT_SIZE;
+
     // enable consume queue ext
     private boolean enableConsumeQueueExt = false;
+
     // ConsumeQueue extend file size, 48M
     private int mappedFileSizeConsumeQueueExt = 48 * 1024 * 1024;
+
     // Bit count of filter bit map.
     // this will be set by pipe of calculate filter bit map.
     private int bitMapLengthConsumeQueueExt = 64;
@@ -53,37 +56,50 @@ public class MessageStoreConfig {
     // Whether schedule flush,default is real-time
     @ImportantField
     private boolean flushCommitLogTimed = false;
+
     // ConsumeQueue flush interval
     private int flushIntervalConsumeQueue = 1000;
+
     // Resource reclaim interval
     private int cleanResourceInterval = 10000;
+
     // CommitLog removal interval
     private int deleteCommitLogFilesInterval = 100;
+
     // ConsumeQueue removal interval
     private int deleteConsumeQueueFilesInterval = 100;
     private int destroyMapedFileIntervalForcibly = 1000 * 120;
     private int redeleteHangedFileInterval = 1000 * 120;
+
     // When to delete,default is at 4 am
     @ImportantField
     private String deleteWhen = "04";
     private int diskMaxUsedSpaceRatio = 75;
+
     // The number of hours to keep a log file before deleting it (in hours)
     @ImportantField
     private int fileReservedTime = 72;
+
     // Flow control for ConsumeQueue
     private int putMsgIndexHightWater = 600000;
+
     // The maximum size of message,default is 4M
     private int maxMessageSize = 1024 * 1024 * 4;
+
     // Whether check the CRC32 of the records consumed.
     // This ensures no on-the-wire or on-disk corruption to the messages occurred.
     // This check adds some overhead,so it may be disabled in cases seeking extreme performance.
     private boolean checkCRCOnRecover = true;
+
     // How many pages are to be flushed when flush CommitLog
     private int flushCommitLogLeastPages = 4;
+
     // How many pages are to be committed when commit data to file
     private int commitCommitLogLeastPages = 4;
+
     // Flush page size when the disk in warming state
     private int flushLeastPagesWhenWarmMapedFile = 1024 / 4 * 16;
+
     // How many pages are to be flushed when flush ConsumeQueue
     private int flushConsumeQueueLeastPages = 2;
     private int flushCommitLogThoroughInterval = 1000 * 10;

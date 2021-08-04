@@ -108,12 +108,24 @@ public class MappedFile extends ReferenceResource {
      */
     private boolean firstCreateInQueue = false;
 
-    /*
-     * TODO 待定
+    /**
+     * 当前文件可写的起始位置
      */
     protected final AtomicInteger wrotePosition = new AtomicInteger(0);
+
+    /**
+     * 当前文件已提交的最终位置(还未刷盘)
+     */
     protected final AtomicInteger committedPosition = new AtomicInteger(0);
+
+    /**
+     * 当前文件已刷盘的最终位置
+     */
     private final AtomicInteger flushedPosition = new AtomicInteger(0);
+
+    /*
+     * Constructor
+     */
 
     /**
      * 创建一个内存映射文件
@@ -138,63 +150,6 @@ public class MappedFile extends ReferenceResource {
         init(fileName, fileSize, transientStorePool);
     }
 
-    /**
-     * 确保指定文件路径是一个目录
-     *
-     * @param dirName 文件路径
-     */
-    public static void ensureDirOK(final String dirName) {
-        if (dirName != null) {
-            File f = new File(dirName);
-            if (!f.exists()) {
-                boolean result = f.mkdirs();
-                log.info(dirName + " mkdir " + (result ? "OK" : "Failed"));
-            }
-        }
-    }
-
-    public static void clean(final ByteBuffer buffer) {
-        if (buffer == null || !buffer.isDirect() || buffer.capacity() == 0) return;
-        invoke(invoke(viewed(buffer), "cleaner"), "clean");
-    }
-
-    private static Object invoke(final Object target, final String methodName, final Class<?>... args) {
-        return AccessController.doPrivileged(new PrivilegedAction<Object>() {
-            public Object run() {
-                try {
-                    Method method = method(target, methodName, args);
-                    method.setAccessible(true);
-                    return method.invoke(target);
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-        });
-    }
-
-    private static Method method(Object target, String methodName, Class<?>[] args) throws NoSuchMethodException {
-        try {
-            return target.getClass().getMethod(methodName, args);
-        } catch (NoSuchMethodException e) {
-            return target.getClass().getDeclaredMethod(methodName, args);
-        }
-    }
-
-    private static ByteBuffer viewed(ByteBuffer buffer) {
-        String methodName = "viewedBuffer";
-        Method[] methods = buffer.getClass().getMethods();
-        for (int i = 0; i < methods.length; i++) {
-            if (methods[i].getName().equals("attachment")) {
-                methodName = "attachment";
-                break;
-            }
-        }
-
-        ByteBuffer viewedBuffer = (ByteBuffer) invoke(buffer, methodName);
-        if (viewedBuffer == null) return buffer;
-        else return viewed(viewedBuffer);
-    }
-
     public static int getTotalMappedFiles() {
         return TOTAL_MAPPED_FILES.get();
     }
@@ -203,6 +158,100 @@ public class MappedFile extends ReferenceResource {
         return TOTAL_MAPPED_VIRTUAL_MEMORY.get();
     }
 
+    /**
+     * 保证该路径表示一个文件目录
+     *
+     * @param dirName 路径
+     */
+    public static void ensureDirOK(final String dirName) {
+        if (dirName != null) {
+            File f = new File(dirName);
+            // 不存在时创建目录
+            if (!f.exists()) {
+                boolean result = f.mkdirs();
+                log.info(dirName + " mkdir " + (result ? "OK" : "Failed"));
+            }
+        }
+    }
+
+    /**
+     * 释放资源
+     *
+     * @param buffer nio缓冲区
+     */
+    public static void clean(final ByteBuffer buffer) {
+        if (buffer == null || !buffer.isDirect() || buffer.capacity() == 0) {
+            return;
+        }
+        ByteBuffer viewed = viewed(buffer);
+        Object invoke = invoke(viewed, "cleaner");
+        invoke(invoke, "clean");
+    }
+
+
+    private static ByteBuffer viewed(ByteBuffer buffer) {
+        String methodName = "viewedBuffer";
+        Method[] methods = buffer.getClass().getMethods();
+
+        // 遍历 ByteBuffer 中的每个方法, 取到第一个方法名带有"attachment"的方法.
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getName().equals("attachment")) {
+                methodName = "attachment";
+                break;
+            }
+        }
+
+        // 代码走到这边, 两种情况：要么等于“viewedBuffer”, 要么等于“attachment”.
+        // 所以这边会执行 viewedBuffer()方法, 或者 attachment().
+        ByteBuffer viewedBuffer = (ByteBuffer) invoke(buffer, methodName);
+
+        // 递归获取
+        return viewedBuffer == null ? buffer : viewed(viewedBuffer);
+    }
+
+    /**
+     * 找到指定方法名的方法, 并回调它
+     *
+     * @param target     对象实体
+     * @param methodName 方法名
+     * @param args       方法参数
+     * @return 方法执行结果
+     */
+    private static Object invoke(final Object target, final String methodName, final Class<?>... args) {
+        return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            public Object run() {
+                try {
+                    // 获取指定 methodName 的方法, 设置它的访问级别
+                    Method method = method(target, methodName, args);
+                    method.setAccessible(true);
+                    // 回调方法
+                    return method.invoke(target);
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取 target 指定方法名的方法
+     *
+     * @param target     对象实体
+     * @param methodName 方法名
+     * @param args       参数
+     * @return Method
+     */
+    private static Method method(Object target, String methodName, Class<?>[] args) throws NoSuchMethodException {
+        try {
+            return target.getClass().getMethod(methodName, args);
+        } catch (NoSuchMethodException e) {
+            return target.getClass().getDeclaredMethod(methodName, args);
+        }
+    }
+
+    /*
+     * 成员方法
+     */
 
     public void init(final String fileName, final int fileSize, final TransientStorePool transientStorePool) throws IOException {
         init(fileName, fileSize);
@@ -215,17 +264,17 @@ public class MappedFile extends ReferenceResource {
         this.fileSize = fileSize;
         // fileName其实是filePath, 所以可以直接拿来创建一个file句柄
         this.file = new File(fileName);
-        // 前面讲过, commit log的文件命名是很有规律的, 它的文件名就是起始偏移量
+        // rocketMQ磁盘文件命名是很有规律的, 它的文件名就是起始偏移量
         this.fileFromOffset = Long.parseLong(this.file.getName());
         boolean ok = false;
-        // 保证该 commit log 文件的父目录存在(若不存在, 这个方法会创建它)
+        // 保证该磁盘文件的父目录存在(若不存在, 这个方法会创建它)
         ensureDirOK(this.file.getParent());
 
         try {
-            // 获取该 commit log 文件对应的 nio 通道.
+            // 获取该磁盘文件对应的 nio 通道.
             this.fileChannel = new RandomAccessFile(this.file, "rw").getChannel();
             // 内存映射, 直接将文件映射到用户空间中.
-            // 其中参数 0 表示起始映射偏移量, fileSize(默认1G, 即1073741824) 表示总的要映射的空间
+            // 其中参数 0 表示起始映射偏移量, fileSize表示总的要映射的空间
             this.mappedByteBuffer = this.fileChannel.map(MapMode.READ_WRITE, 0, fileSize);
 
             // 一个用来记录总的映射字节数, 另一个用来记录总的映射文件数
@@ -246,36 +295,86 @@ public class MappedFile extends ReferenceResource {
         }
     }
 
+    /**
+     * 获取底层磁盘文件最后一次更新时间
+     *
+     * @return 时间戳
+     */
     public long getLastModifiedTimestamp() {
         return this.file.lastModified();
     }
 
+    /**
+     * 获取磁盘文件大小
+     *
+     * @return 文件大小, 单位字节
+     */
     public int getFileSize() {
         return fileSize;
     }
 
+    /**
+     * 获取 nio 文件通道
+     *
+     * @return channel
+     */
     public FileChannel getFileChannel() {
         return fileChannel;
     }
 
+    /**
+     * 获取底层磁盘文件的起始偏移量
+     *
+     * @return 偏移量
+     */
+    public long getFileFromOffset() {
+        return this.fileFromOffset;
+    }
+
+    /**
+     * 追加单条消息
+     *
+     * @param msg 单条消息
+     * @param cb  回调方法
+     * @return 结果
+     */
     public AppendMessageResult appendMessage(final MessageExtBrokerInner msg, final AppendMessageCallback cb) {
         return appendMessagesInner(msg, cb);
     }
 
+    /**
+     * 追加批量消息
+     *
+     * @param messageExtBatch 多条消息
+     * @param cb              回调方法
+     * @return 结果
+     */
     public AppendMessageResult appendMessages(final MessageExtBatch messageExtBatch, final AppendMessageCallback cb) {
         return appendMessagesInner(messageExtBatch, cb);
     }
 
+    /**
+     * 存储消息到 commit log中
+     *
+     * @param messageExt 消息
+     * @param cb         回调方法
+     * @return 存储结果
+     */
     public AppendMessageResult appendMessagesInner(final MessageExt messageExt, final AppendMessageCallback cb) {
         assert messageExt != null;
         assert cb != null;
 
+        // 文件可写的最小偏移量
         int currentPos = this.wrotePosition.get();
 
+        // 只有可写偏移量小于文件大小, 消息才可以被追加
         if (currentPos < this.fileSize) {
+            // slice()方法, 用于创建一个新的字节缓冲区, 其内容是给定缓冲区内容的共享子序列
             ByteBuffer byteBuffer = writeBuffer != null ? writeBuffer.slice() : this.mappedByteBuffer.slice();
             byteBuffer.position(currentPos);
+
             AppendMessageResult result;
+            // 强转不同的消息, 最终还是交予 AppendMessageCallback 执行.
             if (messageExt instanceof MessageExtBrokerInner) {
                 result = cb.doAppend(this.getFileFromOffset(), byteBuffer, this.fileSize - currentPos, (MessageExtBrokerInner) messageExt);
             } else if (messageExt instanceof MessageExtBatch) {
@@ -283,7 +382,9 @@ public class MappedFile extends ReferenceResource {
             } else {
                 return new AppendMessageResult(AppendMessageStatus.UNKNOWN_ERROR);
             }
+            // 写入成功后, 更新起始写位置量
             this.wrotePosition.addAndGet(result.getWroteBytes());
+            // 更新储存时间
             this.storeTimestamp = result.getStoreTimestamp();
             return result;
         }
@@ -291,24 +392,27 @@ public class MappedFile extends ReferenceResource {
         return new AppendMessageResult(AppendMessageStatus.UNKNOWN_ERROR);
     }
 
-    public long getFileFromOffset() {
-        return this.fileFromOffset;
-    }
-
+    /**
+     * 写入消息
+     * @param data 消息内容
+     * @return true-写入成功
+     */
     public boolean appendMessage(final byte[] data) {
+        // 当前可以开始写的位置量
         int currentPos = this.wrotePosition.get();
-
+        // 不超过文件大小才可以写入
         if ((currentPos + data.length) <= this.fileSize) {
             try {
+                // fileChannel 为磁盘 commit log 的操作通道, 先设置它的可写位置值, 然后写入
                 this.fileChannel.position(currentPos);
                 this.fileChannel.write(ByteBuffer.wrap(data));
             } catch (Throwable e) {
                 log.error("Error occurred when append message to mappedFile.", e);
             }
+            // 写入成功后, 更新起始写位置量
             this.wrotePosition.addAndGet(data.length);
             return true;
         }
-
         return false;
     }
 
@@ -320,7 +424,6 @@ public class MappedFile extends ReferenceResource {
      */
     public boolean appendMessage(final byte[] data, final int offset, final int length) {
         int currentPos = this.wrotePosition.get();
-
         if ((currentPos + length) <= this.fileSize) {
             try {
                 this.fileChannel.position(currentPos);
@@ -331,7 +434,6 @@ public class MappedFile extends ReferenceResource {
             this.wrotePosition.addAndGet(length);
             return true;
         }
-
         return false;
     }
 
