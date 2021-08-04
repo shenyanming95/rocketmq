@@ -9,18 +9,13 @@ import java.util.List;
 public class GetMessageResult {
 
     private final List<SelectMappedBufferResult> messageMapedList = new ArrayList<SelectMappedBufferResult>(100);
-
     private final List<ByteBuffer> messageBufferList = new ArrayList<ByteBuffer>(100);
-
     private GetMessageStatus status;
     private long nextBeginOffset;
     private long minOffset;
     private long maxOffset;
-
     private int bufferTotalSize = 0;
-
     private boolean suggestPullingFromSlave = false;
-
     private int msgCount4Commercial = 0;
 
     public GetMessageResult() {

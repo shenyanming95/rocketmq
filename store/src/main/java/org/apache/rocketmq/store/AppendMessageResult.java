@@ -4,27 +4,42 @@ package org.apache.rocketmq.store;
  * When write a message to the commit log, returns results
  */
 public class AppendMessageResult {
-    // Return code
+    /**
+     * 执行结果状态
+     */
     private AppendMessageStatus status;
-    // Where to start writing
+
+    /**
+     * 从哪里开始写
+     */
     private long wroteOffset;
-    // Write Bytes
+
+    /**
+     * 写入的字节数
+     */
     private int wroteBytes;
-    // Message ID
+
+    /**
+     * 消息标识
+     */
     private String msgId;
-    // Message storage timestamp
+
+    /**
+     * 消息存储的时间戳
+     */
     private long storeTimestamp;
+
     // Consume queue's offset(step by one)
     private long logicsOffset;
     private long pagecacheRT = 0;
-
     private int msgNum = 1;
 
     public AppendMessageResult(AppendMessageStatus status) {
         this(status, 0, 0, "", 0, 0, 0);
     }
 
-    public AppendMessageResult(AppendMessageStatus status, long wroteOffset, int wroteBytes, String msgId, long storeTimestamp, long logicsOffset, long pagecacheRT) {
+    public AppendMessageResult(AppendMessageStatus status, long wroteOffset, int wroteBytes,
+                               String msgId, long storeTimestamp, long logicsOffset, long pagecacheRT) {
         this.status = status;
         this.wroteOffset = wroteOffset;
         this.wroteBytes = wroteBytes;
@@ -104,6 +119,8 @@ public class AppendMessageResult {
 
     @Override
     public String toString() {
-        return "AppendMessageResult{" + "status=" + status + ", wroteOffset=" + wroteOffset + ", wroteBytes=" + wroteBytes + ", msgId='" + msgId + '\'' + ", storeTimestamp=" + storeTimestamp + ", logicsOffset=" + logicsOffset + ", pagecacheRT=" + pagecacheRT + ", msgNum=" + msgNum + '}';
+        return "AppendMessageResult{" + "status=" + status + ", wroteOffset=" + wroteOffset + ", " +
+                "wroteBytes=" + wroteBytes + ", msgId='" + msgId + '\'' + ", storeTimestamp=" + storeTimestamp +
+                ", logicsOffset=" + logicsOffset + ", pagecacheRT=" + pagecacheRT + ", msgNum=" + msgNum + '}';
     }
 }

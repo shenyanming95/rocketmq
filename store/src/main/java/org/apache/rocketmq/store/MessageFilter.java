@@ -3,6 +3,9 @@ package org.apache.rocketmq.store;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+/**
+ * 当使用消息存储引擎{@link MessageStore}查询到消息时, 使用这个接口来过滤查询到消息
+ */
 public interface MessageFilter {
     /**
      * match by tags code or filter bit map which is calculated when message received

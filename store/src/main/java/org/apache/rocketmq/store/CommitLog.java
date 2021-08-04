@@ -27,6 +27,10 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Store all metadata downtime for recovery, data protection reliability
+ *
+ * commit log 文件名称(确切地说应该是文件路径), 文件名长度为20位, 左边补0. 比如：
+ * 00000000000000000000代表了第一个文件, 起始偏移量为0, 文件大小为1G=1073741824;
+ * 当第一个文件写满了, 第二个文件名为00000000001073741824, 起始偏移量为1073741824.
  */
 public class CommitLog {
     // Message's MAGIC CODE daa320a7
@@ -1167,6 +1171,10 @@ public class CommitLog {
         return diff;
     }
 
+    /*
+     * inner class
+     */
+
     public static class GroupCommitRequest {
         private final long nextOffset;
         private final long startTimestamp = System.currentTimeMillis();
@@ -1572,20 +1580,32 @@ public class CommitLog {
             return msgStoreItemMemory;
         }
 
+        /**
+         * 真正将消息存储到磁盘
+         *
+         * @param fileFromOffset {@link MappedFile}文件的起始地址
+         * @param byteBuffer     缓冲区, 消息写入到缓冲区, 就会将其刷入 OS page cache.
+         * @param maxBlank       最大可写
+         * @param msgInner       消息
+         * @return 存储结果
+         */
         public AppendMessageResult doAppend(final long fileFromOffset, final ByteBuffer byteBuffer, final int maxBlank, final MessageExtBrokerInner msgInner) {
             // STORETIMESTAMP + STOREHOSTADDRESS + OFFSET <br>
 
-            // PHY OFFSET
+            // 文件起始偏移量 + 当前可写偏移量 = 实际物理磁盘文件可写的偏移量
             long wroteOffset = fileFromOffset + byteBuffer.position();
 
             int sysflag = msgInner.getSysFlag();
 
+            // IPV4地址为4个字节, IPV6地址为16个字节, 加上端口4个字节, 所以就是下面这样子：
             int bornHostLength = (sysflag & MessageSysFlag.BORNHOST_V6_FLAG) == 0 ? 4 + 4 : 16 + 4;
             int storeHostLength = (sysflag & MessageSysFlag.STOREHOSTADDRESS_V6_FLAG) == 0 ? 4 + 4 : 16 + 4;
+
             ByteBuffer bornHostHolder = ByteBuffer.allocate(bornHostLength);
             ByteBuffer storeHostHolder = ByteBuffer.allocate(storeHostLength);
-
             this.resetByteBuffer(storeHostHolder, storeHostLength);
+
+            // 生成 message id
             String msgId;
             if ((sysflag & MessageSysFlag.STOREHOSTADDRESS_V6_FLAG) == 0) {
                 msgId = MessageDecoder.createMessageId(this.msgIdMemory, msgInner.getStoreHostBytes(storeHostHolder), wroteOffset);
@@ -1593,7 +1613,7 @@ public class CommitLog {
                 msgId = MessageDecoder.createMessageId(this.msgIdV6Memory, msgInner.getStoreHostBytes(storeHostHolder), wroteOffset);
             }
 
-            // Record ConsumeQueue information
+            // 生成 consumerQueue的 标识, 然后获取它可写的队列偏移量
             keyBuilder.setLength(0);
             keyBuilder.append(msgInner.getTopic());
             keyBuilder.append('-');
@@ -1620,32 +1640,35 @@ public class CommitLog {
                     break;
             }
 
-            /**
-             * Serialize message
+            /*
+             * 开始序列化消息体
              */
+
+            // 消息额外的配置
             final byte[] propertiesData = msgInner.getPropertiesString() == null ? null : msgInner.getPropertiesString().getBytes(MessageDecoder.CHARSET_UTF8);
-
             final int propertiesLength = propertiesData == null ? 0 : propertiesData.length;
-
             if (propertiesLength > Short.MAX_VALUE) {
                 log.warn("putMessage message properties length too long. length={}", propertiesData.length);
                 return new AppendMessageResult(AppendMessageStatus.PROPERTIES_SIZE_EXCEEDED);
             }
 
+            // 消息主题
             final byte[] topicData = msgInner.getTopic().getBytes(MessageDecoder.CHARSET_UTF8);
             final int topicLength = topicData.length;
 
+            // 消息内容
             final int bodyLength = msgInner.getBody() == null ? 0 : msgInner.getBody().length;
 
+            // 最终计算消息存储到磁盘需要的字节数, 这里面会添加各式各样的数值
             final int msgLen = calMsgLength(msgInner.getSysFlag(), bodyLength, topicLength, propertiesLength);
 
-            // Exceeds the maximum message
+            // 不能超过最大消息大小
             if (msgLen > this.maxMessageSize) {
                 CommitLog.log.warn("message size exceeded, msg total size: " + msgLen + ", msg body size: " + bodyLength + ", maxMessageSize: " + this.maxMessageSize);
                 return new AppendMessageResult(AppendMessageStatus.MESSAGE_SIZE_EXCEEDED);
             }
 
-            // Determines whether there is sufficient free space
+            // 不能超过缓冲区可写的大小
             if ((msgLen + END_FILE_MIN_BLANK_LENGTH) > maxBlank) {
                 this.resetByteBuffer(this.msgStoreItemMemory, maxBlank);
                 // 1 TOTALSIZE
@@ -1811,6 +1834,9 @@ public class CommitLog {
             return result;
         }
 
+        /**
+         * 将{@link ByteBuffer}置为可读状态, 然后设置它的最大可读位置
+         */
         private void resetByteBuffer(final ByteBuffer byteBuffer, final int limit) {
             byteBuffer.flip();
             byteBuffer.limit(limit);

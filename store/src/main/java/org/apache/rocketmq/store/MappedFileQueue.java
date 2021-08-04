@@ -10,24 +10,48 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * {@link MappedFile}是对单个磁盘文件的内存映射, 而{@link MappedFileQueue}
+ * 用来管理{@link MappedFile}.
+ */
 public class MappedFileQueue {
+
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
     private static final InternalLogger LOG_ERROR = InternalLoggerFactory.getLogger(LoggerName.STORE_ERROR_LOGGER_NAME);
 
+    /**
+     * 允许删除文件的最大个数
+     */
     private static final int DELETE_FILES_BATCH_MAX = 10;
 
+    /**
+     * 文件存储目录, 比如可以是：commitlog目录、consumerqueue目录..等等
+     */
     private final String storePath;
 
+    /**
+     * 管理的{@link MappedFile}的大小
+     */
     private final int mappedFileSize;
 
+    /**
+     * 存储{@link MappedFile}的数据集合
+     */
     private final CopyOnWriteArrayList<MappedFile> mappedFiles = new CopyOnWriteArrayList<MappedFile>();
 
+    /**
+     * 用来提前创建{@link MappedFile}文件
+     */
     private final AllocateMappedFileService allocateMappedFileService;
+
+    /**
+     * 保存每次刷盘的时间
+     */
+    private volatile long storeTimestamp = 0;
 
     private long flushedWhere = 0;
     private long committedWhere = 0;
 
-    private volatile long storeTimestamp = 0;
 
     public MappedFileQueue(final String storePath, int mappedFileSize, AllocateMappedFileService allocateMappedFileService) {
         this.storePath = storePath;
@@ -35,17 +59,22 @@ public class MappedFileQueue {
         this.allocateMappedFileService = allocateMappedFileService;
     }
 
+    /**
+     * 自检查, 一般是害怕磁盘文件被人为改变.
+     */
     public void checkSelf() {
-
         if (!this.mappedFiles.isEmpty()) {
             Iterator<MappedFile> iterator = mappedFiles.iterator();
             MappedFile pre = null;
             while (iterator.hasNext()) {
                 MappedFile cur = iterator.next();
-
                 if (pre != null) {
+                    // 因为 rocketMQ 设计的磁盘文件都是以offset命名的, 且都是紧邻的偏移量.
+                    // 比如文件大小若设置为1M, 那么第一个文件取名为"0000000000", 当它写满以后, 第二个文件取名为"0001048576"...以此类推.
+                    // 所以第二个文件的起始偏移量(实际就是文件名)减去第一个文件的起始偏移量, 说明文件被改过且已经不符合 rocketMQ 规定的格式.
                     if (cur.getFileFromOffset() - pre.getFileFromOffset() != this.mappedFileSize) {
-                        LOG_ERROR.error("[BUG]The mappedFile queue's data is damaged, the adjacent mappedFile's offset don't match. pre file {}, cur file {}", pre.getFileName(), cur.getFileName());
+                        LOG_ERROR.error("[BUG]The mappedFile queue's data is damaged, the adjacent mappedFile's offset don't match. pre file {}, cur file {}",
+                                pre.getFileName(), cur.getFileName());
                     }
                 }
                 pre = cur;
@@ -53,28 +82,39 @@ public class MappedFileQueue {
         }
     }
 
+    /**
+     * 获取磁盘文件修改时间大于等于指定时间的{@link MappedFile},
+     * 如果都没有找到, 会默认返回集合最后一个.
+     *
+     * @param timestamp 时间戳
+     * @return 映射文件
+     */
     public MappedFile getMappedFileByTime(final long timestamp) {
+        // 拷贝 mappedFile 对象数组
         Object[] mfs = this.copyMappedFiles(0);
-
         if (null == mfs) return null;
-
+        // 寻找第一个底层磁盘文件修改时间大于等于指定时间戳的 MappedFile
         for (int i = 0; i < mfs.length; i++) {
             MappedFile mappedFile = (MappedFile) mfs[i];
             if (mappedFile.getLastModifiedTimestamp() >= timestamp) {
                 return mappedFile;
             }
         }
-
+        // 如果for循环没有找到指定时间戳的文件, 兜底返回最后一个.
         return (MappedFile) mfs[mfs.length - 1];
     }
 
+    /**
+     * 拷贝{@link MappedFile}文件集合
+     *
+     * @param reservedMappedFiles 当原文件集合大于此值才会拷贝
+     * @return 新的 MappedFile 对象数据
+     */
     private Object[] copyMappedFiles(final int reservedMappedFiles) {
         Object[] mfs;
-
         if (this.mappedFiles.size() <= reservedMappedFiles) {
             return null;
         }
-
         mfs = this.mappedFiles.toArray();
         return mfs;
     }

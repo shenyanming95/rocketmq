@@ -13,13 +13,32 @@ import java.nio.ByteBuffer;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+/**
+ * 缓冲区{@link ByteBuffer}对象池, 底层用的是双端队列{@link Deque}
+ */
 public class TransientStorePool {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
 
+    /**
+     * 对象池大小
+     */
     private final int poolSize;
+
+    /**
+     * 用来控制创建的{@link ByteBuffer}大小, 单位字节
+     */
     private final int fileSize;
+
+    /**
+     * 底层对象池
+     */
     private final Deque<ByteBuffer> availableBuffers;
+
+    /**
+     * 消息存储配置
+     */
     private final MessageStoreConfig storeConfig;
+
 
     public TransientStorePool(final MessageStoreConfig storeConfig) {
         this.storeConfig = storeConfig;
@@ -33,17 +52,19 @@ public class TransientStorePool {
      */
     public void init() {
         for (int i = 0; i < poolSize; i++) {
+            // 该对象池, 存储的都是直接缓冲区: java.nio.DirectByteBuffer.
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(fileSize);
-
+            // 获取直接缓冲区的内存地址
             final long address = ((DirectBuffer) byteBuffer).address();
-            Pointer pointer = new Pointer(address);
-            LibC.INSTANCE.mlock(pointer, new NativeLong(fileSize));
-
+            // 锁住程序的内存地址空间, 防止被 swap
+            LibC.INSTANCE.mlock(new Pointer(address), new NativeLong(fileSize));
+            // 保存这个直接缓冲区
             availableBuffers.offer(byteBuffer);
         }
     }
 
     public void destroy() {
+        // 就是将每个直接缓冲区的内存地址空间解锁
         for (ByteBuffer byteBuffer : availableBuffers) {
             final long address = ((DirectBuffer) byteBuffer).address();
             Pointer pointer = new Pointer(address);

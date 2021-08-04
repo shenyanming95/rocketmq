@@ -6,16 +6,24 @@ import org.apache.rocketmq.store.ConsumeQueue;
 import java.io.File;
 
 public class MessageStoreConfig {
-    //The root directory in which the log data is kept
+
+    /**
+     * rocketMQ 保存日志数据的根目录, 其它文件目录都是在这个目录之下
+     */
     @ImportantField
     private String storePathRootDir = System.getProperty("user.dir") + File.separator + "workdir" + File.separator + "store";
 
-    //The directory in which the commitlog is kept
+    /**
+     * rocketMQ会将所有消息都存储到 commit log中, 这个路径就是 commit log 的存储目录
+     */
     @ImportantField
     private String storePathCommitLog = System.getProperty("user.dir") + File.separator + "workdir" + File.separator + "store" + File.separator + "commitlog";
 
-    // CommitLog file size,default is 1G
+    /**
+     * commit log 文件大小, 默认 1G
+     */
     private int mappedFileSizeCommitLog = 1024 * 1024 * 1024;
+
     // ConsumeQueue file size,default is 30W
     private int mappedFileSizeConsumeQueue = 300000 * ConsumeQueue.CQ_STORE_UNIT_SIZE;
     // enable consume queue ext

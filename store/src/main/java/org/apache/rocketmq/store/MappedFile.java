@@ -27,79 +27,122 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 每一个{@link MappedFile}都会映射一个【/commitlog/*】下面的每一个文件
+ * 这个类是对底层磁盘存储文件的内存映射, 主要使用了 Java Nio 技术的{@link MappedByteBuffer}.
+ * 这个类的一个实例对应着一个磁盘文件, 这个类会被{@link MappedFileQueue}管理, 主要用在 RocketMQ 这几个日志数据：
+ * commitLog、consumerQueue、indexFile
  */
 public class MappedFile extends ReferenceResource {
-    /**
-     * 操作系统 page cache 的大小
-     */
-    public static final int OS_PAGE_SIZE = 1024 * 4;
+
     protected static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
 
+    /* static fields */
+
     /**
-     * rocketMQ 会将每一个 commit log 文件都映射成 MappedByteBuffer,
-     * 所以这个静态变量就是来统计总的映射文件的字节数.
+     * 操作系统 page cache 的大小, 默认是4KB
+     */
+    public static final int OS_PAGE_SIZE = 1024 * 4;
+
+    /**
+     * 用来统计总的内存映射文件的字节数, 比如映射一个 commit log 文件, 由于它默认是 1G 大小,
+     * 所以这个值就会加上 1 * 1024 * 1024 * 1024.
      */
     private static final AtomicLong TOTAL_MAPPED_VIRTUAL_MEMORY = new AtomicLong(0);
 
     /**
-     * 同上一个参数一样, 这个参数来统计总映射的文件的数量.
+     * 同上一个参数一样, 用于统计总映射的文件数量.
      */
     private static final AtomicInteger TOTAL_MAPPED_FILES = new AtomicInteger(0);
 
+    /* fields */
+
+    /**
+     * 底层磁盘文件的大小：
+     * 1.如果是 commit log, 每个文件默认1G;
+     * 2.如果是 consume queue, 每个文件默认6M;
+     */
+    protected int fileSize;
+
+    /**
+     * 磁盘文件的绝对路径
+     */
+    private String fileName;
+
+    /**
+     * 文件句柄, 即 file = new File(fileName)
+     */
+    private File file;
+
+    /**
+     * rocketMQ 会把磁盘文件使用虚拟内存的方式直接映射到用户空间上, 其读写性能极高.
+     */
+    private MappedByteBuffer mappedByteBuffer;
+
+    /**
+     * 磁盘文件对应的 nio 文件通道
+     */
+    protected FileChannel fileChannel;
+
+    /**
+     * 磁盘文件的起始偏移量, 大部分情况都是它的文件名.
+     * 因为 RocketMQ 在对其维护的日志数据文件取名是很有讲究的, 比如commit log的文件命名,
+     * 00000000000000000000 是第一个 commit log 文件, 那么这个文件的起始偏移量就为0;
+     * 00000000001073741824 是第二个 commit log 文件, 那么它的起始偏移量为1073741824;
+     */
+    private long fileFromOffset;
+
+    /**
+     * 这两个参数是搭配使用的, 通过{@link TransientStorePool}来获取{@link ByteBuffer}.
+     * 对象池{@link TransientStorePool} 维护了许多直接缓冲区(rocketMQ通过JNA执行OS系统调用, 做了优化).
+     * 当用户开启了对象池配置, 这两个参数就会生效, 那么数据就会先被保存到这里, 然后在重刷到{@link FileChannel}中.
+     */
+    protected ByteBuffer writeBuffer = null;
+    protected TransientStorePool transientStorePool = null;
+
+    /**
+     * 记录消息保存或者刷盘的时间
+     */
+    private volatile long storeTimestamp = 0;
+
+    /**
+     * 如果是在{@link MappedFileQueue}创建的, 这个值就为true.
+     */
+    private boolean firstCreateInQueue = false;
+
+    /*
+     * TODO 待定
+     */
     protected final AtomicInteger wrotePosition = new AtomicInteger(0);
     protected final AtomicInteger committedPosition = new AtomicInteger(0);
     private final AtomicInteger flushedPosition = new AtomicInteger(0);
 
     /**
-     * commit log 文件大小, 每个文件默认1G
+     * 创建一个内存映射文件
+     *
+     * @param fileName 磁盘文件路径
+     * @param fileSize 磁盘文件大小
+     * @throws IOException IOE
      */
-    protected int fileSize;
-
-    /**
-     * commit log 文件名称(确切地说应该是文件路径), 文件名长度为20位, 左边补0. 比如：
-     * 00000000000000000000代表了第一个文件, 起始偏移量为0, 文件大小为1G=1073741824;
-     * 当第一个文件写满了, 第二个文件名为00000000001073741824, 起始偏移量为1073741824.
-     */
-    private String fileName;
-
-    /**
-     * commit log 文件句柄, 即 file = new File(fileName)
-     */
-    private File file;
-
-    /**
-     * rocketMQ 会把 commit log 文件使用虚拟内存的方式直接映射到用户空间上.
-     * 这样子, 对 commit log 的操作, 读写性能极高.
-     */
-    private MappedByteBuffer mappedByteBuffer;
-
-    /**
-     * commit log 文件对应的 nio 文件通道
-     */
-    protected FileChannel fileChannel;
-
-    /**
-     * Message will put to here first, and then reput to FileChannel if writeBuffer is not null.
-     */
-    protected ByteBuffer writeBuffer = null;
-    protected TransientStorePool transientStorePool = null;
-
-
-    private long fileFromOffset;
-
-    private volatile long storeTimestamp = 0;
-    private boolean firstCreateInQueue = false;
-
-
     public MappedFile(final String fileName, final int fileSize) throws IOException {
         init(fileName, fileSize);
     }
 
+    /**
+     * 创建一个内存映射文件, 并使用{@link ByteBuffer}对象池
+     *
+     * @param fileName           磁盘文件路径
+     * @param fileSize           磁盘文件大小
+     * @param transientStorePool 对象池
+     * @throws IOException IOEø
+     */
     public MappedFile(final String fileName, final int fileSize, final TransientStorePool transientStorePool) throws IOException {
         init(fileName, fileSize, transientStorePool);
     }
 
+    /**
+     * 确保指定文件路径是一个目录
+     *
+     * @param dirName 文件路径
+     */
     public static void ensureDirOK(final String dirName) {
         if (dirName != null) {
             File f = new File(dirName);
