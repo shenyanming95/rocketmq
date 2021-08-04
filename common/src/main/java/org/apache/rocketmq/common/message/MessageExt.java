@@ -13,23 +13,18 @@ public class MessageExt extends Message {
     private static final long serialVersionUID = 5720810158625748049L;
 
     private String brokerName;
-
     private int queueId;
-
     private int storeSize;
-
     private long queueOffset;
     private int sysFlag;
     private long bornTimestamp;
     private SocketAddress bornHost;
-
     private long storeTimestamp;
     private SocketAddress storeHost;
     private String msgId;
     private long commitLogOffset;
     private int bodyCRC;
     private int reconsumeTimes;
-
     private long preparedTransactionOffset;
 
     public MessageExt() {
