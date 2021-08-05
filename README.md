@@ -1,6 +1,9 @@
-## RocketMQ 4.8.0 源码分析：
+![](./docs/rocketmq-logo.svg)
 
-下载好源码目录, 直接执行:
+# RocketMQ 4.8.0 源码分析
+
+下载好源码目录，执行编译，运行命令：	
+
 ```shell script
 mvn -Prelease-all -DskipTests clean install -U
 ```
