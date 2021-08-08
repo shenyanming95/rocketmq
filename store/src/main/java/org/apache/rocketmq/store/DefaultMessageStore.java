@@ -159,6 +159,7 @@ public class DefaultMessageStore implements MessageStore {
 
                 this.indexService.load(lastExitOK);
 
+                // rocketMQ重启时, 需要重新恢复之前已经写入到磁盘的偏移量
                 this.recover(lastExitOK);
 
                 log.info("load over, and the max phy offset = {}", this.getMaxPhyOffset());

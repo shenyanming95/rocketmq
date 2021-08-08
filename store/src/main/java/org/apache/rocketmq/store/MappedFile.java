@@ -110,12 +110,12 @@ public class MappedFile extends ReferenceResource {
     private volatile long storeTimestamp = 0;
 
     /**
-     * 如果是在{@link MappedFileQueue}创建的, 这个值就为true.
+     * 如果是在{@link MappedFileQueue}创建的, 并且是第一个创建的, 这个值就为true.
      */
     private boolean firstCreateInQueue = false;
 
     /**
-     * 当前文件可写的起始位置
+     * 当前文件已写入的位置, 要么写入到{@link #mappedByteBuffer}, 要么写入到{@link #writeBuffer}
      */
     protected final AtomicInteger wrotePosition = new AtomicInteger(0);
 
@@ -200,7 +200,6 @@ public class MappedFile extends ReferenceResource {
     private static ByteBuffer viewed(ByteBuffer buffer) {
         String methodName = "viewedBuffer";
         Method[] methods = buffer.getClass().getMethods();
-
         // 遍历 ByteBuffer 中的每个方法, 取到第一个方法名带有"attachment"的方法.
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getName().equals("attachment")) {
@@ -208,11 +207,9 @@ public class MappedFile extends ReferenceResource {
                 break;
             }
         }
-
         // 代码走到这边, 两种情况：要么等于“viewedBuffer”, 要么等于“attachment”.
         // 所以这边会执行 viewedBuffer()方法, 或者 attachment().
         ByteBuffer viewedBuffer = (ByteBuffer) invoke(buffer, methodName);
-
         // 递归获取
         return viewedBuffer == null ? buffer : viewed(viewedBuffer);
     }
@@ -422,7 +419,7 @@ public class MappedFile extends ReferenceResource {
     /**
      * 执行刷盘
      *
-     * @param flushLeastPages 至少刷入的页数
+     * @param flushLeastPages 执行flush的最少页数, 一般取决于{@link MessageStoreConfig#getFlushCommitLogLeastPages()}
      * @return 已刷盘的最大位置
      */
     public int flush(final int flushLeastPages) {
@@ -434,8 +431,8 @@ public class MappedFile extends ReferenceResource {
                 int value = getReadPosition();
                 try {
                     // 要么使用 fileChannel 刷盘, 要么使用 mappedByteBuffer 刷盘.
-                    // 注意：若writeBuffer不为空, 那就得先 commit 再 flush, 不然存储在
-                    // writeBuffer 的数据是不会进入到 FileChannel 的
+                    // 注意：若writeBuffer不为空, 那就得先 commit 再 flush, 不然存储在writeBuffer 的数据是不会进入到 FileChannel.
+                    // 注意：调用 java.nio.MappedByteBuffer.force()方法并不会更新 ByteBuffer 里面的位置属性, 比如 position.
                     if (writeBuffer != null || this.fileChannel.position() != 0) {
                         this.fileChannel.force(false);
                     } else {
@@ -460,7 +457,7 @@ public class MappedFile extends ReferenceResource {
     /**
      * 执行提交
      *
-     * @param commitLeastPages 至少提交的页数
+     * @param commitLeastPages 执行commit的最少页数, 一般取决于{@link MessageStoreConfig#getCommitCommitLogLeastPages()}
      * @return 已提交的最大位置
      */
     public int commit(final int commitLeastPages) {
@@ -470,9 +467,13 @@ public class MappedFile extends ReferenceResource {
             // no need to commit data to file channel, so just regard wrotePosition as committedPosition.
             return this.wrotePosition.get();
         }
+        // 允许提交操作
         if (this.isAbleToCommit(commitLeastPages)) {
+            // 持有对象, 将其引用计数加1
             if (this.hold()) {
+                // 执行commit
                 commit0(commitLeastPages);
+                // 引用计数减一
                 this.release();
             } else {
                 log.warn("in commit, hold failed, commit offset = " + this.committedPosition.get());
@@ -494,6 +495,7 @@ public class MappedFile extends ReferenceResource {
 
         if (writePos - lastCommittedPosition > commitLeastPages) {
             try {
+                // 将 writeBuffer 中的数据写入到 FileChannel 中.
                 ByteBuffer byteBuffer = writeBuffer.slice();
                 byteBuffer.position(lastCommittedPosition);
                 byteBuffer.limit(writePos);
@@ -533,21 +535,35 @@ public class MappedFile extends ReferenceResource {
         return write > flush;
     }
 
+    /**
+     * 判断是否可以执行 commit 操作
+     *
+     * @param commitLeastPages 执行commit的最少页数
+     * @return true-可以执行
+     */
     protected boolean isAbleToCommit(final int commitLeastPages) {
+        // 已提交的位置
         int flush = this.committedPosition.get();
+        // 已写入的位置
         int write = this.wrotePosition.get();
-
+        // 已写满, 可以执行 commit 操作
         if (this.isFull()) {
             return true;
         }
-
+        // 未 commit 的数据量要达到 commitLeastPages 指定的页数才允许commit,
+        // 页数按照 page cache 来计算, 默认4kb.
         if (commitLeastPages > 0) {
             return ((write / OS_PAGE_SIZE) - (flush / OS_PAGE_SIZE)) >= commitLeastPages;
         }
-
+        // 写入的位置大于刷盘的位置
         return write > flush;
     }
 
+    /**
+     * 已写入的数量已经等于文件规定的大小
+     *
+     * @return true-文件已写满
+     */
     public boolean isFull() {
         return this.fileSize == this.wrotePosition.get();
     }
@@ -587,45 +603,57 @@ public class MappedFile extends ReferenceResource {
         return null;
     }
 
+    /**
+     * 清理资源
+     *
+     * @param currentRef 本资源被引用的计数
+     * @return true-清理成功
+     */
     @Override
     public boolean cleanup(final long currentRef) {
         if (this.isAvailable()) {
             log.error("this file[REF:" + currentRef + "] " + this.fileName + " have not shutdown, stop unmapping.");
             return false;
         }
-
         if (this.isCleanupOver()) {
             log.error("this file[REF:" + currentRef + "] " + this.fileName + " have cleanup, do not do it again.");
             return true;
         }
-
+        // 释放资源
         clean(this.mappedByteBuffer);
+        // 将它们从计数Map中移除.
         TOTAL_MAPPED_VIRTUAL_MEMORY.addAndGet(this.fileSize * (-1));
         TOTAL_MAPPED_FILES.decrementAndGet();
         log.info("unmap file[REF:" + currentRef + "] " + this.fileName + " OK");
         return true;
     }
 
+    /**
+     * 销毁当前的 MappedFile , 它会先调用{@link #cleanup(long)}方法清理资源, 然后直接把底层磁盘文件删除.
+     *
+     * @param intervalForcibly 时间间隔{@link ReferenceResource#shutdown(long)}
+     * @return true-销毁成功
+     */
     public boolean destroy(final long intervalForcibly) {
+        // 父类的 shutdown() 用来清除一些引用计数和标志位,
+        // 然后会再去调用 cleanup() 方法
         this.shutdown(intervalForcibly);
-
         if (this.isCleanupOver()) {
             try {
+                // 关闭文件通道
                 this.fileChannel.close();
                 log.info("close file channel " + this.fileName + " OK");
-
                 long beginTime = System.currentTimeMillis();
+                // 把文件删除.
                 boolean result = this.file.delete();
                 log.info("delete file[REF:" + this.getRefCount() + "] " + this.fileName + (result ? " OK, " : " Failed, ") + "W:" + this.getWrotePosition() + " M:" + this.getFlushedPosition() + ", " + UtilAll.computeElapsedTimeMilliseconds(beginTime));
             } catch (Exception e) {
                 log.warn("close file channel " + this.fileName + " Failed. ", e);
             }
-
             return true;
         } else {
             log.warn("destroy mapped file[REF:" + this.getRefCount() + "] " + this.fileName + " Failed. cleanupOver: " + this.cleanupOver);
         }
-
         return false;
     }
 
@@ -642,22 +670,36 @@ public class MappedFile extends ReferenceResource {
                 this.committedPosition.get();
     }
 
+    /**
+     * 在磁盘中先将文件初始化好.
+     *
+     * @param type  刷盘方式
+     * @param pages rocketMQ会用“0”填充整个文件, 这里表示每多少页刷盘一次.
+     */
     public void warmMappedFile(FlushDiskType type, int pages) {
         long beginTime = System.currentTimeMillis();
         ByteBuffer byteBuffer = this.mappedByteBuffer.slice();
         int flush = 0;
         long time = System.currentTimeMillis();
+
+        // 变量i每次循环都累加 MappedFile.OS_PAGE_SIZE, 因此它实际为这个配置的整数倍.
         for (int i = 0, j = 0; i < this.fileSize; i += MappedFile.OS_PAGE_SIZE, j++) {
+            // 用0填充. 注意：如果使用 java.nio.ByteBuffer.put(int, byte) 添加的数据, 是不会影响
+            // ByteBuffer自身维护的那几个变量的, 例如position、limit..
             byteBuffer.put(i, (byte) 0);
             // force flush when flush disk type is sync
             if (type == FlushDiskType.SYNC_FLUSH) {
+                // 由于上面说过 i 是MappedFile.OS_PAGE_SIZE的整数倍, 所以除以这个值, 其实就是表示多少页.
+                // 而flush等于上一次刷盘的 i, 所以这两个值相减, 就表示已经往 ByteBuffer 填充了多少页了.
+                // 只要大于等于参数指定的值, 那么就强制刷盘
                 if ((i / OS_PAGE_SIZE) - (flush / OS_PAGE_SIZE) >= pages) {
                     flush = i;
                     mappedByteBuffer.force();
                 }
             }
 
-            // prevent gc
+            // prevent gc, 有待商榷：
+            // https://stackoverflow.com/questions/53284031/why-thread-sleep0-can-prevent-gc-in-rocketmq
             if (j % 1000 == 0) {
                 log.info("j={}, costTime={}", j, System.currentTimeMillis() - time);
                 time = System.currentTimeMillis();
@@ -669,13 +711,14 @@ public class MappedFile extends ReferenceResource {
             }
         }
 
-        // force flush when prepare load finished
+        // 当for循环完成时, 数据都已经添加到 ByteBuffer 中, 如果是同步刷盘, 那么就直接强制刷新.
+        // 当然如果是异步刷新, 那么方法就直接返回了, 其它操作交由操作系统去刷盘.
         if (type == FlushDiskType.SYNC_FLUSH) {
             log.info("mapped file warm-up done, force to disk, mappedFile={}, costTime={}", this.getFileName(), System.currentTimeMillis() - beginTime);
             mappedByteBuffer.force();
         }
         log.info("mapped file warm-up done. mappedFile={}, costTime={}", this.getFileName(), System.currentTimeMillis() - beginTime);
-
+        // 将这个 MappedFile 的 mmap 映射锁定在物理内存中.
         this.mlock();
     }
 
@@ -688,14 +731,12 @@ public class MappedFile extends ReferenceResource {
         Pointer pointer = new Pointer(address);
         {
             int ret = LibC.INSTANCE.mlock(pointer, new NativeLong(this.fileSize));
-            log.info("mlock {} {} {} ret = {} time consuming = {}", address, this.fileName, this.fileSize, ret,
-                    System.currentTimeMillis() - beginTime);
+            log.info("mlock {} {} {} ret = {} time consuming = {}", address, this.fileName, this.fileSize, ret, System.currentTimeMillis() - beginTime);
         }
 
         {
             int ret = LibC.INSTANCE.madvise(pointer, new NativeLong(this.fileSize), LibC.MADV_WILLNEED);
-            log.info("madvise {} {} {} ret = {} time consuming = {}", address, this.fileName, this.fileSize, ret,
-                    System.currentTimeMillis() - beginTime);
+            log.info("madvise {} {} {} ret = {} time consuming = {}", address, this.fileName, this.fileSize, ret, System.currentTimeMillis() - beginTime);
         }
     }
 
@@ -707,8 +748,7 @@ public class MappedFile extends ReferenceResource {
         final long address = ((DirectBuffer) (this.mappedByteBuffer)).address();
         Pointer pointer = new Pointer(address);
         int ret = LibC.INSTANCE.munlock(pointer, new NativeLong(this.fileSize));
-        log.info("munlock {} {} {} ret = {} time consuming = {}", address, this.fileName, this.fileSize,
-                ret, System.currentTimeMillis() - beginTime);
+        log.info("munlock {} {} {} ret = {} time consuming = {}", address, this.fileName, this.fileSize, ret, System.currentTimeMillis() - beginTime);
     }
 
     public int getWrotePosition() {

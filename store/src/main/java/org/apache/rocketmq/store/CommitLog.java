@@ -386,6 +386,9 @@ public class CommitLog {
             // Looking beginning to recover from which file
             int index = mappedFiles.size() - 1;
             MappedFile mappedFile = null;
+
+            // 这边实际上就是取最后一个文件, 因为只要恢复最后一个文件的偏移量就行了.
+            // 之前写入磁盘的那些文件肯定都是已写满了的, 所以它们不需要恢复偏移量.
             for (; index >= 0; index--) {
                 mappedFile = mappedFiles.get(index);
                 if (this.isMappedFileMatchedRecover(mappedFile)) {

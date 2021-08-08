@@ -2,8 +2,11 @@ package org.apache.rocketmq.store.config;
 
 import org.apache.rocketmq.common.annotation.ImportantField;
 import org.apache.rocketmq.store.ConsumeQueue;
+import org.apache.rocketmq.store.MappedFile;
+import org.apache.rocketmq.store.TransientStorePool;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 
 public class MessageStoreConfig {
 
@@ -91,17 +94,28 @@ public class MessageStoreConfig {
     // This check adds some overhead,so it may be disabled in cases seeking extreme performance.
     private boolean checkCRCOnRecover = true;
 
-    // How many pages are to be flushed when flush CommitLog
+    /**
+     * 一次flush至少需要脏页的数量, 针对commitlog文件, 默认4页
+     */
     private int flushCommitLogLeastPages = 4;
 
-    // How many pages are to be committed when commit data to file
+    /**
+     * 一次commit至少需要脏页的数量, 针对commitlog文件, 默认4页
+     */
     private int commitCommitLogLeastPages = 4;
 
-    // Flush page size when the disk in warming state
+    /**
+     * rocketMQ在创建磁盘文件的时候, 会一次性按照{@link MappedFile#getFileSize()}用字节0填充整个文件.
+     * 这个参数用来指定多少页 flush 一次, 默认是4096页.
+     */
     private int flushLeastPagesWhenWarmMapedFile = 1024 / 4 * 16;
 
-    // How many pages are to be flushed when flush ConsumeQueue
+    /**
+     * 一次 flush 至少需要的脏页数量, 针对 consumer queue 文件, 默认2页
+     */
     private int flushConsumeQueueLeastPages = 2;
+
+
     private int flushCommitLogThoroughInterval = 1000 * 10;
     private int commitCommitLogThoroughInterval = 200;
     private int flushConsumeQueueThoroughInterval = 1000 * 60;
@@ -131,14 +145,26 @@ public class MessageStoreConfig {
     private int haSlaveFallbehindMax = 1024 * 1024 * 256;
     @ImportantField
     private BrokerRole brokerRole = BrokerRole.ASYNC_MASTER;
+
+    /**
+     * 刷盘方式, 一般是异步刷盘.
+     */
     @ImportantField
     private FlushDiskType flushDiskType = FlushDiskType.ASYNC_FLUSH;
+
+
     private int syncFlushTimeout = 1000 * 5;
     private String messageDelayLevel = "1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h";
     private long flushDelayOffsetInterval = 1000 * 10;
     @ImportantField
     private boolean cleanFileForciblyEnable = true;
+
+    /**
+     * 是否要开启预写{@link org.apache.rocketmq.store.MappedFile}文件, true-开启
+     */
     private boolean warmMapedFileEnable = false;
+
+
     private boolean offsetCheckInSlave = false;
     private boolean debugLockEnable = false;
     private boolean duplicationEnable = false;
@@ -146,9 +172,18 @@ public class MessageStoreConfig {
     private long osPageCacheBusyTimeOutMills = 1000;
     private int defaultQueryMaxNum = 32;
 
+    /**
+     * 如果置为true, 会使用{@link org.apache.rocketmq.store.TransientStorePool}.
+     * 它会预先创建一些直接缓冲区以供后续使用.
+     */
     @ImportantField
     private boolean transientStorePoolEnable = false;
+
     private int transientStorePoolSize = 5;
+
+    /**
+     * 从{@link TransientStorePool}获取{@link ByteBuffer}是否支持快速失败
+     */
     private boolean fastFailIfNoBufferInStorePool = false;
 
     private boolean enableDLegerCommitLog = false;

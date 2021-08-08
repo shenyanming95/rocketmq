@@ -18,7 +18,8 @@ public interface AppendMessageCallback {
      * @param msg            消息
      * @return 写入了多少字节
      */
-    AppendMessageResult doAppend(final long fileFromOffset, final ByteBuffer byteBuffer, final int maxBlank, final MessageExtBrokerInner msg);
+    AppendMessageResult doAppend(final long fileFromOffset, final ByteBuffer byteBuffer,
+                                 final int maxBlank, final MessageExtBrokerInner msg);
 
     /**
      * 写入消息
@@ -29,5 +30,6 @@ public interface AppendMessageCallback {
      * @param messageExtBatch 批量消息
      * @return 写入了多少字节
      */
-    AppendMessageResult doAppend(final long fileFromOffset, final ByteBuffer byteBuffer, final int maxBlank, final MessageExtBatch messageExtBatch);
+    AppendMessageResult doAppend(final long fileFromOffset, final ByteBuffer byteBuffer,
+                                 final int maxBlank, final MessageExtBatch messageExtBatch);
 }
