@@ -147,6 +147,9 @@ public abstract class ServiceThread implements Runnable {
         log.info("makestop thread " + this.getServiceName());
     }
 
+    /**
+     * 唤醒线程
+     */
     public void wakeup() {
         if (hasNotified.compareAndSet(false, true)) {
             waitPoint.countDown(); // notify
@@ -154,24 +157,22 @@ public abstract class ServiceThread implements Runnable {
     }
 
     protected void waitForRunning(long interval) {
-        // 正常逻辑是不会到达这个if分支, 因为一开始 hasNotified 为false,
-        // 除了之前被调用了 shutdown()、stop()、wakeUp()方法后再调用此方法才会进入这个分支.
+        // 已经被唤醒过了, 直接调用唤醒后置处理逻辑, 然后方法返回, 就不需要阻塞了.
         if (hasNotified.compareAndSet(true, false)) {
             this.onWaitEnd();
             return;
         }
-
-        // 重置
+        // 重置, 就是将 java.util.concurrent.locks.AbstractQueuedSynchronizer.state 重新设置一开始的值
         waitPoint.reset();
-
         try {
-            // 阻塞等待
+            // 阻塞等待一段时间, 要么超时返回, 要么被唤醒返回, 甚至有可能假唤醒
             waitPoint.await(interval, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             log.error("Interrupted", e);
         } finally {
-            // 被唤醒后将 hasNotified 置为 false
+            // 阻塞状态结束后, 将 hasNotified 置为 false
             hasNotified.set(false);
+            // 执行后置处理
             this.onWaitEnd();
         }
     }

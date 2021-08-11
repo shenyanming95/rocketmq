@@ -10,21 +10,22 @@ public class Message implements Serializable {
     private static final long serialVersionUID = 8445773977080406428L;
 
     /**
-     * 消息主题名称
+     * 消息主题
      */
     private String topic;
 
     private int flag;
+
+    /**
+     * producer 发送消息时携带过来的配置信息
+     */
     private Map<String, String> properties;
 
     /**
-     * 消息内容
+     * producer 发送的消息内容
      */
     private byte[] body;
 
-    /**
-     * 事务号
-     */
     private String transactionId;
 
     public Message() {

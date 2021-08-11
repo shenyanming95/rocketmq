@@ -13,17 +13,39 @@ public class MessageExt extends Message {
     private static final long serialVersionUID = 5720810158625748049L;
 
     private String brokerName;
+
+    /**
+     * 队列序号, 比如一个 topic 创建了3个队列, 那么序号就是：0、1、2
+     */
     private int queueId;
     private int storeSize;
     private long queueOffset;
     private int sysFlag;
     private long bornTimestamp;
+
+    /**
+     * 对端主机地址, 比如如果是 broker 收到消息, 那么这个配置就指向 producer.
+     */
     private SocketAddress bornHost;
+
+    /**
+     * 本消息被存储的时间戳
+     */
     private long storeTimestamp;
+
+    /**
+     * 存储本条消息的主机地址, 即 broker 所在服务器的IP地址
+     */
     private SocketAddress storeHost;
+
     private String msgId;
     private long commitLogOffset;
+
+    /**
+     * 对消息内容的CRC验证
+     */
     private int bodyCRC;
+
     private int reconsumeTimes;
     private long preparedTransactionOffset;
 
