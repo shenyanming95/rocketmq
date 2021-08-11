@@ -4,12 +4,24 @@ import java.nio.ByteBuffer;
 
 public class SelectMappedBufferResult {
 
+    /**
+     * 绝对位置, 即计算上{@link MappedFile#getFileFromOffset()}
+     */
     private final long startOffset;
 
+    /**
+     * 实际数据
+     */
     private final ByteBuffer byteBuffer;
 
+    /**
+     * 数据的可读大小
+     */
     private int size;
 
+    /**
+     * 数据对应的载体
+     */
     private MappedFile mappedFile;
 
     public SelectMappedBufferResult(long startOffset, ByteBuffer byteBuffer, int size, MappedFile mappedFile) {

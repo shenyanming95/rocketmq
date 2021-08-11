@@ -419,7 +419,8 @@ public class MappedFile extends ReferenceResource {
     /**
      * 执行刷盘
      *
-     * @param flushLeastPages 执行flush的最少页数, 一般取决于{@link MessageStoreConfig#getFlushCommitLogLeastPages()}
+     * @param flushLeastPages 执行flush的最少页数, 可以参考
+     *                        {@link MessageStoreConfig#getFlushCommitLogLeastPages()}
      * @return 已刷盘的最大位置
      */
     public int flush(final int flushLeastPages) {
@@ -457,19 +458,23 @@ public class MappedFile extends ReferenceResource {
     /**
      * 执行提交
      *
-     * @param commitLeastPages 执行commit的最少页数, 一般取决于{@link MessageStoreConfig#getCommitCommitLogLeastPages()}
+     * @param commitLeastPages 执行commit的最少页数, 如果为0表示不限制. 具体可以参考
+     *                         {@link MessageStoreConfig#getCommitCommitLogLeastPages()}
      * @return 已提交的最大位置
      */
     public int commit(final int commitLeastPages) {
-        // 如果 writeBuffer 为空, 即没有开启直接缓冲区对象池的功能, 那么是没有 commit 这一概念的,
-        // 此时只有 write 和 flush 的统计指标.
+        // 如果 writeBuffer 为空, 即没有开启直接缓冲区对象池的功能,
+        // 那么是没有 commit 这一概念的, 此时只有 write 和 flush 的统计指标.
         if (writeBuffer == null) {
-            // no need to commit data to file channel, so just regard wrotePosition as committedPosition.
+            // 不需要向FileChannel提交数据, 所以只需将 writePosition 视为committedPosition即可
             return this.wrotePosition.get();
         }
-        // 允许提交操作
+        // isAbleToCommit() 用来判断当前情况是否可以执行commit操作:
+        // 1)、文件已经写满, 即 wrotePosition == fileSize;
+        // 2)、已写入位置 wrotePosition 大于 已提交位置 committedPosition;
+        // 3)、如果指定了至少需要提交的页数, 还得满足它;
         if (this.isAbleToCommit(commitLeastPages)) {
-            // 持有对象, 将其引用计数加1
+            // 持有对象, 将其引用计数加1, 如果持有失败就会放弃此次 commit 操作.
             if (this.hold()) {
                 // 执行commit
                 commit0(commitLeastPages);
@@ -479,28 +484,40 @@ public class MappedFile extends ReferenceResource {
                 log.warn("in commit, hold failed, commit offset = " + this.committedPosition.get());
             }
         }
-
-        // All dirty data has been committed to FileChannel.
+        // 所有脏页都已经 commit 到了 fileChannel, 那么就将 writeBuffer 返回给 transientStorePool.
+        // 此 MappedFile 后续就剩读取操作, 再也没有写入操作了.
         if (writeBuffer != null && this.transientStorePool != null && this.fileSize == this.committedPosition.get()) {
             this.transientStorePool.returnBuffer(writeBuffer);
             this.writeBuffer = null;
         }
-
+        // 返回当前已提交的最大位置.
         return this.committedPosition.get();
     }
 
+    /**
+     * 真正执行 commit 操作的方法, 其实就是将{@link #writeBuffer}内未提交的数据写入到{@link #fileChannel}中
+     *
+     * @param commitLeastPages 执行commit的最少页数, 如果为0表示不限制. 具体可以参考
+     *                         {@link MessageStoreConfig#getCommitCommitLogLeastPages()}
+     */
     protected void commit0(final int commitLeastPages) {
         int writePos = this.wrotePosition.get();
         int lastCommittedPosition = this.committedPosition.get();
 
+        // 参数 commitLeastPages 原先表示：执行commit的最少页数, 但是 rocketMQ 在这里直接用来比较计算结果.
+        // 因此它的含义在这个方法中变为：只要 wrotePosition 大于 committedPosition, 即还有数据没有提交就允许执行commit
         if (writePos - lastCommittedPosition > commitLeastPages) {
             try {
-                // 将 writeBuffer 中的数据写入到 FileChannel 中.
+                // slice()可以从原缓冲区构造出一个新的缓冲区, 它们的位置偏移量各自独立,
+                // 但是可以共享同一个底层字节数组. rocketMQ 使用这个方法可以避免更改到 writeBuffer 自身的位置偏移量.
                 ByteBuffer byteBuffer = writeBuffer.slice();
                 byteBuffer.position(lastCommittedPosition);
                 byteBuffer.limit(writePos);
+                // 其实就是将 writeBuffer 中未提交的数据, 写入到 fileChannel 中.
+                // 当然 fileChannel 也许还有数据, 所以这里需要指定从哪里开始写.
                 this.fileChannel.position(lastCommittedPosition);
                 this.fileChannel.write(byteBuffer);
+                // 写完以后, 更新已提交的位置, 其实就是等于当前写入的位置, 即wrotePosition
                 this.committedPosition.set(writePos);
             } catch (Throwable e) {
                 log.error("Error occurred when commit data to FileChannel.", e);
@@ -587,19 +604,34 @@ public class MappedFile extends ReferenceResource {
         return null;
     }
 
+    /**
+     * 获取当前 MappedFile 中, 从 pos 开始的最大可读数据
+     *
+     * @param pos 相对偏移量, 即不考虑{@link #fileFromOffset}
+     * @return 可读数据
+     */
     public SelectMappedBufferResult selectMappedBuffer(int pos) {
+        // 最大可读位置, 要么是最大写入位置, 要么是最大提交位置.
         int readPosition = getReadPosition();
         if (pos < readPosition && pos >= 0) {
+            // 持有当前 MappedFile, 将其引用计数加1, 避免它被请清理
             if (this.hold()) {
+                // 先从 mmap 缓冲区中创建出子缓冲区, 然后重新设置子缓冲区的 position
                 ByteBuffer byteBuffer = this.mappedByteBuffer.slice();
                 byteBuffer.position(pos);
+                // 总的可读数量
                 int size = readPosition - pos;
+                // 再从子缓冲区中创建孙缓冲区, 这就避免了读到子缓冲区 pos 之前的数据
                 ByteBuffer byteBufferNew = byteBuffer.slice();
+                // 最后设置孙缓冲区的最大可读位置
                 byteBufferNew.limit(size);
+                // 有没有发现, 这边虽然调用了 hold() 方法持有对象, 但是居然没用调用 release() 方法释放对象. 原因就是 java.nio.ByteBuffer.slice()
+                // 方法获取的 byteBuffer 会和原 byteBuffer 共用同一个底层数组, 所以在没有真正将结果使用之前不能调用 release() 方法. 这也解释了为啥
+                // SelectMappedBufferResult 要获取 MappedFile 的引用, 就是为了后续调用它的 release() 方法.
                 return new SelectMappedBufferResult(this.fileFromOffset + pos, byteBufferNew, size, this);
             }
         }
-
+        // 偏移量不合法, 超过可读偏移量时则直接返回null
         return null;
     }
 

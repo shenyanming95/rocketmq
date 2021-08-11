@@ -33,9 +33,19 @@ public class StoreCheckpoint {
      */
     private final MappedByteBuffer mappedByteBuffer;
 
-    // TODO 待定
+    /**
+     * commitlog 文件最后刷盘的时间
+     */
     private volatile long physicMsgTimestamp = 0;
+
+    /**
+     * consumequeue 文件最终刷盘的时间
+     */
     private volatile long logicsMsgTimestamp = 0;
+
+    /**
+     * index 文件最终刷盘的时间
+     */
     private volatile long indexMsgTimestamp = 0;
 
 

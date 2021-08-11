@@ -141,6 +141,7 @@ public class DefaultMessageStore implements MessageStore {
         boolean result = true;
 
         try {
+            // 根据是否存在 abort 文件来判断是异常退出还是正常退出, 不存在即正常退出.
             boolean lastExitOK = !this.isTempFileExist();
             log.info("last shutdown {}", lastExitOK ? "normally" : "abnormally");
 
@@ -1295,6 +1296,12 @@ public class DefaultMessageStore implements MessageStore {
         }
     }
 
+    /**
+     * rocketMQ 在正常退出时, 会将 abort 文件删除-{@link #shutdown()}.
+     * 因此在重启的时候, 如果该文件还存在, 说明是异常退出的.
+     *
+     * @return true-说明上次mq是异常退出
+     */
     private boolean isTempFileExist() {
         String fileName = StorePathConfigHelper.getAbortFile(this.messageStoreConfig.getStorePathRootDir());
         File file = new File(fileName);
@@ -1333,6 +1340,11 @@ public class DefaultMessageStore implements MessageStore {
         return true;
     }
 
+    /**
+     * 重新恢复之前已经写入的磁盘文件, 用于重置{@link MappedFile}的索引
+     *
+     * @param lastExitOK true-正常退出, false-异常退出
+     */
     private void recover(final boolean lastExitOK) {
         long maxPhyOffsetOfConsumeQueue = this.recoverConsumeQueue();
 

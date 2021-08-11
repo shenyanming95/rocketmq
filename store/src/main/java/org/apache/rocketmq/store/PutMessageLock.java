@@ -1,9 +1,10 @@
 package org.apache.rocketmq.store;
 
 /**
- * Used when trying to put messageø
+ * 存储消息的写锁
  */
 public interface PutMessageLock {
+
     void lock();
 
     void unlock();

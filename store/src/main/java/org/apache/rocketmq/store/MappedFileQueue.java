@@ -13,8 +13,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * {@link MappedFile}是对单个磁盘文件的内存映射, 因此它管理一个文件.
- * {@link MappedFileQueue}用来管理{@link MappedFile}, 因此它管理一个目录,
- * {@link #storePath}就是用来指定需要管理的目录
+ * {@link MappedFileQueue}用来管理{@link MappedFile}, 因此它管理一个目录, {@link #storePath}就是用来指定需要管理的目录.
+ * <p>
+ * MappedFileQueue 的偏移量与 MappedFile 的偏移量计算意义不一样：mappedFile的偏移量都是相对它自己, 但是mappedFileQueue的
+ * 偏移量需要统计多个mappedFile, 所以它是绝对值, 会结合每个{@link MappedFile#getFileFromOffset()}来计算.
  */
 public class MappedFileQueue {
 
@@ -52,12 +54,14 @@ public class MappedFileQueue {
     private volatile long storeTimestamp = 0;
 
     /**
-     * 已经刷盘的最终位置
+     * 已经刷盘的最终位置, 它是绝对值, 比如存在多个 MappedFile,
+     * 它会把每个{@link MappedFile#getFileFromOffset()}也计算进去.
      */
     private long flushedWhere = 0;
 
     /**
-     * 已经提交的最终位置
+     * 已经提交的最终位置, 它是绝对值, 比如存在多个 MappedFile,
+     * 它会把每个{@link MappedFile#getFileFromOffset()}也计算进去.
      */
     private long committedWhere = 0;
 
@@ -108,16 +112,23 @@ public class MappedFileQueue {
     /**
      * 提交日志操作
      *
-     * @param commitLeastPages {@link MessageStoreConfig#getCommitCommitLogLeastPages()}
-     * @return true-成功
+     * @param commitLeastPages 指定至少需要提交的页数, 若为0表示不限制. 可以参考
+     *                         {@link MessageStoreConfig#getCommitCommitLogLeastPages()}
+     * @return true-表示没有数据commit, false-表示有部分数据已经commit.
      */
     public boolean commit(final int commitLeastPages) {
         boolean result = true;
+        // 通过已经commit的偏移量找到对应的 MappedFile
         MappedFile mappedFile = this.findMappedFileByOffset(this.committedWhere, this.committedWhere == 0);
         if (mappedFile != null) {
+            // 若能找到, 直接调用该 mappedFile 的 commit(), 该方法会返回最大提交的位置
             int offset = mappedFile.commit(commitLeastPages);
+            // 理论上此时已经提交的偏移量
             long where = mappedFile.getFileFromOffset() + offset;
-            result = where == this.committedWhere;
+            // 如果 where == this.committedWhere 表示并没有 commit 什么数据.
+            // 只有这两个不等, 才说明有数据被提交了.
+            result = (where == this.committedWhere);
+            // 更新当前 MappedFileQueue 的 committedWhere 偏移量
             this.committedWhere = where;
         }
         return result;
@@ -126,23 +137,30 @@ public class MappedFileQueue {
     /**
      * 刷盘日志操作
      *
-     * @param flushLeastPages {@link MessageStoreConfig#getFlushCommitLogLeastPages()} ()}
-     * @return true-成功
+     * @param flushLeastPages 指定至少需要刷入的页数, 若为0表示不限制. 可以参考
+     *                        {@link MessageStoreConfig#getFlushCommitLogLeastPages()}
+     * @return true-表示没有数据flush, false-表示有部分数据已经flush.
      */
     public boolean flush(final int flushLeastPages) {
         boolean result = true;
+        // 通过已经commit的偏移量找到对应的 MappedFile
         MappedFile mappedFile = this.findMappedFileByOffset(this.flushedWhere, this.flushedWhere == 0);
         if (mappedFile != null) {
             long tmpTimeStamp = mappedFile.getStoreTimestamp();
+
+            // 若能找到, 直接调用该 mappedFile 的 flush(), 该方法会返回已经刷盘的最大位置
             int offset = mappedFile.flush(flushLeastPages);
+            // 理论上此时已经刷盘的偏移量
             long where = mappedFile.getFileFromOffset() + offset;
+            // 如果 where == this.flushedWhere 表示并没有 flush 什么数据.
+            // 只有这两个不等, 才说明有数据被刷盘了.
             result = where == this.flushedWhere;
             this.flushedWhere = where;
             if (0 == flushLeastPages) {
+                // 只有全部数据都刷盘以后才会更新 storeTimestamp
                 this.storeTimestamp = tmpTimeStamp;
             }
         }
-
         return result;
     }
 
@@ -313,7 +331,7 @@ public class MappedFileQueue {
     /**
      * 通过偏移量查询{@link MappedFile}
      *
-     * @param offset                指定的偏移量
+     * @param offset                绝对的偏移量, 即算上了每个{@link MappedFile#getFileFromOffset()}
      * @param returnFirstOnNotFound 如果未找到映射文件, 是否要返回第一个
      * @return 可能为null (when not found and returnFirstOnNotFound is <code>false</code>).
      */
@@ -356,7 +374,7 @@ public class MappedFileQueue {
                     }
                 }
             }
-            // 如果还是没有找到, 根据查询选择性返回
+            // 如果还是没有找到, 根据查询参数选择性返回
             if (returnFirstOnNotFound) {
                 return firstMappedFile;
             }
@@ -634,10 +652,20 @@ public class MappedFileQueue {
         return false;
     }
 
+    /**
+     * 计算还有多少字节的数据未提交, 就是用已写入位置 - 已提交位置
+     *
+     * @return 字节数
+     */
     public long remainHowManyDataToCommit() {
         return getMaxWrotePosition() - committedWhere;
     }
 
+    /**
+     * 计算还有多少字节的数据未刷盘, 就是最大可读数据(最大可写 or 最大已提交) - 已刷盘的位置
+     *
+     * @return 字节数
+     */
     public long remainHowManyDataToFlush() {
         return getMaxOffset() - flushedWhere;
     }

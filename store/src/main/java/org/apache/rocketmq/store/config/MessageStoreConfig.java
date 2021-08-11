@@ -1,9 +1,7 @@
 package org.apache.rocketmq.store.config;
 
 import org.apache.rocketmq.common.annotation.ImportantField;
-import org.apache.rocketmq.store.ConsumeQueue;
-import org.apache.rocketmq.store.MappedFile;
-import org.apache.rocketmq.store.TransientStorePool;
+import org.apache.rocketmq.store.*;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -40,23 +38,33 @@ public class MessageStoreConfig {
     // this will be set by pipe of calculate filter bit map.
     private int bitMapLengthConsumeQueueExt = 64;
 
-    // CommitLog flush interval
-    // flush data to disk
+    /**
+     * 执行刷盘操作的时间间隔
+     * (tip: 刷盘即flush, 表示将数据保存到磁盘)
+     */
     @ImportantField
     private int flushIntervalCommitLog = 500;
 
-    // Only used if TransientStorePool enabled
-    // flush data to FileChannel
+    /**
+     * 仅仅在{@link #transientStorePoolEnable}设置为true, 即开启{@link TransientStorePool}情况下使用.
+     * 指定执行 commit 操作的时间间隔, 单位取决于调用方设置的时间单位, 不唯一.
+     * (tip: commit是指将数据从DirectByteBuffer刷入到FileChannel中)
+     */
     @ImportantField
     private int commitIntervalCommitLog = 200;
 
     /**
-     * introduced since 4.0.x. Determine whether to use mutex reentrantLock when putting message.<br/>
-     * By default it is set to false indicating using spin lock when putting message.
+     * 从 4.0.x 开始引入, 指定{@link PutMessageLock}的实现方式, 默认false表示使用自旋锁{@link PutMessageSpinLock},
+     * 如果改为true, 则会使用互斥锁{@link PutMessageReentrantLock}
      */
     private boolean useReentrantLockWhenPutMessage = false;
 
-    // Whether schedule flush,default is real-time
+    /**
+     * 是否定时执行 flush 操作, 默认为false, 表示实时刷盘.
+     * 这个参数会结合{@link #flushIntervalCommitLog}使用, 在执行刷盘操作时：
+     * 1.若为true, 那么直接 thread.sleep() 一段时间后再执行 flush;
+     * 2.若为false, 那么会 ServiceThread.waitForRunning() 一段时间后再执行 flush.
+     */
     @ImportantField
     private boolean flushCommitLogTimed = false;
 
@@ -100,7 +108,8 @@ public class MessageStoreConfig {
     private int flushCommitLogLeastPages = 4;
 
     /**
-     * 一次commit至少需要脏页的数量, 针对commitlog文件, 默认4页
+     * 一次commit至少需要脏页的数量, 针对commitlog文件, 默认4页.
+     * 若值改为0, 表示不限制
      */
     private int commitCommitLogLeastPages = 4;
 
@@ -115,9 +124,16 @@ public class MessageStoreConfig {
      */
     private int flushConsumeQueueLeastPages = 2;
 
-
+    /**
+     * commitlog连续两次刷盘的最大间隔, 如果超过该间隔, 将忽略{@link #commitCommitLogLeastPages}限制
+     */
     private int flushCommitLogThoroughInterval = 1000 * 10;
+
+    /**
+     * Commitlog连续两次提交的最大间隔, 如果超过该间隔, 将忽略{@link #commitCommitLogLeastPages}限制
+     */
     private int commitCommitLogThoroughInterval = 200;
+
     private int flushConsumeQueueThoroughInterval = 1000 * 60;
     @ImportantField
     private int maxTransferBytesOnMessageInMemory = 1024 * 256;
@@ -654,10 +670,12 @@ public class MessageStoreConfig {
     }
 
     /**
-     * Enable transient commitLog store pool only if transientStorePoolEnable is true and the FlushDiskType is
-     * ASYNC_FLUSH
+     * 开启transient commitLog 存储池功能({@link TransientStorePool}), 需要同时满足：
+     * 1.{@link #transientStorePoolEnable}为true；
+     * 2.刷盘方式为异步, {@link FlushDiskType#ASYNC_FLUSH}
+     * 3.当前broker为master
      *
-     * @return <tt>true</tt> or <tt>false</tt>
+     * @return true-支持, false-不支持
      */
     public boolean isTransientStorePoolEnable() {
         return transientStorePoolEnable && FlushDiskType.ASYNC_FLUSH == getFlushDiskType() && BrokerRole.SLAVE != getBrokerRole();
