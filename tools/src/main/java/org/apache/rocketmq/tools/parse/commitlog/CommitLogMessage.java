@@ -1,13 +1,13 @@
 package org.apache.rocketmq.tools.parse.commitlog;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 
 /**
  * @author shenyanming
  * Create on 2021/08/03 20:06
  */
 public class CommitLogMessage {
+
     private int totalSize;
     private int magicCode;
     private int bodyCyc;
@@ -16,9 +16,9 @@ public class CommitLogMessage {
     private long queueOffset;
     private long physicalOffset;
     private int sysFlag;
-    private long bornTimeStamp;
+    private String bornTimeStamp;
     private InetSocketAddress bornHost;
-    private long storeTimeStamp;
+    private String storeTimeStamp;
     private InetSocketAddress storeHost;
     private int reconsumeTimes;
     private long preparedTransactionOffset;
@@ -93,11 +93,11 @@ public class CommitLogMessage {
         this.sysFlag = sysFlag;
     }
 
-    public long getBornTimeStamp() {
+    public String getBornTimeStamp() {
         return bornTimeStamp;
     }
 
-    public void setBornTimeStamp(long bornTimeStamp) {
+    public void setBornTimeStamp(String bornTimeStamp) {
         this.bornTimeStamp = bornTimeStamp;
     }
 
@@ -109,11 +109,11 @@ public class CommitLogMessage {
         this.bornHost = bornHost;
     }
 
-    public long getStoreTimeStamp() {
+    public String getStoreTimeStamp() {
         return storeTimeStamp;
     }
 
-    public void setStoreTimeStamp(long storeTimeStamp) {
+    public void setStoreTimeStamp(String storeTimeStamp) {
         this.storeTimeStamp = storeTimeStamp;
     }
 

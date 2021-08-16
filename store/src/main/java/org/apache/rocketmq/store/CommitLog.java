@@ -231,52 +231,52 @@ public class CommitLog {
     /**
      * 恢复磁盘文件数据, 将其更新回{@link MappedFile}的各个位置值中.
      * 如果 rocketMQ 上一次是正常退出, 调用此方法; 如果是异常退出, 调用{@link #recoverAbnormally(long)}
-     * 
+     *
      * @param maxPhyOffsetOfConsumeQueue
      */
     public void recoverNormally(long maxPhyOffsetOfConsumeQueue) {
         boolean checkCRCOnRecover = this.defaultMessageStore.getMessageStoreConfig().isCheckCRCOnRecover();
         final List<MappedFile> mappedFiles = this.mappedFileQueue.getMappedFiles();
         if (!mappedFiles.isEmpty()) {
-            // Began to recover from the last third file
+            // 从倒数第三个文件开始解析
             int index = mappedFiles.size() - 3;
             if (index < 0) index = 0;
-
             MappedFile mappedFile = mappedFiles.get(index);
             ByteBuffer byteBuffer = mappedFile.sliceByteBuffer();
+            // 每个MappedFile的起始偏移量
             long processOffset = mappedFile.getFileFromOffset();
+            // 用来累加每一条消息的大小
             long mappedFileOffset = 0;
+            // 开始解析
             while (true) {
+                // 读取当前 MappedFile 中的每一条消息
                 DispatchRequest dispatchRequest = this.checkMessageAndReturnSize(byteBuffer, checkCRCOnRecover);
+                // 消息的总大小：0,表示读到最后一条消息, >0,表示正常消息, -1,表示读取消息失败.
                 int size = dispatchRequest.getMsgSize();
-                // Normal data
-                if (dispatchRequest.isSuccess() && size > 0) {
+
+                if (dispatchRequest.isSuccess() && size > 0) { // 如果是正常消息, 便累加它的大小
                     mappedFileOffset += size;
-                }
-                // Come the end of the file, switch to the next file Since the
-                // return 0 representatives met last hole,
-                // this can not be included in truncate offset
-                else if (dispatchRequest.isSuccess() && size == 0) {
+                } else if (dispatchRequest.isSuccess() && size == 0) { // 当size==0表示已经读取到当前 MappedFile 的末尾, 此时需要切换到下一个MappedFile去解析.
                     index++;
                     if (index >= mappedFiles.size()) {
-                        // Current branch can not happen
+                        // 所有mappedFile已经读取完毕
                         log.info("recover last 3 physics file over, last mapped file " + mappedFile.getFileName());
                         break;
                     } else {
+                        // 重新赋值变量
                         mappedFile = mappedFiles.get(index);
                         byteBuffer = mappedFile.sliceByteBuffer();
                         processOffset = mappedFile.getFileFromOffset();
                         mappedFileOffset = 0;
                         log.info("recover next physics file, " + mappedFile.getFileName());
                     }
-                }
-                // Intermediate file read error
-                else if (!dispatchRequest.isSuccess()) {
+                } else if (!dispatchRequest.isSuccess()) { // Intermediate file read error
                     log.info("recover physics file end, " + mappedFile.getFileName());
                     break;
                 }
             }
-
+            // while循环完就已经解析完所有 mappedFile, 将最后一个 mappedFile 的起始偏移量加上它有效消息的大小,
+            // 就表示当前以及存入到磁盘的绝对偏移量, 最后调用 mappedFileQueue 去重置里面的位置变量.
             processOffset += mappedFileOffset;
             this.mappedFileQueue.setFlushedWhere(processOffset);
             this.mappedFileQueue.setCommittedWhere(processOffset);
@@ -304,16 +304,14 @@ public class CommitLog {
      */
     @Deprecated
     public void recoverAbnormally(long maxPhyOffsetOfConsumeQueue) {
-        // recover by the minimum time stamp
         boolean checkCRCOnRecover = this.defaultMessageStore.getMessageStoreConfig().isCheckCRCOnRecover();
+        // 正常关闭后的恢复逻辑是从倒数第三个文件开始恢复, 而异常关闭后的恢复逻辑是直接拿最后一个文件来恢复
         final List<MappedFile> mappedFiles = this.mappedFileQueue.getMappedFiles();
         if (!mappedFiles.isEmpty()) {
-            // Looking beginning to recover from which file
             int index = mappedFiles.size() - 1;
             MappedFile mappedFile = null;
 
-            // 这边实际上就是取最后一个文件, 因为只要恢复最后一个文件的偏移量就行了.
-            // 之前写入磁盘的那些文件肯定都是已写满了的, 所以它们不需要恢复偏移量.
+            // 从最后一个文件开始往前找, 直至找到能够用来恢复的 mappedFile.
             for (; index >= 0; index--) {
                 mappedFile = mappedFiles.get(index);
                 if (this.isMappedFileMatchedRecover(mappedFile)) {
@@ -322,6 +320,7 @@ public class CommitLog {
                 }
             }
 
+            // 越界则直接找第一个文件
             if (index < 0) {
                 index = 0;
                 mappedFile = mappedFiles.get(index);
@@ -335,10 +334,8 @@ public class CommitLog {
                 int size = dispatchRequest.getMsgSize();
 
                 if (dispatchRequest.isSuccess()) {
-                    // Normal data
-                    if (size > 0) {
+                    if (size > 0) { //正常的消息
                         mappedFileOffset += size;
-
                         if (this.defaultMessageStore.getMessageStoreConfig().isDuplicationEnable()) {
                             if (dispatchRequest.getCommitLogOffset() < this.defaultMessageStore.getConfirmOffset()) {
                                 this.defaultMessageStore.doDispatch(dispatchRequest);
@@ -346,11 +343,7 @@ public class CommitLog {
                         } else {
                             this.defaultMessageStore.doDispatch(dispatchRequest);
                         }
-                    }
-                    // Come the end of the file, switch to the next file
-                    // Since the return 0 representatives met last hole, this can
-                    // not be included in truncate offset
-                    else if (size == 0) {
+                    } else if (size == 0) { //解析到文件的末尾
                         index++;
                         if (index >= mappedFiles.size()) {
                             // The current branch under normal circumstances should
@@ -365,7 +358,7 @@ public class CommitLog {
                             log.info("recover next physics file, " + mappedFile.getFileName());
                         }
                     }
-                } else {
+                } else { //解析消息失败
                     log.info("recover physics file end, " + mappedFile.getFileName() + " pos=" + byteBuffer.position());
                     break;
                 }
@@ -391,14 +384,24 @@ public class CommitLog {
         }
     }
 
+    /**
+     * 检查{@link ByteBuffer}中的一条消息(注意每调用一次这个, 只会解析出来一条消息)
+     *
+     * @param byteBuffer 内存数据
+     * @param checkCRC   是否检查CRC
+     * @return 解析结果, {@link DispatchRequest#getMsgSize()} 0 文件末尾, >0 正常消息, -1 消息读取失败
+     */
     public DispatchRequest checkMessageAndReturnSize(java.nio.ByteBuffer byteBuffer, final boolean checkCRC) {
         return this.checkMessageAndReturnSize(byteBuffer, checkCRC, true);
     }
 
     /**
-     * check the message and returns the message size
+     * 检查{@link ByteBuffer}中的一条消息(注意每调用一次这个, 只会解析出来一条消息)
      *
-     * @return 0 Come the end of the file // >0 Normal messages // -1 Message checksum failure
+     * @param byteBuffer 内存数据
+     * @param checkCRC   是否检查CRC
+     * @param readBody   是否读取消息体
+     * @return 解析结果, {@link DispatchRequest#getMsgSize()} 0 文件末尾, >0 正常消息, -1 消息读取失败
      */
     public DispatchRequest checkMessageAndReturnSize(java.nio.ByteBuffer byteBuffer, final boolean checkCRC, final boolean readBody) {
         try {
@@ -1211,14 +1214,23 @@ public class CommitLog {
         }
     }
 
+    /**
+     * 判断一个{@link MappedFile}是否满足用来异常关闭后的恢复条件
+     *
+     * @param mappedFile 映射文件
+     * @return true-满足恢复条件
+     */
     private boolean isMappedFileMatchedRecover(final MappedFile mappedFile) {
         ByteBuffer byteBuffer = mappedFile.sliceByteBuffer();
-
+        // MessageDecoder.MESSAGE_MAGIC_CODE_POSTION 表示消息魔数的索引,
+        // 获取这个文件第一条消息的魔数值
         int magicCode = byteBuffer.getInt(MessageDecoder.MESSAGE_MAGIC_CODE_POSTION);
+        // 魔数值有误, 那么这个文件就不能作为恢复的数据
         if (magicCode != MESSAGE_MAGIC_CODE) {
             return false;
         }
 
+        // 获取存储时间, 等于0说明数据有误, 这个文件就不能作为恢复的数据
         int sysFlag = byteBuffer.getInt(MessageDecoder.SYSFLAG_POSITION);
         int bornhostLength = (sysFlag & MessageSysFlag.BORNHOST_V6_FLAG) == 0 ? 8 : 20;
         int msgStoreTimePos = 4 + 4 + 4 + 4 + 4 + 8 + 8 + 4 + 8 + bornhostLength;
@@ -1227,7 +1239,8 @@ public class CommitLog {
             return false;
         }
 
-        if (this.defaultMessageStore.getMessageStoreConfig().isMessageIndexEnable() && this.defaultMessageStore.getMessageStoreConfig().isMessageIndexSafe()) {
+        if (this.defaultMessageStore.getMessageStoreConfig().isMessageIndexEnable() &&
+                this.defaultMessageStore.getMessageStoreConfig().isMessageIndexSafe()) {
             if (storeTimestamp <= this.defaultMessageStore.getStoreCheckpoint().getMinTimestampIndex()) {
                 log.info("find check timestamp, {} {}", storeTimestamp, UtilAll.timeMillisToHumanString(storeTimestamp));
                 return true;
@@ -1238,7 +1251,6 @@ public class CommitLog {
                 return true;
             }
         }
-
         return false;
     }
 

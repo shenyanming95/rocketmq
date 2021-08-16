@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +30,7 @@ public class CommitLogParser {
 
     private final static int BORNHOST_V6_FLAG = 0x1 << 4; // 16
     private final static int STOREHOSTADDRESS_V6_FLAG = 0x1 << 5; // 32
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static List<CommitLogMessage> parse(String path) {
         return read(path, null);
@@ -89,9 +94,9 @@ public class CommitLogParser {
             result.setQueueOffset(file.readLong());
             result.setPhysicalOffset(file.readLong());
             result.setSysFlag(file.readInt());
-            result.setBornTimeStamp(file.readLong());
+            result.setBornTimeStamp(convertTime(file.readLong()));
             result.setBornHost(readAddress(result.getSysFlag(), true, file));
-            result.setStoreTimeStamp(file.readLong());
+            result.setStoreTimeStamp(convertTime(file.readLong()));
             result.setStoreHost(readAddress(result.getSysFlag(), false, file));
             result.setReconsumeTimes(file.readInt());
             result.setPreparedTransactionOffset(file.readLong());
@@ -132,5 +137,10 @@ public class CommitLogParser {
         InetAddress address = InetAddress.getByAddress(readBytes(readBytes, file));
         int port = file.readInt();
         return new InetSocketAddress(address, port);
+    }
+
+    private static String convertTime(long timestamp){
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+        return formatter.format(dateTime);
     }
 }

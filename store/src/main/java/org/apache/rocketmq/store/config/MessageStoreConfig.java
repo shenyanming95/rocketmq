@@ -145,13 +145,24 @@ public class MessageStoreConfig {
     private int maxTransferCountOnMessageInDisk = 8;
     @ImportantField
     private int accessMessageInMemoryMaxRatio = 40;
+
+    /**
+     * 是否支持消息索引文件
+     */
     @ImportantField
     private boolean messageIndexEnable = true;
+
     private int maxHashSlotNum = 5000000;
     private int maxIndexNum = 5000000 * 4;
     private int maxMsgsNumBatch = 64;
+
+    /**
+     * 消息索引是否安全, 默认为 false.
+     * 文件恢复时选择文件检测点（commitlog.consumeque）的最小的与文件最后更新对比, 如果为true, 文件恢复时选择文件检测点保存的索引更新时间作为对比
+     */
     @ImportantField
     private boolean messageIndexSafe = false;
+
     private int haListenPort = 10912;
     private int haSendHeartbeatInterval = 1000 * 5;
     private int haHousekeepingInterval = 1000 * 20;
@@ -183,7 +194,12 @@ public class MessageStoreConfig {
 
     private boolean offsetCheckInSlave = false;
     private boolean debugLockEnable = false;
+
+    /**
+     * 是否允许重复复制, 默认为 false
+     */
     private boolean duplicationEnable = false;
+
     private boolean diskFallRecorded = true;
     private long osPageCacheBusyTimeOutMills = 1000;
     private int defaultQueryMaxNum = 32;

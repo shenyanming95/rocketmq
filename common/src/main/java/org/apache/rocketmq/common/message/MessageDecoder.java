@@ -15,7 +15,12 @@ public class MessageDecoder {
 //    public final static int MSG_ID_LENGTH = 8 + 8;
 
     public final static Charset CHARSET_UTF8 = Charset.forName("UTF-8");
+
+    /**
+     * commit log 中消息数据结构中, 魔数所处的下标位置
+     */
     public final static int MESSAGE_MAGIC_CODE_POSTION = 4;
+
     public final static int MESSAGE_FLAG_POSTION = 16;
     public final static int MESSAGE_PHYSIC_OFFSET_POSTION = 28;
     //    public final static int MESSAGE_STORE_TIMESTAMP_POSTION = 56;
@@ -24,7 +29,12 @@ public class MessageDecoder {
     public static final char PROPERTY_SEPARATOR = 2;
     public static final int PHY_POS_POSITION = 4 + 4 + 4 + 4 + 4 + 8;
     public static final int QUEUE_OFFSET_POSITION = 4 + 4 + 4 + 4 + 4;
+
+    /**
+     * commit log 中消息数据结构中, 系统标志所处的下标位置
+     */
     public static final int SYSFLAG_POSITION = 4 + 4 + 4 + 4 + 4 + 8 + 8;
+
 //    public static final int BODY_SIZE_POSITION = 4 // 1 TOTALSIZE
 //        + 4 // 2 MAGICCODE
 //        + 4 // 3 BODYCRC
