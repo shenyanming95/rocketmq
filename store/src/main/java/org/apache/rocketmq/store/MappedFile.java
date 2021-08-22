@@ -528,7 +528,7 @@ public class MappedFile extends ReferenceResource {
     /**
      * 判断是否可以执行刷盘
      *
-     * @param flushLeastPages 至少要刷入的页数
+     * @param flushLeastPages 至少要刷入的页数, 值为0时会刷入当前可以刷入的缓冲数据
      * @return true-可以执行
      */
     private boolean isAbleToFlush(final int flushLeastPages) {

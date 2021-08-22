@@ -29,7 +29,8 @@ public class AllocateMappedFileService extends ServiceThread {
 
     /**
      * 用来映射文件路径和请求, 存储格式为：<filePath, AllocateRequest>.
-     * 首先请求得先添加到这个table里面, 然后才会被添加到{@link #requestQueue}, 看起来, 作者的意图是想去重(有待商榷)
+     * 如果是 AllocateRequest 是第一次添加到这个Map中, 那么它会被加入到{@link #requestQueue}, 后续由专门线程去创建 MappedFile.
+     * 若 AllocateRequest 不是第一次添加, 它会直接获取执行结果, 就不会添加到{@link #requestQueue}.
      */
     private ConcurrentMap<String, AllocateRequest> requestTable = new ConcurrentHashMap<String, AllocateRequest>();
 
@@ -54,7 +55,10 @@ public class AllocateMappedFileService extends ServiceThread {
     }
 
     /**
-     * 添加一个预热文件的请求, 然后等待其预热好的{@link MappedFile}
+     * 添加一个预热文件的请求, 然后等待其预热好的{@link MappedFile}, 怎么理解这个方法?
+     * 首先, rocketMQ 的磁盘文件是有序的, 我们假设第一个预热请求A, 它需要创建C1文件, 同时会预写C2文件;
+     * 第二个请求B过来, 它需要创建C2文件, 同时会预写C3文件. 此时, C2文件已经在第一个预热请求A中就创建好了,
+     * 因此预热请求B中, 参加C2文件就不会添加到优先级队列{@link #requestQueue}中, 而是直接获取结果
      *
      * @param nextFilePath     第一个需要预热的文件路径
      * @param nextNextFilePath 第二个需要预热的文件路径
@@ -66,7 +70,7 @@ public class AllocateMappedFileService extends ServiceThread {
         int canSubmitRequests = 2;
         // isTransientStorePoolEnable()为true有3个条件：开启缓冲池功能 + 异步刷盘 + master broker.
         if (this.messageStore.getMessageStoreConfig().isTransientStorePoolEnable()) {
-            // 如果从 transientStorePool中获取 ByteBuffer 支持快速失败, 并且当前 broker 是 master角色.
+            // 如果从 transientStorePool中获取 ByteBuffer 支持快速失败, 并且当前 broker 是 master 角色.
             if (this.messageStore.getMessageStoreConfig().isFastFailIfNoBufferInStorePool()
                     && BrokerRole.SLAVE != this.messageStore.getMessageStoreConfig().getBrokerRole()) {
                 // if broker is slave, don't fast fail even no buffer in pool.
@@ -78,8 +82,8 @@ public class AllocateMappedFileService extends ServiceThread {
         // 开始添加第一个预热文件请求.
         AllocateRequest nextReq = new AllocateRequest(nextFilePath, fileSize);
         // 如果原先 requestTable 不存在这个路径的预热请求, 那么就会返回null, 否则返回的已经存在的预热请求.
+        // 因此, 只有在第一次加入到 requestTable 的情况下才会进入下面这个if语句块, 即添加到优先级队列等待创建 MappedFile 文件.
         boolean nextPutOK = this.requestTable.putIfAbsent(nextFilePath, nextReq) == null;
-        // 因此, 只有在第一次加入到 requestTable 的情况下才会进入下面这个if语句块
         if (nextPutOK) {
             // canSubmitRequests 为负数, 说明缓冲池不够了
             if (canSubmitRequests <= 0) {

@@ -268,11 +268,12 @@ public class MappedFileQueue {
             MappedFile mappedFile = null;
 
             if (this.allocateMappedFileService != null) {
-                // allocateMappedFileService 不为空, 除了创建当前文件以外, 还会顺带创建下一个相邻的文件, 暂且称它为“预写”
+                // 创建一个 MappedFile 需要一定的时间, 为了提高 putMessage 的效率, 除了创建当前文件以外, 还会顺带创建下一个相邻的文件, 暂且称它为“预写”.
+                // 这样子, 等下一次 putMessage 需要下一个相邻的文件时, 这个方法就可以直接返回, 而不需要从新开始进行内存映射操作.
                 String nextNextFilePath = this.storePath + File.separator + UtilAll.offset2FileName(createOffset + this.mappedFileSize);
                 mappedFile = this.allocateMappedFileService.putRequestAndReturnMappedFile(nextFilePath, nextNextFilePath, this.mappedFileSize);
             } else {
-                // allocateMappedFileService为空, 就只会创建当前新文件
+                // 没开启预写功能, 就只会创建当前需要的文件
                 try {
                     mappedFile = new MappedFile(nextFilePath, this.mappedFileSize);
                 } catch (IOException e) {
@@ -300,7 +301,7 @@ public class MappedFileQueue {
      */
     public MappedFile getLastMappedFile() {
         MappedFile mappedFileLast = null;
-        // 循环查询, 区别于 getFirstMappedFile(), 两种情况下会返回null:
+        // 循环查询, 区别于 getFirstMappedFile(), 三种情况下会返回null:
         // 1.mappedFiles数据集合为空
         // 2.mappedFiles索引i所在的对象为空
         // 3.出现未知异常(情况较少)

@@ -34,8 +34,13 @@ public class BrokerConfig {
     private boolean clusterTopicEnable = true;
 
     private boolean brokerTopicEnable = true;
+
+    /**
+     * 是否自动创建消费组
+     */
     @ImportantField
     private boolean autoCreateSubscriptionGroup = true;
+
     private String messageStorePlugIn = "";
     @ImportantField
     private String msgTraceTopicName = TopicValidator.RMQ_SYS_TRACE_TOPIC;

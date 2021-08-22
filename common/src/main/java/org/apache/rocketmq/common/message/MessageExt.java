@@ -18,9 +18,26 @@ public class MessageExt extends Message {
      * 队列序号, 比如一个 topic 创建了3个队列, 那么序号就是：0、1、2
      */
     private int queueId;
+
+    /**
+     * 记录消息在 broker 的存盘大小
+     */
     private int storeSize;
+
+    /**
+     * 记录消息在 ConsumerQueue 中的偏移量
+     */
     private long queueOffset;
+
+    /**
+     * 用来记录一些系统和消息的标志, 比如当前主机是否为IPV6, 消息是否为事务消息等等.
+     * {@link MessageSysFlag}
+     */
     private int sysFlag;
+
+    /**
+     * 消息创建时间, 在 producer 发送消息时设置
+     */
     private long bornTimestamp;
 
     /**
@@ -38,7 +55,14 @@ public class MessageExt extends Message {
      */
     private SocketAddress storeHost;
 
+    /**
+     * 消息唯一编号
+     */
     private String msgId;
+
+    /**
+     * 记录消息存储在 commit log 中的偏移量
+     */
     private long commitLogOffset;
 
     /**
@@ -46,7 +70,14 @@ public class MessageExt extends Message {
      */
     private int bodyCRC;
 
+    /**
+     * 消息重试消费次数
+     */
     private int reconsumeTimes;
+
+    /**
+     * 事务详细相关
+     */
     private long preparedTransactionOffset;
 
     public MessageExt() {

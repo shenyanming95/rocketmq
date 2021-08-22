@@ -1,7 +1,7 @@
 package org.apache.rocketmq.store;
 
 /**
- * When write a message to the commit log, returns code
+ * 向 commit log 写入消息时, 返回标识码
  */
 public enum AppendMessageStatus {
     /**
@@ -10,7 +10,8 @@ public enum AppendMessageStatus {
     PUT_OK,
 
     /**
-     * 超过{@link java.nio.ByteBuffer}可写区域
+     * 超过{@link java.nio.ByteBuffer}可写区域,
+     * 即{@link MappedFile}文件写不下了.
      */
     END_OF_FILE,
 

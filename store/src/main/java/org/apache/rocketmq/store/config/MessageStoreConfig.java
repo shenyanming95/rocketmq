@@ -95,11 +95,19 @@ public class MessageStoreConfig {
     private int putMsgIndexHightWater = 600000;
 
     // The maximum size of message,default is 4M
+    /**
+     * 存储到 commit log 文件中每一条消息的最大值(包含了rocketMQ自身定义的消息数据)
+     * 默认4M
+     */
     private int maxMessageSize = 1024 * 1024 * 4;
 
     // Whether check the CRC32 of the records consumed.
     // This ensures no on-the-wire or on-disk corruption to the messages occurred.
     // This check adds some overhead,so it may be disabled in cases seeking extreme performance.
+    /**
+     * 文件恢复时是否校验CRC.
+     * 可确保不会对发生的消息进行在线或磁盘损坏, 但是检查会增加一些开销, 在寻求极端性能的情况下可以选择禁用它
+     */
     private boolean checkCRCOnRecover = true;
 
     /**
@@ -179,8 +187,11 @@ public class MessageStoreConfig {
     @ImportantField
     private FlushDiskType flushDiskType = FlushDiskType.ASYNC_FLUSH;
 
-
+    /**
+     * 同步刷盘的最大等待时间
+     */
     private int syncFlushTimeout = 1000 * 5;
+
     private String messageDelayLevel = "1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h";
     private long flushDelayOffsetInterval = 1000 * 10;
     @ImportantField
@@ -188,6 +199,7 @@ public class MessageStoreConfig {
 
     /**
      * 是否要开启预写{@link org.apache.rocketmq.store.MappedFile}文件, true-开启
+     * {@link AllocateMappedFileService}
      */
     private boolean warmMapedFileEnable = false;
 

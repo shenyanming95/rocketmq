@@ -7,6 +7,8 @@ public class NettyServerConfig implements Cloneable {
     private int serverSelectorThreads = 3;
     private int serverOnewaySemaphoreValue = 256;
     private int serverAsyncSemaphoreValue = 64;
+
+    // 网络连接最大空闲时间。如果链接空闲时间超过此参数设置的值，连接将被关闭
     private int serverChannelMaxIdleTimeSeconds = 120;
 
     private int serverSocketSndBufSize = NettySystemConfig.socketSndbufSize;

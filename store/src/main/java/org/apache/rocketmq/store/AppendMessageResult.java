@@ -1,7 +1,7 @@
 package org.apache.rocketmq.store;
 
 /**
- * When write a message to the commit log, returns results
+ * 向 commit log 写入消息时, 返回结果
  */
 public class AppendMessageResult {
     /**
@@ -29,9 +29,21 @@ public class AppendMessageResult {
      */
     private long storeTimestamp;
 
-    // Consume queue's offset(step by one)
+    /**
+     *  consumer queue 偏移量(这个值是累加1的)
+     */
     private long logicsOffset;
+
+    /**
+     * 记录写入到缓冲区的时间.
+     * 在实际代码中, 消息要么写入到{@link MappedFile#getMappedByteBuffer()}, 要么写入到{@link MappedFile#writeBuffer},
+     * 这个参数就是记录添加到上述缓冲区的时间.
+     */
     private long pagecacheRT = 0;
+
+    /**
+     * 当处理批量消息时, 用来记录已处理的消息个数
+     */
     private int msgNum = 1;
 
     public AppendMessageResult(AppendMessageStatus status) {

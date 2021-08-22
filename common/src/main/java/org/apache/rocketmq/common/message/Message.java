@@ -1,5 +1,7 @@
 package org.apache.rocketmq.common.message;
 
+import org.apache.rocketmq.remoting.protocol.RemotingCommand;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,10 +16,15 @@ public class Message implements Serializable {
      */
     private String topic;
 
+    /**
+     * 客户端指定的flag, 目前不知道有何用, 在{@link RemotingCommand#isOnewayRPC}中使用.
+     * 可能是网络通信层标记
+     */
     private int flag;
 
     /**
-     * producer 发送消息时携带过来的配置信息
+     * producer 发送消息时携带过来的配置信息, 比如tag、key等关键的消息属性.
+     * rocketMQ 预订了一组内置属性: {@link MessageConst}
      */
     private Map<String, String> properties;
 
@@ -26,6 +33,9 @@ public class Message implements Serializable {
      */
     private byte[] body;
 
+    /**
+     * 事务消息相关的事务编号
+     */
     private String transactionId;
 
     public Message() {
