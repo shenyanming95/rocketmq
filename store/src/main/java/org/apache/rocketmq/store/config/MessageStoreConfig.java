@@ -2,6 +2,7 @@ package org.apache.rocketmq.store.config;
 
 import org.apache.rocketmq.common.annotation.ImportantField;
 import org.apache.rocketmq.store.*;
+import org.apache.rocketmq.store.index.IndexFile;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -160,8 +161,16 @@ public class MessageStoreConfig {
     @ImportantField
     private boolean messageIndexEnable = true;
 
+    /**
+     * {@link IndexFile}使用, hash槽的个数, 默认为五百万
+     */
     private int maxHashSlotNum = 5000000;
+
+    /**
+     * {@link IndexFile}使用, 消息题目的个数, 默认为两千万
+     */
     private int maxIndexNum = 5000000 * 4;
+
     private int maxMsgsNumBatch = 64;
 
     /**
