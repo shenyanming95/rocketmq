@@ -14,12 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * rocketMQ 设计索引文件实现, 类似于Java中的{@link HashMap}, 其结构设计如下.
- * 一个{@link IndexFile}包含三个部分：
+ * rocketMQ 设计索引文件实现, 类似于Java中的{@link HashMap}, 其结构设计包含三个部分, 如下所示：
  * 1)、文件头, 即{@link IndexHeader}, 保存一些总的统计信息;
  * 2)、哈希槽, 默认五百万个, 每个哈希槽四个字节, 用来存储下面"索引条目"的位置;
  * 3)、索引条目, 实际存储消息信息, 默认两千万个, 每个条目20字节, 包含4字节的hashcode, 8字节的commitlog偏移量, 4字节的存储时间差, 4字节的前一个索引条目索引.
- *
  * <pre>
  *
  * 丨← IndexHeader →丨  ←   500W个hash槽  → 丨 ← 2000W个Index条目 → 丨
@@ -32,6 +30,13 @@ import java.util.List;
  *                                                   ------------------------------------------
  *                                                  丨hashcode丨phyOffset丨timeDif丨pre index no丨
  * </pre>                                            ------------------------------------------
+ *
+ * 结合上面的示意图, 运行逻辑为：
+ * 1.计算消息key的哈希值, 将其对hash槽总数求余, 可以得到位于哪个槽, 然后求出该hash槽实际在文件的偏移量;
+ * 2.读取哈希槽存储的值, 它表示哈希冲突时上一条消息在索引条目的序号, 当然未出现hash冲突时值就为0;
+ * 3.组装索引条目的结构, 包括 hashcode、phyOffset、timeDif(存储时间差)、pre index no(第2步读取的序号值)
+ * 4.算出索引条目实际要存放的偏移量, 依次将上面4个值写入进去, 同时更新hash槽的值为当前消息在索引条目的序号.
+ * (搜索逻辑类似...)
  */
 public class IndexFile {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
@@ -92,7 +97,7 @@ public class IndexFile {
         // 创建文件头
         ByteBuffer byteBuffer = this.mappedByteBuffer.slice();
         this.indexHeader = new IndexHeader(byteBuffer);
-
+        // 设置起始commit log偏移量(一般是上一个indexFile文件的终止commit log偏移量)
         if (endPhyOffset > 0) {
             this.indexHeader.setBeginPhyOffset(endPhyOffset);
             this.indexHeader.setEndPhyOffset(endPhyOffset);
@@ -134,7 +139,7 @@ public class IndexFile {
     /**
      * 保存索引
      *
-     * @param key            消息的key
+     * @param key            消息的key, 格式为：{topic} + '#' + {原始消息的UNIQ_KEY}
      * @param phyOffset      commit log 物理偏移量
      * @param storeTimestamp 存储时间
      * @return true-成功
@@ -181,12 +186,12 @@ public class IndexFile {
                 // 计算公式：文件头大小 + 哈希槽大小 + 当前索引条目数 * 每条索引条目大小
                 int absIndexPos = IndexHeader.INDEX_HEADER_SIZE + this.hashSlotNum * hashSlotSize + this.indexHeader.getIndexCount() * indexSize;
 
-                // 这边的存储方式就是索引条目的结构：消息key哈希值 + commit log物理偏移量 + 存储时间差 + 上一个索引条目的偏移量
+                // 这边的存储方式就是索引条目的结构：消息key哈希值、commitlog物理偏移量、存储时间差、上一个索引条目的偏移量
                 this.mappedByteBuffer.putInt(absIndexPos, keyHash);                       //4字节
                 this.mappedByteBuffer.putLong(absIndexPos + 4, phyOffset);          //8字节
                 this.mappedByteBuffer.putInt(absIndexPos + 4 + 8, (int) timeDiff);  //4字节
                 this.mappedByteBuffer.putInt(absIndexPos + 4 + 8 + 4, slotValue);   //4字节
-                // 设置哈希槽的值. 所以哈希槽的值实际存储的是消息的序号
+                // 更新哈希槽的值, 为当前消息在索引条目中的序号
                 this.mappedByteBuffer.putInt(absSlotPos, this.indexHeader.getIndexCount());
                 // 如果是第一条消息, 那就同步设置消息头的起始物理偏移量和起始存储时间戳
                 if (this.indexHeader.getIndexCount() <= 1) {
@@ -230,10 +235,22 @@ public class IndexFile {
         return false;
     }
 
+    /**
+     * 查询索引
+     * @param phyOffsets 从indexFile中读取出来的commitlog偏移量就放在这个集合中
+     * @param key
+     * @param maxNum 需要读取的commitlog偏移量的最大数量
+     * @param begin 筛选条件, 起始时间
+     * @param end 筛选条件, 终止时间
+     * @param lock
+     */
     public void selectPhyOffset(final List<Long> phyOffsets, final String key, final int maxNum, final long begin, final long end, boolean lock) {
         if (this.mappedFile.hold()) {
+            // 计算消息key的哈希值
             int keyHash = indexKeyHashMethod(key);
+            // 哈希值对总槽数求余, 得出此消息位于哪一个槽
             int slotPos = keyHash % this.hashSlotNum;
+            // 算出它在indexFile中的实际偏移量
             int absSlotPos = IndexHeader.INDEX_HEADER_SIZE + slotPos * hashSlotSize;
 
             FileLock fileLock = null;
@@ -243,6 +260,7 @@ public class IndexFile {
                     // hashSlotSize, true);
                 }
 
+                // 读出哈希槽的值, 它表示一个序号, 即消息位于哪一个索引条目上
                 int slotValue = this.mappedByteBuffer.getInt(absSlotPos);
                 // if (fileLock != null) {
                 // fileLock.release();
@@ -250,17 +268,21 @@ public class IndexFile {
                 // }
 
                 if (slotValue <= invalidIndex || slotValue > this.indexHeader.getIndexCount() || this.indexHeader.getIndexCount() <= 1) {
+                    // 非法的哈希槽值, 就不做处理(也不知道rocketMQ写这行代码干嘛..)
                 } else {
+                    // 由于存在哈希冲突, 所以直接读取到的消息可能不是目标消息, 就跟hashMap一样, 需要链式地读取
                     for (int nextIndexToRead = slotValue; ; ) {
+                        // 读取到的个数达到参数限制的最大值则退出循环
                         if (phyOffsets.size() >= maxNum) {
                             break;
                         }
 
+                        // 算出消息在indexFile中的实际偏移量
                         int absIndexPos = IndexHeader.INDEX_HEADER_SIZE + this.hashSlotNum * hashSlotSize + nextIndexToRead * indexSize;
 
+                        // 把索引条目的4个信息全部读取出来：消息key哈希值、commitlog物理偏移量、存储时间差、上一个索引条目的偏移量
                         int keyHashRead = this.mappedByteBuffer.getInt(absIndexPos);
                         long phyOffsetRead = this.mappedByteBuffer.getLong(absIndexPos + 4);
-
                         long timeDiff = (long) this.mappedByteBuffer.getInt(absIndexPos + 4 + 8);
                         int prevIndexRead = this.mappedByteBuffer.getInt(absIndexPos + 4 + 8 + 4);
 
@@ -268,19 +290,26 @@ public class IndexFile {
                             break;
                         }
 
+                        // 存储进去的时间差单位是秒, 这边乘以1000转换成毫秒
                         timeDiff *= 1000L;
 
+                        // 加上文件头保存的初始时间戳
                         long timeRead = this.indexHeader.getBeginTimestamp() + timeDiff;
+
+                        // 判断时间戳是否匹配, 即位于[begin, end]之间
                         boolean timeMatched = (timeRead >= begin) && (timeRead <= end);
 
+                        // 如果匹配, 保存commitlog偏移量到结果集中
                         if (keyHash == keyHashRead && timeMatched) {
                             phyOffsets.add(phyOffsetRead);
                         }
 
+                        // 非法数据校验
                         if (prevIndexRead <= invalidIndex || prevIndexRead > this.indexHeader.getIndexCount() || prevIndexRead == nextIndexToRead || timeRead < begin) {
                             break;
                         }
 
+                        // 如果不匹配, 则链式搜索, 用当前消息维护的上一条消息重新匹配
                         nextIndexToRead = prevIndexRead;
                     }
                 }
@@ -327,6 +356,15 @@ public class IndexFile {
     }
 
     public boolean isTimeMatched(final long begin, final long end) {
+        /*
+         *        begin                           end
+         *          ↓                              ↓
+         * ------------------------------------------------------- 时间轴
+         *              [←  1.查找这个区间  →]
+         *  [←  2.查找这个区间  →]
+         *                             [←    3.查找这个区间  →]
+         * 其实可以简化成：this.indexHeader.getEndTimestamp() > begin && this.indexHeader.getBeginTimestamp() < end
+         */
         boolean result = begin < this.indexHeader.getBeginTimestamp() && end > this.indexHeader.getEndTimestamp();
         result = result || (begin >= this.indexHeader.getBeginTimestamp() && begin <= this.indexHeader.getEndTimestamp());
         result = result || (end >= this.indexHeader.getBeginTimestamp() && end <= this.indexHeader.getEndTimestamp());

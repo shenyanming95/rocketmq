@@ -5,10 +5,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * {@link IndexFile}文件头, 主要存储六个信息
- *
- *
- *
+ * {@link IndexFile}文件头, 主要存储六个信息：
+ * 1)、第一次存放消息的存储时间、
+ * 2)、最后一次存储消息的存储时间、
+ * 3)、起始物理偏移量、
+ * 4)、终止物理偏移量、
+ * 5)、hash slot使用数、
+ * 6)、消息的个数
  */
 public class IndexHeader {
     /**
