@@ -40,6 +40,10 @@ public class DefaultMessageStore implements MessageStore {
     // CommitLog
     private final CommitLog commitLog;
 
+    /**
+     * 根据 topic 和 queueId, 快速定位到{@link ConsumeQueue}.
+     * <topic, < queueId, consumerQueue> >
+     */
     private final ConcurrentMap<String/* topic */, ConcurrentMap<Integer/* queueId */, ConsumeQueue>> consumeQueueTable;
 
     private final FlushConsumeQueueService flushConsumeQueueService;
@@ -1128,10 +1132,19 @@ public class DefaultMessageStore implements MessageStore {
         this.commitLog.setConfirmOffset(phyOffset);
     }
 
+    /**
+     * 根据 commitlog 物理偏移量和消息大小查询消息信息
+     *
+     * @param commitLogOffset 物理偏移量(算入了{@link MappedFile#getFileFromOffset()})
+     * @param size            消息大小
+     * @return 消息内容
+     */
     public MessageExt lookMessageByOffset(long commitLogOffset, int size) {
+        // 查询指定偏移量, 指定大小为size的数据, 一般是一条消息的byte数组
         SelectMappedBufferResult sbr = this.commitLog.getMessage(commitLogOffset, size);
         if (null != sbr) {
             try {
+                // 解码消息
                 return MessageDecoder.decode(sbr.getByteBuffer(), true, false);
             } finally {
                 sbr.release();
@@ -1141,29 +1154,40 @@ public class DefaultMessageStore implements MessageStore {
         return null;
     }
 
+    /**
+     * 根据主题名和队列序号定位消息消费队列
+     *
+     * @param topic   主题名
+     * @param queueId 队列序号
+     * @return {@link ConsumeQueue}
+     */
     public ConsumeQueue findConsumeQueue(String topic, int queueId) {
+        // 获取topic对应的map信息
         ConcurrentMap<Integer, ConsumeQueue> map = consumeQueueTable.get(topic);
+        // 如果map为空, 那么为这个topic初始化一个map
         if (null == map) {
             ConcurrentMap<Integer, ConsumeQueue> newMap = new ConcurrentHashMap<Integer, ConsumeQueue>(128);
             ConcurrentMap<Integer, ConsumeQueue> oldMap = consumeQueueTable.putIfAbsent(topic, newMap);
+            // 一个简单的并发控制
             if (oldMap != null) {
                 map = oldMap;
             } else {
                 map = newMap;
             }
         }
-
+        // 通过 topic map 获取对应 queueId 的consumerQueue
         ConsumeQueue logic = map.get(queueId);
+        // 如果 consumerQueue 为空, 那么为其创建一个新的实例
         if (null == logic) {
             ConsumeQueue newLogic = new ConsumeQueue(topic, queueId, StorePathConfigHelper.getStorePathConsumeQueue(this.messageStoreConfig.getStorePathRootDir()), this.getMessageStoreConfig().getMappedFileSizeConsumeQueue(), this);
             ConsumeQueue oldLogic = map.putIfAbsent(queueId, newLogic);
+            // 一个简单的并发控制
             if (oldLogic != null) {
                 logic = oldLogic;
             } else {
                 logic = newLogic;
             }
         }
-
         return logic;
     }
 

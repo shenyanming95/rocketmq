@@ -436,14 +436,23 @@ public class ConsumeQueue {
         }
     }
 
+    /**
+     * 获取 consumer queue 指定偏移量的数据
+     *
+     * @param startIndex 数据条目的开始索引, 拿它乘以 CQ_STORE_UNIT_SIZE 就可以等到实际物理偏移量
+     * @return 查询数据
+     */
     public SelectMappedBufferResult getIndexBuffer(final long startIndex) {
         int mappedFileSize = this.mappedFileSize;
+        // 每个 consumer queue 20个字节, 这边乘以20就是拿到实际的物理偏移量
         long offset = startIndex * CQ_STORE_UNIT_SIZE;
+        // 要查询的索引必须大于等于最小的逻辑偏移量
         if (offset >= this.getMinLogicOffset()) {
+            // 查找目标偏移量存在于哪一个mappedFile上
             MappedFile mappedFile = this.mappedFileQueue.findMappedFileByOffset(offset);
             if (mappedFile != null) {
-                SelectMappedBufferResult result = mappedFile.selectMappedBuffer((int) (offset % mappedFileSize));
-                return result;
+                // 直接从mappedFile中读取相应的数据
+                return mappedFile.selectMappedBuffer((int) (offset % mappedFileSize));
             }
         }
         return null;

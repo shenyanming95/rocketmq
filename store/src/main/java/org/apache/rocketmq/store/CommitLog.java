@@ -34,6 +34,8 @@ import java.util.concurrent.*;
  * 1.性能最高, 安全性最低, {@link CommitRealTimeService}, 它直接把消息写到{@link FileChannel}内就返回;
  * 2.性能居中, 安全性居中, {@link FlushRealTimeService}, 它通过{@link MappedByteBuffer#force()}, 异步地将消息刷盘;
  * 3.性能最慢, 安全性最高, {@link GroupCommitService}, 刷盘方式跟第2种一样, 只不过它需要同步等待{@link Future#get()}, 因此效果如同步刷盘一样.
+ * <p>
+ * @see org.apache.rocketmq.tools.parse.commitlog.CommitLogMessage
  */
 public class CommitLog {
     protected static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
@@ -96,7 +98,8 @@ public class CommitLog {
     private volatile long beginTimeInLock = 0;
 
     /**
-     * 用来存储 consumer queue 的偏移量, key- 消息主题+队列序号, value- consumer queue偏移量
+     * 用来维护消息在 ConsumerQueue 的存储偏移量, 初始值都为0, 后续存储一条commitlog消息成功, offset就会累加1.
+     * 存储结构为：<topic+queueId, <offset>>
      */
     protected HashMap<String/* topic-queueid */, Long/* offset */> topicQueueTable = new HashMap<String, Long>(1024);
 
@@ -157,7 +160,7 @@ public class CommitLog {
                 + 8 //STORETIMESTAMP-8个字节记录-消息存储的时间戳
                 + storeHostAddressLength //STOREHOSTADDRESS-8或20个字节记录-存储消息的broker的主机地址
                 + 4 //RECONSUMETIMES-4个字节记录-消息重试消费次数
-                + 8 //Prepared Transaction Offset //8个字节记录-事务详细相关
+                + 8 //Prepared Transaction Offset //8个字节记录-事务消息相关
                 + 4 + (Math.max(bodyLength, 0)) //BODY-4个字节来记录-消息体的大小, 接着加上消息体自身需要的字节数
                 + 1 + topicLength //TOPIC-1个字节记录-消息主题名称的大小, 接着加上主题名称自身需要的字节数
                 + 2 + (Math.max(propertiesLength, 0)) //propertiesLength-2个字节记录-额外属性需要的大小, 接着加上额外属性自身需要的字节数
@@ -456,6 +459,7 @@ public class CommitLog {
 
             long bornTimeStamp = byteBuffer.getLong();
 
+            // 消息来源主机地址的解析
             ByteBuffer byteBuffer1;
             if ((sysFlag & MessageSysFlag.BORNHOST_V6_FLAG) == 0) {
                 byteBuffer1 = byteBuffer.get(bytesContent, 0, 4 + 4);
@@ -465,6 +469,7 @@ public class CommitLog {
 
             long storeTimestamp = byteBuffer.getLong();
 
+            // 消息存储broker主机地址的解析
             ByteBuffer byteBuffer2;
             if ((sysFlag & MessageSysFlag.STOREHOSTADDRESS_V6_FLAG) == 0) {
                 byteBuffer2 = byteBuffer.get(bytesContent, 0, 4 + 4);
@@ -476,11 +481,11 @@ public class CommitLog {
 
             long preparedTransactionOffset = byteBuffer.getLong();
 
+            // 读取消息体
             int bodyLen = byteBuffer.getInt();
             if (bodyLen > 0) {
                 if (readBody) {
                     byteBuffer.get(bytesContent, 0, bodyLen);
-
                     if (checkCRC) {
                         int crc = UtilAll.crc32(bytesContent, 0, bodyLen);
                         if (crc != bodyCRC) {
@@ -501,6 +506,7 @@ public class CommitLog {
             String keys = "";
             String uniqKey = null;
 
+            // 解析消息的额外属性 properties
             short propertiesLength = byteBuffer.getShort();
             Map<String, String> propertiesMap = null;
             if (propertiesLength > 0) {
@@ -509,24 +515,25 @@ public class CommitLog {
                 propertiesMap = MessageDecoder.string2messageProperties(properties);
 
                 keys = propertiesMap.get(MessageConst.PROPERTY_KEYS);
-
                 uniqKey = propertiesMap.get(MessageConst.PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX);
-
                 String tags = propertiesMap.get(MessageConst.PROPERTY_TAGS);
+
                 if (tags != null && tags.length() > 0) {
                     tagsCode = MessageExtBrokerInner.tagsString2tagsCode(MessageExt.parseTopicFilterType(sysFlag), tags);
                 }
 
-                // Timing message processing
+                // 延迟消息解析(如果该消息是延迟消息的话)
                 {
                     String t = propertiesMap.get(MessageConst.PROPERTY_DELAY_TIME_LEVEL);
                     if (TopicValidator.RMQ_SYS_SCHEDULE_TOPIC.equals(topic) && t != null) {
-                        int delayLevel = Integer.parseInt(t);
 
+                        // 解析出延迟消息的延迟等级
+                        int delayLevel = Integer.parseInt(t);
                         if (delayLevel > this.defaultMessageStore.getScheduleMessageService().getMaxDelayLevel()) {
                             delayLevel = this.defaultMessageStore.getScheduleMessageService().getMaxDelayLevel();
                         }
 
+                        // 通过延迟等级和存储时间, 计算实际要被投递的时间, 存储到tagsCode中
                         if (delayLevel > 0) {
                             tagsCode = this.defaultMessageStore.getScheduleMessageService().computeDeliverTimestamp(delayLevel, storeTimestamp);
                         }
@@ -605,7 +612,8 @@ public class CommitLog {
                 MessageAccessor.putProperty(msg, MessageConst.PROPERTY_REAL_QUEUE_ID, String.valueOf(msg.getQueueId()));
                 msg.setPropertiesString(MessageDecoder.messageProperties2String(msg.getProperties()));
 
-                // 将延迟消息队列和主题设置进去, 所以此条消息实际保存在延迟队列
+                // 将延迟消息队列和主题设置进去, 消息还是存储在commit log中,
+                // 只不过后续线程会将其存到延迟队列专用的 consumer queue中
                 msg.setTopic(topic);
                 msg.setQueueId(queueId);
             }
@@ -1297,11 +1305,22 @@ public class CommitLog {
         return -1;
     }
 
+    /**
+     * 根据物理偏移量和消息大小查找消息
+     *
+     * @param offset 物理偏移量
+     * @param size   消息大小
+     * @return 实际消息
+     */
     public SelectMappedBufferResult getMessage(final long offset, final int size) {
+        // 获取 commit log 文件的大小
         int mappedFileSize = this.defaultMessageStore.getMessageStoreConfig().getMappedFileSizeCommitLog();
+        // 查找指定偏移量位于哪一个mappedFile中
         MappedFile mappedFile = this.mappedFileQueue.findMappedFileByOffset(offset, offset == 0);
         if (mappedFile != null) {
+            // 获取相对偏移量
             int pos = (int) (offset % mappedFileSize);
+            // 从mappedFile中捞出数据
             return mappedFile.selectMappedBuffer(pos, size);
         }
         return null;

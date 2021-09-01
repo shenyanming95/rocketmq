@@ -1,6 +1,10 @@
 package org.apache.rocketmq.store;
 
+/**
+ * 消息落地到磁盘的结果, 区别于消息追加到commitlog的结果{@link AppendMessageResult}
+ */
 public class PutMessageResult {
+
     private PutMessageStatus putMessageStatus;
     private AppendMessageResult appendMessageResult;
 
