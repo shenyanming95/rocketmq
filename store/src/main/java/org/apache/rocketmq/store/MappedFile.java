@@ -585,14 +585,28 @@ public class MappedFile extends ReferenceResource {
         return this.fileSize == this.wrotePosition.get();
     }
 
+    /**
+     * 查询 mappedFile 指定逻辑偏移量的数据
+     *
+     * @param pos  逻辑偏移量(不算入{@link #fileFromOffset})
+     * @param size 读取数据的大小
+     * @return 数据集
+     */
     public SelectMappedBufferResult selectMappedBuffer(int pos, int size) {
+        // 当前文件最大可读位置
         int readPosition = getReadPosition();
+        // 满足可读范围内
         if ((pos + size) <= readPosition) {
+            // 将该mappedFile的引用计数加1, 避免被回收, 不过在这边没有 release(), 它是在调用方自己release()的.
             if (this.hold()) {
+                // 依次调用 slice() 方法拿到共享缓冲区, 这边需要两次 slice() 的含义在于：
+                // slice() 会将 limit=limit-position, position=0. 所以第一次会为了
+                // 限制limit, 第二次是为了将position置为0
                 ByteBuffer byteBuffer = this.mappedByteBuffer.slice();
                 byteBuffer.position(pos);
                 ByteBuffer byteBufferNew = byteBuffer.slice();
                 byteBufferNew.limit(size);
+                // 组装数据返回
                 return new SelectMappedBufferResult(this.fileFromOffset + pos, byteBufferNew, size, this);
             } else {
                 log.warn("matched, but hold failed, request pos: " + pos + ", fileFromOffset: " + this.fileFromOffset);
@@ -600,7 +614,6 @@ public class MappedFile extends ReferenceResource {
         } else {
             log.warn("selectMappedBuffer request pos invalid, request pos: " + pos + ", size: " + size + ", fileFromOffset: " + this.fileFromOffset);
         }
-
         return null;
     }
 

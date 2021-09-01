@@ -201,8 +201,16 @@ public class MessageStoreConfig {
      */
     private int syncFlushTimeout = 1000 * 5;
 
+    /**
+     * 延迟队列等级（s=秒，m=分，h=小时)
+     */
     private String messageDelayLevel = "1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h";
+
+    /**
+     * 延迟队列拉取进度刷盘间隔, 默认10s
+     */
     private long flushDelayOffsetInterval = 1000 * 10;
+
     @ImportantField
     private boolean cleanFileForciblyEnable = true;
 
