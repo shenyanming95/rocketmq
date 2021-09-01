@@ -3,31 +3,33 @@ package org.apache.rocketmq.tools.parse.commitlog;
 import java.net.InetSocketAddress;
 
 /**
+ * rocketMQ的commit log消息条目的数据结构
+ *
  * @author shenyanming
  * Create on 2021/08/03 20:06
  */
 public class CommitLogMessage {
 
-    private int totalSize;
-    private int magicCode;
-    private int bodyCyc;
-    private int queueId;
-    private int flag;
-    private long queueOffset;
-    private long physicalOffset;
-    private int sysFlag;
-    private String bornTimeStamp;
-    private InetSocketAddress bornHost;
-    private String storeTimeStamp;
-    private InetSocketAddress storeHost;
-    private int reconsumeTimes;
-    private long preparedTransactionOffset;
-    private int bodyLength;
-    private byte[] body;
-    private byte topicLength;
-    private byte[] topic;
-    private short propertiesLength;
-    private byte[] propertiesData;
+    private int totalSize;                  //消息总大小
+    private int magicCode;                  //魔数, 标识用, 比如写到文件末尾
+    private int bodyCyc;                    //消息体body的CRC校验和
+    private int queueId;                    //消费队列consumerQueue的序号
+    private int flag;                       //网络通信层标记
+    private long queueOffset;               //消息在ConsumerQueue中的偏移量
+    private long physicalOffset;            //消息存储在commitLog的绝对偏移量
+    private int sysFlag;                    //系统标志
+    private String bornTimeStamp;           //消息在来源方生成的时间戳
+    private InetSocketAddress bornHost;     //消息来源方主机地址
+    private String storeTimeStamp;          //消息在Broker的存储时间
+    private InetSocketAddress storeHost;    //消息在Broker的主机地址
+    private int reconsumeTimes;             //消息重试消费次数
+    private long preparedTransactionOffset; //事务消息相关
+    private int bodyLength;                 //消息体的大小
+    private byte[] body;                    //消息体
+    private byte topicLength;               //主题名大小
+    private byte[] topic;                   //主题名
+    private short propertiesLength;         //附加属性大小
+    private byte[] propertiesData;          //附加属性值
 
     public int getTotalSize() {
         return totalSize;

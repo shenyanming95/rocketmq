@@ -30,6 +30,7 @@ public class CommitLogParser {
 
     private final static int BORNHOST_V6_FLAG = 0x1 << 4; // 16
     private final static int STOREHOSTADDRESS_V6_FLAG = 0x1 << 5; // 32
+    private final static int BLANK_MAGIC_CODE = -875286124;
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static List<CommitLogMessage> parse(String path) {
@@ -43,36 +44,30 @@ public class CommitLogParser {
     private static List<CommitLogMessage> read(String path, Integer total) {
         // 返回值
         List<CommitLogMessage> retList = Objects.isNull(total) ? new ArrayList<>() : new ArrayList<>(total);
+        // 读取的消息条数
+        int readCount = Objects.isNull(total) ? Integer.MAX_VALUE : total;
         // 打开文件
         try (RandomAccessFile file = openFile(path)) {
-            if (Objects.isNull(total)) {
-                // 一直读到文件末尾
-                for (; ; ) {
-                    // 优先读取一条消息的总大小
-                    int totalSize = file.readInt();
-                    if (totalSize < 1) {
-                        // 读到文件末尾
-                        break;
-                    }
-                    // 依次读取消息格式
-                    retList.add(doRead(totalSize, file));
-                }
-                return retList;
-            }
-            for (int i = 0; i < total; i++) {
+            for (int i = 0; i < readCount; i++) {
                 // 优先读取一条消息的总大小
                 int totalSize = file.readInt();
                 if (totalSize < 1) {
                     // 读到文件末尾
                     break;
                 }
+                // 再读取魔数, 判断是否读取到文件末尾
+                int magicCode = file.readInt();
+                if (Objects.equals(BLANK_MAGIC_CODE, magicCode)) {
+                    // 读到文件末尾
+                    break;
+                }
                 // 依次读取消息格式
-                retList.add(doRead(totalSize, file));
+                retList.add(doRead(totalSize, magicCode, file));
             }
-            return retList;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return retList;
     }
 
     private static RandomAccessFile openFile(String path) {
@@ -83,11 +78,11 @@ public class CommitLogParser {
         }
     }
 
-    private static CommitLogMessage doRead(int totalSize, RandomAccessFile file) {
+    private static CommitLogMessage doRead(int totalSize, int magicCode, RandomAccessFile file) {
         try {
             CommitLogMessage result = new CommitLogMessage();
             result.setTotalSize(totalSize);
-            result.setMagicCode(file.readInt());
+            result.setMagicCode(magicCode);
             result.setBodyCyc(file.readInt());
             result.setQueueId(file.readInt());
             result.setFlag(file.readInt());
@@ -139,7 +134,7 @@ public class CommitLogParser {
         return new InetSocketAddress(address, port);
     }
 
-    private static String convertTime(long timestamp){
+    private static String convertTime(long timestamp) {
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
         return formatter.format(dateTime);
     }
