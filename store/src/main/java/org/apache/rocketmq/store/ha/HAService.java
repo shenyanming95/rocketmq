@@ -25,19 +25,17 @@ import java.util.concurrent.atomic.AtomicReference;
 public class HAService {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
 
+    /**
+     * 已经创建并连接好的{@link HAConnection}的数量统计
+     */
     private final AtomicInteger connectionCount = new AtomicInteger(0);
 
     private final List<HAConnection> connectionList = new LinkedList<>();
-
     private final AcceptSocketService acceptSocketService;
-
     private final DefaultMessageStore defaultMessageStore;
-
     private final WaitNotifyObject waitNotifyObject = new WaitNotifyObject();
     private final AtomicLong push2SlaveMaxOffset = new AtomicLong(0);
-
     private final GroupTransferService groupTransferService;
-
     private final HAClient haClient;
 
     public HAService(final DefaultMessageStore defaultMessageStore) throws IOException {

@@ -2,6 +2,7 @@ package org.apache.rocketmq.store.config;
 
 import org.apache.rocketmq.common.annotation.ImportantField;
 import org.apache.rocketmq.store.*;
+import org.apache.rocketmq.store.dledger.DLedgerCommitLog;
 import org.apache.rocketmq.store.index.IndexFile;
 
 import java.io.File;
@@ -181,9 +182,22 @@ public class MessageStoreConfig {
     private boolean messageIndexSafe = false;
 
     private int haListenPort = 10912;
+
+    /**
+     * Master与Slave心跳包发送间隔, 默认5s
+     */
     private int haSendHeartbeatInterval = 1000 * 5;
+
+    /**
+     * Master与slave长连接空闲时间, 超过该时间将关闭连接, 单位毫秒
+     */
     private int haHousekeepingInterval = 1000 * 20;
+
+    /**
+     * 一次HA主从同步传输的最大字节长度, 默认为32K
+     */
     private int haTransferBatchSize = 1024 * 32;
+
     @ImportantField
     private String haMasterAddress = null;
     private int haSlaveFallbehindMax = 1024 * 1024 * 256;
@@ -247,9 +261,26 @@ public class MessageStoreConfig {
      */
     private boolean fastFailIfNoBufferInStorePool = false;
 
+    /**
+     * 是否启动 DLedger, 即使用{@link DLedgerCommitLog}.
+     * 是指一组相同名称的 Broker, 至少需要3个节点, 通过 Raft 自动选举出一个 Leader,
+     * 其余节点 作为 Follower, 并在 Leader 和 Follower 之间复制数据以保证高可用.
+     */
     private boolean enableDLegerCommitLog = false;
+
+    /**
+     * DLedger Raft Group的名字, 建议和 brokerName 保持一致
+     */
     private String dLegerGroup;
+
+    /**
+     * DLedger Group 内各节点的端口信息, 同一个 Group 内的各个节点配置必须要保证一致
+     */
     private String dLegerPeers;
+
+    /**
+     * 节点 id, 必须属于 dLegerPeers 中的一个, 同 Group 内各个节点要唯一
+     */
     private String dLegerSelfId;
 
     private String preferredLeaderId;
