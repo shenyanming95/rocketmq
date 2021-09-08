@@ -181,6 +181,9 @@ public class MessageStoreConfig {
     @ImportantField
     private boolean messageIndexSafe = false;
 
+    /**
+     * HA主从同步, master监听的端口地址, 用来接受slave连接
+     */
     private int haListenPort = 10912;
 
     /**
@@ -200,7 +203,13 @@ public class MessageStoreConfig {
 
     @ImportantField
     private String haMasterAddress = null;
+
+    /**
+     * 允许slave与master同步commitlog的最大字节数偏差, 默认256M.
+     * 如果超过该值则表示该slave不可用
+     */
     private int haSlaveFallbehindMax = 1024 * 1024 * 256;
+
     @ImportantField
     private BrokerRole brokerRole = BrokerRole.ASYNC_MASTER;
 

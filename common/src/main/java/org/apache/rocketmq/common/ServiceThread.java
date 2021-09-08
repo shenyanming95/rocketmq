@@ -156,6 +156,11 @@ public abstract class ServiceThread implements Runnable {
         }
     }
 
+    /**
+     * 阻塞一段时间后, 再运行
+     *
+     * @param interval 阻塞时间, 单位毫秒
+     */
     protected void waitForRunning(long interval) {
         // 已经被唤醒过了, 直接调用唤醒后置处理逻辑, 然后方法返回, 就不需要阻塞了.
         if (hasNotified.compareAndSet(true, false)) {

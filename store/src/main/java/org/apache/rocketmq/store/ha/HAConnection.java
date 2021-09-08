@@ -51,7 +51,8 @@ public class HAConnection {
     private ReadSocketService readSocketService;
 
     /**
-     * slave需要同步的偏移量(即slave告诉master, 我要这个位置的commitlog消息)
+     * salve连接上master, 第一次上报, 需要同步的偏移量, 即slave告诉master, 我要这个位置的commitlog消息.
+     * 这个变量只会在第一次上报的时候更新, 它记录slave最开始需要的commitlog偏移量
      */
     private volatile long slaveRequestOffset = -1;
 
@@ -261,8 +262,9 @@ public class HAConnection {
                                 log.info("slave[" + HAConnection.this.clientAddr + "] request offset " + readOffset);
                             }
 
-                            // 唤醒阻塞的线程, 即唤醒：org.apache.rocketmq.store.ha.HAService.GroupTransferService.
-                            // 它会告知其它线程, 此次主从同步成功.
+                            // 当处理完slave上报的消息时, 说明slave已经将master发给它的commitlog数据处理好了.
+                            // 此时就会唤醒阻塞的线程, 即唤醒：org.apache.rocketmq.store.ha.HAService.GroupTransferService.
+                            // 通知它, 此次主从同步成功.
                             HAConnection.this.haService.notifyTransferSome(HAConnection.this.slaveAckOffset);
                         }
                     } else if (readSize == 0) {
@@ -271,7 +273,8 @@ public class HAConnection {
                             break;
                         }
                     } else {
-                        // 异常情况, 返回false, 表示TCP通道出现问题, 读取失败
+                        // read()返回值为-1, 说明对端的数据发送完毕, 并且主动的close socket.
+                        // 此时返回false, 表示TCP连接断开, 读取失败
                         log.error("read socket[" + HAConnection.this.clientAddr + "] < 0");
                         return false;
                     }
@@ -293,13 +296,13 @@ public class HAConnection {
         private final Selector selector;
         private final SocketChannel socketChannel;
 
-        // header的数据包大小, 8个字节的commitlog offset, 4字节的commitlog size
+        // header的数据包大小, 8个字节的commitlog offset, 4字节的commitlog数据大小
         private final int headerSize = 8 + 4;
 
         // 用来传输header使用
         private final ByteBuffer byteBufferHeader = ByteBuffer.allocate(headerSize);
 
-        // 下一次写出, 从哪个偏移量开始
+        // 用于构建header, 写回slave
         private long nextTransferFromWhere = -1;
 
         // 用来传输body使用
@@ -338,6 +341,7 @@ public class HAConnection {
                     // 1. slave第一次启动;
                     // 2. slave宕机启动;
                     if (-1 == this.nextTransferFromWhere) {
+
                         // 等于0意味着slave第一次请求同步master(即slave所在的broker没有任何commitlog数据)
                         if (0 == HAConnection.this.slaveRequestOffset) {
                             // master目前存储的commitlog消息最大偏移量(物理偏移量, 算入了 MappedFile#fileFromOffset)
@@ -351,7 +355,7 @@ public class HAConnection {
                             // 头次传输数据, 就从master当前使用的最后一个commitlog文件开始传输
                             this.nextTransferFromWhere = masterOffset;
                         } else {
-                            // 不等于0, 说明是slave宕机重启后请求, 此时会使用上一次正常同步的偏移量开始
+                            // 不等于0, 说明是slave之前已经同步过数据, 此时会使用第一次正常同步使用的偏移量开始同步
                             this.nextTransferFromWhere = HAConnection.this.slaveRequestOffset;
                         }
                         log.info("master transfer data from " + this.nextTransferFromWhere + " to slave[" + HAConnection.this.clientAddr + "], and slave request " + HAConnection.this.slaveRequestOffset);
@@ -385,7 +389,7 @@ public class HAConnection {
                      * 代码到这里, 上一次已经传输完成, 并且master与slave之间未发生心跳超时
                      */
 
-                    // 读取slave指定偏移量的commitlog数据
+                    // 在master中读取指定偏移量的commitlog数据
                     SelectMappedBufferResult selectResult = HAConnection.this.haService.getDefaultMessageStore().getCommitLogData(this.nextTransferFromWhere);
                     if (selectResult != null) {
                         // 一次主从传输最多32k的数据
@@ -402,19 +406,21 @@ public class HAConnection {
 
                         // 设置此次消息体的最大可读位置, 然后赋值给变量 selectMappedBufferResult.
                         selectResult.getByteBuffer().limit(size);
+
                         // 每次传输完(即调用transferData()), 会将变量置为null, 然后等待下次传输重新赋值.
                         this.selectMappedBufferResult = selectResult;
 
                         // Build Header
                         this.byteBufferHeader.position(0);
                         this.byteBufferHeader.limit(headerSize);
+                        // 设置此次同步的commitlog偏移量、设置同步的commitlog数据大小
                         this.byteBufferHeader.putLong(thisOffset);
                         this.byteBufferHeader.putInt(size);
                         this.byteBufferHeader.flip();
 
                         this.lastWriteOver = this.transferData();
                     } else {
-                        // 读取不到新的commitlog消息, 阻塞等待被唤醒
+                        // 读取不到新的commitlog消息, 阻塞等待被唤醒, 或者超时唤醒
                         HAConnection.this.haService.getWaitNotifyObject().allWaitForRunning(100);
                     }
                 } catch (Exception e) {
@@ -490,6 +496,7 @@ public class HAConnection {
             }// while循环结束, 要么header已经写完了, 要么达到空写最大限制
 
             // body没有数据可以写, 返回header缓冲区是否还有剩余
+            // (有可能网络拥堵, 或者对端接收缓冲区已满, 因此数据写不出去, 就会存在剩余的情况)
             if (null == this.selectMappedBufferResult) {
                 return !this.byteBufferHeader.hasRemaining();
             }
