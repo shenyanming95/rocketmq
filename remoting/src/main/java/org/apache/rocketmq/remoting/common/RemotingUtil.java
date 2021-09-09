@@ -39,6 +39,7 @@ public class RemotingUtil {
     public static Selector openSelector() throws IOException {
         Selector result = null;
 
+        // linux平台
         if (isLinuxPlatform()) {
             try {
                 final Class<?> providerClazz = Class.forName("sun.nio.ch.EPollSelectorProvider");
@@ -60,6 +61,7 @@ public class RemotingUtil {
             }
         }
 
+        // 兜底方案, 直接调用jdk的方法创建selector
         if (result == null) {
             result = Selector.open();
         }
