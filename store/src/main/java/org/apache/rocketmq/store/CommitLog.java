@@ -35,6 +35,7 @@ import java.util.concurrent.*;
  * 2.性能居中, 安全性居中, {@link FlushRealTimeService}, 它通过{@link MappedByteBuffer#force()}, 异步地将消息刷盘;
  * 3.性能最慢, 安全性最高, {@link GroupCommitService}, 刷盘方式跟第2种一样, 只不过它需要同步等待{@link Future#get()}, 因此效果如同步刷盘一样.
  * <p>
+ *
  * @see org.apache.rocketmq.tools.parse.commitlog.CommitLogMessage
  */
 public class CommitLog {
@@ -1272,7 +1273,11 @@ public class CommitLog {
     }
 
     /**
-     * According to receive certain message or offset storage time if an error occurs, it returns -1
+     * 根据物理偏移量和消息大小, 查询消息的存储时间
+     *
+     * @param offset 物理偏移量, 即算入了{@link MappedFile#getFileFromOffset()}
+     * @param size   消息大小
+     * @return 存储时间戳, 如果发生错误, 返回-1
      */
     public long pickupStoreTimestamp(final long offset, final int size) {
         if (offset >= this.getMinOffset()) {
@@ -1308,7 +1313,7 @@ public class CommitLog {
     /**
      * 根据物理偏移量和消息大小查找消息
      *
-     * @param offset 物理偏移量
+     * @param offset 物理偏移量(即算入了{@link MappedFile#getFileFromOffset()})
      * @param size   消息大小
      * @return 实际消息
      */

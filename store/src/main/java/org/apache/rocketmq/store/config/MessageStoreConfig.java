@@ -27,13 +27,19 @@ public class MessageStoreConfig {
      */
     private int mappedFileSizeCommitLog = 1024 * 1024 * 1024;
 
-    // ConsumeQueue file size,default is 30W
+    /**
+     * consumerqueue 文件大小, 默认是30M
+     */
     private int mappedFileSizeConsumeQueue = 300000 * ConsumeQueue.CQ_STORE_UNIT_SIZE;
 
-    // enable consume queue ext
+    /**
+     * 是否开启 consumerQueueExt 功能
+     */
     private boolean enableConsumeQueueExt = false;
 
-    // ConsumeQueue extend file size, 48M
+    /**
+     * consumerQueueExt 文件的大小, 默认48M
+     */
     private int mappedFileSizeConsumeQueueExt = 48 * 1024 * 1024;
 
     // Bit count of filter bit map.
@@ -172,6 +178,9 @@ public class MessageStoreConfig {
      */
     private int maxIndexNum = 5000000 * 4;
 
+    /**
+     * 一次查询消息最大返回消息条数, 默认64条
+     */
     private int maxMsgsNumBatch = 64;
 
     /**

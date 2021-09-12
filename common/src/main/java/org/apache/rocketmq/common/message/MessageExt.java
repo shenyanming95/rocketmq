@@ -76,7 +76,7 @@ public class MessageExt extends Message {
     private int reconsumeTimes;
 
     /**
-     * 事务详细相关
+     * 事务消息相关
      */
     private long preparedTransactionOffset;
 

@@ -1,21 +1,79 @@
 package org.apache.rocketmq.store;
 
+import org.apache.rocketmq.common.message.MessageConst;
+import org.apache.rocketmq.common.sysflag.MessageSysFlag;
+import org.apache.rocketmq.store.index.IndexFile;
+
 import java.util.Map;
 
+/**
+ * 在恢复 commitlog 文件时, 记录 commit log 的信息.
+ * 用于构建其它存储文件使用, 比如{@link IndexFile}
+ */
 public class DispatchRequest {
+
+    /**
+     * 主题名
+     */
     private final String topic;
+
+    /**
+     * 队列序号
+     */
     private final int queueId;
+
+    /**
+     * 消息在 commit log 的物理偏移量(算上了{@link MappedFile#getFileFromOffset()})
+     */
     private final long commitLogOffset;
+
+    /**
+     * 消息的标签值, 即{@link MessageConst#PROPERTY_TAGS}
+     */
     private final long tagsCode;
+
+    /**
+     * 消息的存储时间
+     */
     private final long storeTimestamp;
+
+    /**
+     * consumerQueue偏移量
+     */
     private final long consumeQueueOffset;
+
+    /**
+     * 即{@link MessageConst#PROPERTY_KEYS}
+     */
     private final String keys;
+
     private final boolean success;
+
+    /**
+     * 即{@link MessageConst#PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX}
+     */
     private final String uniqKey;
+
+    /**
+     * 系统标志, {@link MessageSysFlag}
+     */
     private final int sysFlag;
+
+    /**
+     * 事务消息相关
+     */
     private final long preparedTransactionOffset;
+
+    /**
+     * 消息附带的额外属性
+     */
     private final Map<String, String> propertiesMap;
+
+    /**
+     * 消息的总大小
+     */
     private int msgSize;
+
     private byte[] bitMap;
 
     private int bufferSize = -1;//the buffer size maybe larger than the msg size if the message is wrapped by something

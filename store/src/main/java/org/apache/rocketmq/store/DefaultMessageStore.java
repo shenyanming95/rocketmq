@@ -1332,23 +1332,42 @@ public class DefaultMessageStore implements MessageStore {
         return file.exists();
     }
 
+    /**
+     * 加载 consumer queue 文件, 注意是这种存储方式：
+     * - path:
+     *      - topic0:
+     *          - queue0
+     *          - queue1
+     *          - ...
+     *      - topic1
+     *          - queue0
+     *          - queue1
+     *          - ...
+     * @return true-加载成功
+     */
     private boolean loadConsumeQueue() {
+        // 获取存储 consumer queue 的路径地址
         File dirLogic = new File(StorePathConfigHelper.getStorePathConsumeQueue(this.messageStoreConfig.getStorePathRootDir()));
+        // 获取旗下所有子目录, 即各个topic
         File[] fileTopicList = dirLogic.listFiles();
         if (fileTopicList != null) {
-
+            // 依次处理每个topic目录
             for (File fileTopic : fileTopicList) {
+                // rocketMQ的设计：每个目录就是topic的名称
                 String topic = fileTopic.getName();
-
+                // 获取topic目录下的每个文件, 就是每个queueId目录
                 File[] fileQueueIdList = fileTopic.listFiles();
                 if (fileQueueIdList != null) {
+                    // fileQueueId 也是一个个文件目录
                     for (File fileQueueId : fileQueueIdList) {
                         int queueId;
                         try {
+                            // 目录名就表示 queueId
                             queueId = Integer.parseInt(fileQueueId.getName());
                         } catch (NumberFormatException e) {
                             continue;
                         }
+                        // 生成consumer queue文件
                         ConsumeQueue logic = new ConsumeQueue(topic, queueId, StorePathConfigHelper.getStorePathConsumeQueue(this.messageStoreConfig.getStorePathRootDir()), this.getMessageStoreConfig().getMappedFileSizeConsumeQueue(), this);
                         this.putConsumeQueue(topic, queueId, logic);
                         if (!logic.load()) {

@@ -1,5 +1,8 @@
 package org.apache.rocketmq.store;
 
+/**
+ * rocketMQ系统运行时的标志, 是通过位运算来实现的
+ */
 public class RunningFlags {
 
     private static final int NOT_READABLE_BIT = 1;
@@ -8,6 +11,10 @@ public class RunningFlags {
 
     private static final int WRITE_LOGICS_QUEUE_ERROR_BIT = 1 << 2;
 
+    /**
+     * 写{@link org.apache.rocketmq.store.index.IndexFile}失败标志.
+     * 对应二进制为为：00000000000000000000000000001000
+     */
     private static final int WRITE_INDEX_FILE_ERROR_BIT = 1 << 3;
 
     private static final int DISK_FULL_BIT = 1 << 4;

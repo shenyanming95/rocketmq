@@ -11,8 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Extend of consume queue, to store something not important,
- * such as message store time, filter bit map and etc.
+ * {@link ConsumeQueue}类的扩展, 用于存储不重要的数据, 比如：消息存储时间、过滤器位等.
+ * 默认存储路径：{user.home}/store/consumequeue_ext/{topic}/{queueId}/, 每个文件
+ * 默认48M, 存放{@link CqExtUnit}（存储单元，由头部和内容两部分组成）,标志位(short, -1代表数据结尾), 尾部预留4个字节作为END_BLANK.
  * <p/>
  * <li>1. This class is used only by {@link ConsumeQueue}</li>
  * <li>2. And is week reliable.</li>
