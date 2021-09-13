@@ -228,7 +228,7 @@ public class MappedFileQueue {
     /**
      * 获取最后一个 mapped file, 如果文件不存在或者文件已写完, 那么创建一个新的
      *
-     * @param startOffset 开始偏移量
+     * @param startOffset 开始偏移量, 用来计算首次创建mappedFile的文件名
      * @return 内存映射文件
      */
     public MappedFile getLastMappedFile(final long startOffset) {
@@ -238,7 +238,7 @@ public class MappedFileQueue {
     /**
      * 获取最后一个 mapped file, 如果文件不存在或者文件已写完, 那么根据参数决定是否要创建新的.
      *
-     * @param startOffset 开始偏移量
+     * @param startOffset 开始偏移量, 用来计算首次创建mappedFile的文件名
      * @param needCreate  true-文件不存在或者已写满, 需要创建新的 mapped file
      * @return 内存映射文件
      */
@@ -260,7 +260,8 @@ public class MappedFileQueue {
             createOffset = mappedFileLast.getFileFromOffset() + this.mappedFileSize;
         }
 
-        // 需要创建新的 mapped file
+        // 上面两个if判断, 是用来决策是否需要创建新的文件. 如果都不满足, 那么createOffset值就为-1,
+        // 因此不会进入下面这个if条件, 进行创建mappedFile文件的逻辑.
         if (createOffset != -1 && needCreate) {
 
             // 新文件的路径
