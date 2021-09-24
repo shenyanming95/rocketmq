@@ -76,33 +76,60 @@ public class MessageStoreConfig {
     @ImportantField
     private boolean flushCommitLogTimed = false;
 
-    // ConsumeQueue flush interval
+    /**
+     * consumerQueue文件刷盘频率
+     */
     private int flushIntervalConsumeQueue = 1000;
 
-    // Resource reclaim interval
+    /**
+     * 清除过期文件线程调度频率
+     */
     private int cleanResourceInterval = 10000;
 
-    // CommitLog removal interval
+    /**
+     * 删除commitlog文件的时间间隔
+     */
     private int deleteCommitLogFilesInterval = 100;
 
     // ConsumeQueue removal interval
+
+    /**
+     * 删除consumequeue文件时间间隔
+     */
     private int deleteConsumeQueueFilesInterval = 100;
+
+    /**
+     * 销毁MappedFile被拒绝的最大存活时间, 默认120s.
+     * 清除过期文件线程在初次销毁mappedFile时, 如果该文件被其他线程引用, 引用次数大于0. 则设置MappedFile的可用状态为false,
+     * 并设置第一次删除时间, 下一次清理任务到达时, 如果系统时间大于初次删除时间加上本参数, 则将ref次数一次减1000, 直到引用次数小于0, 则释放物理资源.
+     */
     private int destroyMapedFileIntervalForcibly = 1000 * 120;
+
+    /**
+     * 重试删除文件间隔, 配合{@link #destroyMapedFileIntervalForcibly}
+     */
     private int redeleteHangedFileInterval = 1000 * 120;
 
-    // When to delete,default is at 4 am
+    /**
+     * 磁盘文件空间充足情况下, 默认每天什么时候执行删除过期文件, 默认04表示凌晨4点
+     */
     @ImportantField
     private String deleteWhen = "04";
+
+    /**
+     * commitlog目录所在分区的最大使用比例, 如果commitlog目录所在的分区使用比例大于该值, 则触发过期文件删除
+     */
     private int diskMaxUsedSpaceRatio = 75;
 
-    // The number of hours to keep a log file before deleting it (in hours)
+    /**
+     * 文件保留时间, 默认72小时. 表示非当前写文件最后一次更新时间加上fileReservedTime小于当前时间, 该文件将被清理
+     */
     @ImportantField
     private int fileReservedTime = 72;
 
     // Flow control for ConsumeQueue
     private int putMsgIndexHightWater = 600000;
 
-    // The maximum size of message,default is 4M
     /**
      * 存储到 commit log 文件中每一条消息的最大值(包含了rocketMQ自身定义的消息数据)
      * 默认4M
@@ -150,15 +177,38 @@ public class MessageStoreConfig {
      */
     private int commitCommitLogThoroughInterval = 200;
 
+    /**
+     * Consume两次刷盘的最大间隔,如果超过该间隔,将忽略
+     */
     private int flushConsumeQueueThoroughInterval = 1000 * 60;
+
+    /**
+     * 一次服务端消息拉取, 消息在内存中传输允许的最大传输字节数默认256kb
+     */
     @ImportantField
     private int maxTransferBytesOnMessageInMemory = 1024 * 256;
+
+    /**
+     * 一次服务消息拉取, 消息在内存中传输运行的最大消息条数, 默认为32条
+     */
     @ImportantField
     private int maxTransferCountOnMessageInMemory = 32;
+
+    /**
+     * 一次服务消息端消息拉取,消息在磁盘中传输允许的最大字节
+     */
     @ImportantField
     private int maxTransferBytesOnMessageInDisk = 1024 * 64;
+
+    /**
+     * 一次消息服务端消息拉取, 消息在磁盘中传输允许的最大条数, 默认为8条
+     */
     @ImportantField
     private int maxTransferCountOnMessageInDisk = 8;
+
+    /**
+     * 访问消息在内存中比率,默认为40
+     */
     @ImportantField
     private int accessMessageInMemoryMaxRatio = 40;
 
@@ -243,6 +293,9 @@ public class MessageStoreConfig {
      */
     private long flushDelayOffsetInterval = 1000 * 10;
 
+    /**
+     * 是否支持强行删除过期文件
+     */
     @ImportantField
     private boolean cleanFileForciblyEnable = true;
 
@@ -252,8 +305,14 @@ public class MessageStoreConfig {
      */
     private boolean warmMapedFileEnable = false;
 
-
+    /**
+     * 从服务器是否支持 offset检测
+     */
     private boolean offsetCheckInSlave = false;
+
+    /**
+     * 是否支持 PutMessage Lock锁打印信息
+     */
     private boolean debugLockEnable = false;
 
     /**
@@ -261,8 +320,19 @@ public class MessageStoreConfig {
      */
     private boolean duplicationEnable = false;
 
+    /**
+     * 是否统计磁盘的使用情况, 默认为true
+     */
     private boolean diskFallRecorded = true;
+
+    /**
+     * putMessage锁占用超过该时间, 表示 PageCache忙
+     */
     private long osPageCacheBusyTimeOutMills = 1000;
+
+    /**
+     * 查询消息默认返回条数,默认为32
+     */
     private int defaultQueryMaxNum = 32;
 
     /**
@@ -272,6 +342,9 @@ public class MessageStoreConfig {
     @ImportantField
     private boolean transientStorePoolEnable = false;
 
+    /**
+     * transientStorePool中缓存 ByteBuffer 个数,默认5个
+     */
     private int transientStorePoolSize = 5;
 
     /**
@@ -304,6 +377,8 @@ public class MessageStoreConfig {
     private String preferredLeaderId;
 
     private boolean isEnableBatchPush = false;
+
+    // ==================================================================================================================================== //
 
     public boolean isDebugLockEnable() {
         return debugLockEnable;
