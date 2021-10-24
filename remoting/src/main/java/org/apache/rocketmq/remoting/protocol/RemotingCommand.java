@@ -16,11 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * RocketMQ组件交互的命令
+ */
 public class RemotingCommand {
+    private static final InternalLogger log = InternalLoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
     public static final String SERIALIZE_TYPE_PROPERTY = "rocketmq.serialize.type";
     public static final String SERIALIZE_TYPE_ENV = "ROCKETMQ_SERIALIZE_TYPE";
     public static final String REMOTING_VERSION_KEY = "rocketmq.remoting.version";
-    private static final InternalLogger log = InternalLoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
     private static final int RPC_TYPE = 0; // 0, REQUEST_COMMAND
     private static final int RPC_ONEWAY = 1; // 0, RPC
     private static final Map<Class<? extends CommandCustomHeader>, Field[]> CLASS_HASH_MAP = new HashMap<Class<? extends CommandCustomHeader>, Field[]>();
@@ -37,12 +40,24 @@ public class RemotingCommand {
     private static final String LONG_CANONICAL_NAME_2 = long.class.getCanonicalName();
     private static final String BOOLEAN_CANONICAL_NAME_1 = Boolean.class.getCanonicalName();
     private static final String BOOLEAN_CANONICAL_NAME_2 = boolean.class.getCanonicalName();
+
+    /**
+     * RocketMQ命令的版本号
+     */
     private static volatile int configVersion = -1;
+
+    /**
+     * 请求唯一ID, 原子递增
+     */
     private static AtomicInteger requestId = new AtomicInteger(0);
 
+    /**
+     * 设置整体的序列化方式, 默认都是JSON, 但是可以在系统变量中改变{@link #SERIALIZE_TYPE_PROPERTY}指定别的序列化方式
+     */
     private static SerializeType serializeTypeConfigInThisServer = SerializeType.JSON;
 
     static {
+        // 指定外部变量传递的序列化方式
         final String protocol = System.getProperty(SERIALIZE_TYPE_PROPERTY, System.getenv(SERIALIZE_TYPE_ENV));
         if (!isBlank(protocol)) {
             try {
@@ -53,34 +68,75 @@ public class RemotingCommand {
         }
     }
 
+    /**
+     * 不同的命令类型有不同的含义:
+     * 1.如果是请求命令, 表示请求类型, 请求接收方根据code执行相应操作;
+     * 2.如果是响应命令, code==0表示成功, code!=0表示错误代码.
+     */
     private int code;
+
+    /**
+     * 请求和响应方语言
+     */
     private LanguageCode language = LanguageCode.JAVA;
+
+    /**
+     * 请求和响应方的程序版本
+     */
     private int version = 0;
+
     private int opaque = requestId.getAndIncrement();
+
+    /**
+     * 通信层标志位
+     */
     private int flag = 0;
+
     private String remark;
     private HashMap<String, String> extFields;
     private transient CommandCustomHeader customHeader;
 
+    /**
+     * 序列化类型
+     */
     private SerializeType serializeTypeCurrentRPC = serializeTypeConfigInThisServer;
 
+    /**
+     * 请求内容
+     */
     private transient byte[] body;
 
     protected RemotingCommand() {
+
     }
 
+    /**
+     * 创建一个请求的命令
+     *
+     * @param code         请求类型
+     * @param customHeader 请求头
+     * @return 命令
+     */
     public static RemotingCommand createRequestCommand(int code, CommandCustomHeader customHeader) {
         RemotingCommand cmd = new RemotingCommand();
         cmd.setCode(code);
         cmd.customHeader = customHeader;
+        // 设置版本
         setCmdVersion(cmd);
         return cmd;
     }
 
+    /**
+     * 设置命令版本号
+     *
+     * @param cmd 命令实例
+     */
     private static void setCmdVersion(RemotingCommand cmd) {
+        // 默认的configVersion为-1, 如果它大于0, 说明之前有命令处理过, 这边复用即可
         if (configVersion >= 0) {
             cmd.setVersion(configVersion);
         } else {
+            // 获取系统配置的变量-"rocketmq.remoting.version", 如果不为空, 使用它作为版本配置
             String v = System.getProperty(REMOTING_VERSION_KEY);
             if (v != null) {
                 int value = Integer.parseInt(v);
@@ -92,6 +148,10 @@ public class RemotingCommand {
 
     public static RemotingCommand createResponseCommand(Class<? extends CommandCustomHeader> classHeader) {
         return createResponseCommand(RemotingSysResponseCode.SYSTEM_ERROR, "not set any response code", classHeader);
+    }
+
+    public static RemotingCommand createResponseCommand(int code, String remark) {
+        return createResponseCommand(code, remark, null);
     }
 
     public static RemotingCommand createResponseCommand(int code, String remark, Class<? extends CommandCustomHeader> classHeader) {
@@ -113,10 +173,6 @@ public class RemotingCommand {
         }
 
         return cmd;
-    }
-
-    public static RemotingCommand createResponseCommand(int code, String remark) {
-        return createResponseCommand(code, remark, null);
     }
 
     public static RemotingCommand decode(final byte[] array) {

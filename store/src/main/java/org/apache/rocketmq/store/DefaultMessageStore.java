@@ -37,7 +37,7 @@ public class DefaultMessageStore implements MessageStore {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
 
     private final MessageStoreConfig messageStoreConfig;
-    // CommitLog
+
     private final CommitLog commitLog;
 
     /**
@@ -67,62 +67,79 @@ public class DefaultMessageStore implements MessageStore {
     private final TransientStorePool transientStorePool;
 
     private final RunningFlags runningFlags = new RunningFlags();
+
     private final SystemClock systemClock = new SystemClock();
 
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("StoreScheduledThread"));
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(
+            new ThreadFactoryImpl("StoreScheduledThread"));
+
     private final BrokerStatsManager brokerStatsManager;
+
     private final MessageArrivingListener messageArrivingListener;
+
     private final BrokerConfig brokerConfig;
+
     private final LinkedList<CommitLogDispatcher> dispatcherList;
-    private final ScheduledExecutorService diskCheckScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("DiskCheckScheduledThread"));
+
+    private final ScheduledExecutorService diskCheckScheduledExecutorService =
+            Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("DiskCheckScheduledThread"));
+
     boolean shutDownNormal = false;
+
     private volatile boolean shutdown = true;
+
     private StoreCheckpoint storeCheckpoint;
+
     private AtomicLong printTimes = new AtomicLong(0);
+
     private RandomAccessFile lockFile;
+
     private FileLock lock;
 
+    /**
+     * 唯一的构造方法
+     */
     public DefaultMessageStore(final MessageStoreConfig messageStoreConfig, final BrokerStatsManager brokerStatsManager, final MessageArrivingListener messageArrivingListener, final BrokerConfig brokerConfig) throws IOException {
         this.messageArrivingListener = messageArrivingListener;
         this.brokerConfig = brokerConfig;
         this.messageStoreConfig = messageStoreConfig;
         this.brokerStatsManager = brokerStatsManager;
         this.allocateMappedFileService = new AllocateMappedFileService(this);
+        // 在 RocketMQ 4.5 版本之前, RocketMQ 只有 Master/Slave 一种部署方式, 一组 broker 中有一个 Master, 有零到多个Slave.
+        // Slave 通过同步复制或异步复制的方式去同步 Master 数据, 这种方式存在一个缺陷：如果主节点挂了, 还需要人为手动进行重启或者切换.
+        // DLedger 是一个基于 raft 协议的 commitlog 存储库, RocketMQ 选用它来实现高可用多副本架构.
         if (messageStoreConfig.isEnableDLegerCommitLog()) {
             this.commitLog = new DLedgerCommitLog(this);
         } else {
             this.commitLog = new CommitLog(this);
         }
         this.consumeQueueTable = new ConcurrentHashMap<>(32);
-
         this.flushConsumeQueueService = new FlushConsumeQueueService();
         this.cleanCommitLogService = new CleanCommitLogService();
         this.cleanConsumeQueueService = new CleanConsumeQueueService();
         this.storeStatsService = new StoreStatsService();
         this.indexService = new IndexService(this);
+        // 如果使用了 DLedger, 那么高可用由它来实现, 就没有必要实现 RocketMQ 自己实现的HA高可用服务.
         if (!messageStoreConfig.isEnableDLegerCommitLog()) {
             this.haService = new HAService(this);
         } else {
             this.haService = null;
         }
         this.reputMessageService = new ReputMessageService();
-
         this.scheduleMessageService = new ScheduleMessageService(this);
-
         this.transientStorePool = new TransientStorePool(messageStoreConfig);
-
         if (messageStoreConfig.isTransientStorePoolEnable()) {
             this.transientStorePool.init();
         }
-
         this.allocateMappedFileService.start();
-
         this.indexService.start();
 
+        // commitlog数据处理器
         this.dispatcherList = new LinkedList<>();
         this.dispatcherList.addLast(new CommitLogDispatcherBuildConsumeQueue());
         this.dispatcherList.addLast(new CommitLogDispatcherBuildIndex());
 
+        // 获取整个存储目录
         File file = new File(StorePathConfigHelper.getLockFile(messageStoreConfig.getStorePathRootDir()));
         MappedFile.ensureDirOK(file.getParent());
         lockFile = new RandomAccessFile(file, "rw");
@@ -138,9 +155,6 @@ public class DefaultMessageStore implements MessageStore {
         }
     }
 
-    /**
-     * @throws IOException
-     */
     public boolean load() {
         boolean result = true;
 
@@ -181,9 +195,6 @@ public class DefaultMessageStore implements MessageStore {
         return result;
     }
 
-    /**
-     * @throws Exception
-     */
     public void start() throws Exception {
 
         lock = lockFile.getChannel().tryLock(0, 1, false);
@@ -1241,9 +1252,6 @@ public class DefaultMessageStore implements MessageStore {
         log.info(fileName + (result ? " delete OK" : " delete Failed"));
     }
 
-    /**
-     * @throws IOException
-     */
     private void createTempFile() throws IOException {
         String fileName = StorePathConfigHelper.getAbortFile(this.messageStoreConfig.getStorePathRootDir());
         File file = new File(fileName);
@@ -1479,12 +1487,24 @@ public class DefaultMessageStore implements MessageStore {
         return runningFlags;
     }
 
+    /**
+     * 在rocketMQ重启时, 用来将解析出来的commitlog数据, 分发给其它组件, 比如说：
+     * 1.consumerqueue - {@link CommitLogDispatcherBuildConsumeQueue}
+     * 2.indexFile - {@link CommitLogDispatcherBuildIndex}
+     *
+     * @param req commitlog数据
+     */
     public void doDispatch(DispatchRequest req) {
         for (CommitLogDispatcher dispatcher : this.dispatcherList) {
             dispatcher.dispatch(req);
         }
     }
 
+    /**
+     * 在RocketMQ重启时, 按照解析出来的commitlog数据, 构建consumerqueue文件.
+     *
+     * @param dispatchRequest commitlog数据
+     */
     public void putMessagePositionInfo(DispatchRequest dispatchRequest) {
         ConsumeQueue cq = this.findConsumeQueue(dispatchRequest.getTopic(), dispatchRequest.getQueueId());
         cq.putMessagePositionInfoWrapper(dispatchRequest);
@@ -1539,12 +1559,15 @@ public class DefaultMessageStore implements MessageStore {
         }, 6, TimeUnit.SECONDS);
     }
 
+    /**
+     * RocketMQ重启时, 拿到解析后的commitlog数据, 用来构建consumerqueue文件
+     */
     class CommitLogDispatcherBuildConsumeQueue implements CommitLogDispatcher {
-
         @Override
         public void dispatch(DispatchRequest request) {
             final int tranType = MessageSysFlag.getTransactionValue(request.getSysFlag());
             switch (tranType) {
+                // 非事务消息、事务提交消息
                 case MessageSysFlag.TRANSACTION_NOT_TYPE:
                 case MessageSysFlag.TRANSACTION_COMMIT_TYPE:
                     DefaultMessageStore.this.putMessagePositionInfo(request);
@@ -1556,8 +1579,10 @@ public class DefaultMessageStore implements MessageStore {
         }
     }
 
+    /**
+     * RocketMQ重启时, 拿到解析后的commitlog数据, 用来构建indexFile文件
+     */
     class CommitLogDispatcherBuildIndex implements CommitLogDispatcher {
-
         @Override
         public void dispatch(DispatchRequest request) {
             if (DefaultMessageStore.this.messageStoreConfig.isMessageIndexEnable()) {
@@ -1779,6 +1804,9 @@ public class DefaultMessageStore implements MessageStore {
         }
     }
 
+    /**
+     * consumerqueue文件刷盘线程
+     */
     class FlushConsumeQueueService extends ServiceThread {
         private static final int RETRY_TIMES_OVER = 3;
         private long lastFlushTimestamp = 0;
@@ -1848,8 +1876,15 @@ public class DefaultMessageStore implements MessageStore {
         }
     }
 
+    /**
+     * 用来将commitlog数据同步到consumerqueue和indexFile中, 这个线程是在
+     * RocketMQ运行时不断执行的.
+     */
     class ReputMessageService extends ServiceThread {
 
+        /**
+         * 用于标识：刷盘到哪个位置了
+         */
         private volatile long reputFromOffset = 0;
 
         public long getReputFromOffset() {
@@ -1876,15 +1911,23 @@ public class DefaultMessageStore implements MessageStore {
             super.shutdown();
         }
 
+        /**
+         * 返回还有多少数据没刷盘
+         */
         public long behind() {
+            // 当前commitlog最大存储位置, 减去重刷位置, 得到的值就表示还有多少数据未刷盘.
             return DefaultMessageStore.this.commitLog.getMaxOffset() - this.reputFromOffset;
         }
 
+        /**
+         * 是否可以刷盘, 判断逻辑在于刷盘位置即reputFromOffset, 小于当前commitlog的最大索引位置.
+         */
         private boolean isCommitLogAvailable() {
             return this.reputFromOffset < DefaultMessageStore.this.commitLog.getMaxOffset();
         }
 
         private void doReput() {
+            // TODO 什么情况下会导致 reputFromOffset 小于 commitlog 的最小偏移量
             if (this.reputFromOffset < DefaultMessageStore.this.commitLog.getMinOffset()) {
                 log.warn("The reputFromOffset={} is smaller than minPyOffset={}, this usually indicate that the dispatch behind too much and the commitlog has expired.", this.reputFromOffset, DefaultMessageStore.this.commitLog.getMinOffset());
                 this.reputFromOffset = DefaultMessageStore.this.commitLog.getMinOffset();
@@ -1895,35 +1938,45 @@ public class DefaultMessageStore implements MessageStore {
                     break;
                 }
 
+                // 从指定位置找出commitlog数据
                 SelectMappedBufferResult result = DefaultMessageStore.this.commitLog.getData(reputFromOffset);
                 if (result != null) {
                     try {
+                        // 更新起始位置.
                         this.reputFromOffset = result.getStartOffset();
 
                         for (int readSize = 0; readSize < result.getSize() && doNext; ) {
+
+                            // 解析出commitlog数据
                             DispatchRequest dispatchRequest = DefaultMessageStore.this.commitLog.checkMessageAndReturnSize(result.getByteBuffer(), false, false);
                             int size = dispatchRequest.getBufferSize() == -1 ? dispatchRequest.getMsgSize() : dispatchRequest.getBufferSize();
 
+                            // 消息解析成功
                             if (dispatchRequest.isSuccess()) {
                                 if (size > 0) {
+                                    // 分发commitlog数据, 这里会去构建consumerqueue和indexFile(如果开启索引功能的话)
                                     DefaultMessageStore.this.doDispatch(dispatchRequest);
 
+                                    // 当前broker是master并且开启了长轮询.回调方法, 告知它们消息已到达.
                                     if (BrokerRole.SLAVE != DefaultMessageStore.this.getMessageStoreConfig().getBrokerRole() && DefaultMessageStore.this.brokerConfig.isLongPollingEnable()) {
                                         DefaultMessageStore.this.messageArrivingListener.arriving(dispatchRequest.getTopic(), dispatchRequest.getQueueId(), dispatchRequest.getConsumeQueueOffset() + 1, dispatchRequest.getTagsCode(), dispatchRequest.getStoreTimestamp(), dispatchRequest.getBitMap(), dispatchRequest.getPropertiesMap());
                                     }
 
+                                    // 累加已经处理的commitlog消息
                                     this.reputFromOffset += size;
                                     readSize += size;
+
+                                    // slaver-broker, 记录状态值
                                     if (DefaultMessageStore.this.getMessageStoreConfig().getBrokerRole() == BrokerRole.SLAVE) {
                                         DefaultMessageStore.this.storeStatsService.getSinglePutMessageTopicTimesTotal(dispatchRequest.getTopic()).incrementAndGet();
                                         DefaultMessageStore.this.storeStatsService.getSinglePutMessageTopicSizeTotal(dispatchRequest.getTopic()).addAndGet(dispatchRequest.getMsgSize());
                                     }
                                 } else if (size == 0) {
+                                    // commitlog解析成功, 但是没有任何消息,
                                     this.reputFromOffset = DefaultMessageStore.this.commitLog.rollNextFile(this.reputFromOffset);
                                     readSize = result.getSize();
                                 }
                             } else if (!dispatchRequest.isSuccess()) {
-
                                 if (size > 0) {
                                     log.error("[BUG]read total count not equals msg total size. reputFromOffset={}", reputFromOffset);
                                     this.reputFromOffset += size;
@@ -1950,16 +2003,16 @@ public class DefaultMessageStore implements MessageStore {
         @Override
         public void run() {
             DefaultMessageStore.log.info(this.getServiceName() + " service started");
-
+            // 只有线程停止才会退出循环.
             while (!this.isStopped()) {
                 try {
+                    // 每隔1ms执行一次刷盘
                     Thread.sleep(1);
                     this.doReput();
                 } catch (Exception e) {
                     DefaultMessageStore.log.warn(this.getServiceName() + " service has exception. ", e);
                 }
             }
-
             DefaultMessageStore.log.info(this.getServiceName() + " service end");
         }
 

@@ -11,6 +11,9 @@ import org.apache.rocketmq.remoting.common.RemotingUtil;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+ * Broker配置类
+ */
 public class BrokerConfig {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.COMMON_LOGGER_NAME);
 
@@ -84,6 +87,12 @@ public class BrokerConfig {
 
     private int filterServerNums = 0;
 
+    /**
+     * 消息拉取为了提高网络性能, 在消息服务端根据拉取偏移量去物理文件查找消息时没有找到, 并不立即返回消息未找到, 而是会将该线程挂起一段时间, 然后再次重试.
+     * 挂起分为长轮询或短轮询:
+     * 1.短轮询：第一次未拉取到消息后等待{@link #shortPollingTimeMills}后再试, 默认为1S;
+     * 2.长轮询：根据消费者端设置的挂起超时时间, 受DefaultMQPullConsumer的brokerSuspendMaxTimeMillis控制, 默认20s;
+     */
     private boolean longPollingEnable = true;
 
     private long shortPollingTimeMills = 1000;
