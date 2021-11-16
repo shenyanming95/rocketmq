@@ -12,6 +12,9 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 import java.nio.ByteBuffer;
 
+/**
+ * 将 RocketMQ 自定义的消息传输对象{@link RemotingCommand}编码成字节数组
+ */
 @ChannelHandler.Sharable
 public class NettyEncoder extends MessageToByteEncoder<RemotingCommand> {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
@@ -19,8 +22,10 @@ public class NettyEncoder extends MessageToByteEncoder<RemotingCommand> {
     @Override
     public void encode(ChannelHandlerContext ctx, RemotingCommand remotingCommand, ByteBuf out) throws Exception {
         try {
+            // 先写入消息头
             ByteBuffer header = remotingCommand.encodeHeader();
             out.writeBytes(header);
+            // 再写入消息体
             byte[] body = remotingCommand.getBody();
             if (body != null) {
                 out.writeBytes(body);
