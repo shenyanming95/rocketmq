@@ -47,6 +47,9 @@ import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * 默认的命令处理器, 如果请求码找不到对应的处理器就使用它
+ */
 public class AdminBrokerProcessor extends AsyncNettyRequestProcessor implements NettyRequestProcessor {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private final BrokerController brokerController;

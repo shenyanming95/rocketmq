@@ -46,7 +46,7 @@ public interface RemotingServer extends RemotingService {
      * 同步执行client发出的请求
      *
      * @param channel       底层通道
-     * @param request       client端发出的请求
+     * @param request       需要发送给对端的请求
      * @param timeoutMillis 处理超时时间
      * @return 发回给client的响应
      */
@@ -56,7 +56,7 @@ public interface RemotingServer extends RemotingService {
      * 异步执行client发出的请求
      *
      * @param channel        底层通道
-     * @param request        client端发出的请求
+     * @param request        需要发送给对端的请求
      * @param timeoutMillis  处理超时时间
      * @param invokeCallback 处理请求后的回调逻辑(有了它才可以实现异步)
      */
@@ -66,7 +66,7 @@ public interface RemotingServer extends RemotingService {
      * 执行client发出的请求, 且不用给client响应
      *
      * @param channel       底层通道
-     * @param request       client端发出的请求
+     * @param request       需要发送给对端的请求
      * @param timeoutMillis 处理超时时间
      */
     void invokeOneway(final Channel channel, final RemotingCommand request, final long timeoutMillis) throws InterruptedException, RemotingTooMuchRequestException, RemotingTimeoutException, RemotingSendRequestException;

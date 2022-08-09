@@ -70,8 +70,8 @@ public class RemotingCommand {
 
     /**
      * 不同的命令类型有不同的含义:
-     * 1.如果是请求命令, 表示请求类型, 请求接收方根据code执行相应操作;
-     * 2.如果是响应命令, code==0表示成功, code!=0表示错误代码.
+     * 1.如果是请求命令, 表示请求类型, 请求接收方根据code执行相应操作-{@link org.apache.rocketmq.common.protocol.RequestCode}
+     * 2.如果是响应命令, code==0表示成功, code!=0表示错误代码.-{@link org.apache.rocketmq.common.protocol.ResponseCode}
      */
     private int code;
 
@@ -85,10 +85,14 @@ public class RemotingCommand {
      */
     private int version = 0;
 
+    /**
+     * 请求id唯一标识, 用它来找到之前发出的请求
+     */
     private int opaque = requestId.getAndIncrement();
 
     /**
-     * 通信层标志位
+     * 通信层标志位:
+     * 0000 0001 - 表示此命令为响应命令
      */
     private int flag = 0;
 
@@ -257,8 +261,13 @@ public class RemotingCommand {
         return result;
     }
 
+    /**
+     * 标志此命令为响应命令
+     */
     public void markResponseType() {
+        // 将1左移0位, 其实还是1
         int bits = 1 << RPC_TYPE;
+        // 然后将flag的二进制位的最低位置为1
         this.flag |= bits;
     }
 
@@ -486,18 +495,23 @@ public class RemotingCommand {
         this.code = code;
     }
 
+    /**
+     * 判断远程命令的类型
+     */
     @JSONField(serialize = false)
     public RemotingCommandType getType() {
+        // 响应类型
         if (this.isResponseType()) {
             return RemotingCommandType.RESPONSE_COMMAND;
         }
-
         return RemotingCommandType.REQUEST_COMMAND;
     }
 
     @JSONField(serialize = false)
     public boolean isResponseType() {
+        // 将1左移0位, 其实还是等于1
         int bits = 1 << RPC_TYPE;
+        // 与flag执行与运算, 若相等则说明是响应的命令
         return (this.flag & bits) == bits;
     }
 

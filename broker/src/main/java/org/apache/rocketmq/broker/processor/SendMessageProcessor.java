@@ -33,6 +33,14 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * 处理producer发来的消息
+ *
+ * 1.{@link RequestCode#SEND_MESSAGE}, 发送单条消息
+ * 2.{@link RequestCode#SEND_MESSAGE_V2}, 发送单条消息
+ * 3.{@link RequestCode#SEND_BATCH_MESSAGE}, 发送批量消息
+ * 4.{@link RequestCode#CONSUMER_SEND_MSG_BACK}, 如果消费失败, 消息将被发送回broker, 并在一段时间后延迟消费
+ */
 public class SendMessageProcessor extends AbstractSendMessageProcessor implements NettyRequestProcessor {
 
     private List<ConsumeMessageHook> consumeMessageHookList;

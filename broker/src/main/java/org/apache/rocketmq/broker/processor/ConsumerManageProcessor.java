@@ -17,6 +17,14 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 import java.util.List;
 
+/**
+ * broker 和 consumer 之间的交互
+ *
+ * 1.{@link RequestCode#GET_CONSUMER_LIST_BY_GROUP}, 获取消费组的consumer列表
+ * 2.{@link RequestCode#UPDATE_CONSUMER_OFFSET}, 更新consumer消费的message offset
+ * 3.{@link RequestCode#QUERY_CONSUMER_OFFSET}, 查询consumer消息的message offset
+ *
+ */
 public class ConsumerManageProcessor extends AsyncNettyRequestProcessor implements NettyRequestProcessor {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
 

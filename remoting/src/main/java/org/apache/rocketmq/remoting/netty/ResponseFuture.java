@@ -10,13 +10,31 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ResponseFuture {
+    /**
+     * 一次请求的标识（即一个request映射一个response）
+     */
     private final int opaque;
+
+    /**
+     * Tcp底层通道
+     */
     private final Channel processChannel;
+
+    /**
+     * 超时时间
+     */
     private final long timeoutMillis;
+
+    /**
+     * 请求后置回调处理实现
+     */
     private final InvokeCallback invokeCallback;
     private final long beginTimestamp = System.currentTimeMillis();
     private final CountDownLatch countDownLatch = new CountDownLatch(1);
 
+    /**
+     * 单次使用的信号量
+     */
     private final SemaphoreReleaseOnlyOnce once;
 
     private final AtomicBoolean executeCallbackOnlyOnce = new AtomicBoolean(false);
@@ -34,6 +52,7 @@ public class ResponseFuture {
 
     public void executeInvokeCallback() {
         if (invokeCallback != null) {
+            // 保证回调只会被执行一次.
             if (this.executeCallbackOnlyOnce.compareAndSet(false, true)) {
                 invokeCallback.operationComplete(this);
             }

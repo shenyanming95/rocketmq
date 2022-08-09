@@ -11,6 +11,10 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 import java.nio.ByteBuffer;
 
+/**
+ * 将TCP传输的字节数据解码成rocketMQ自定义的消息体{@link RemotingCommand}.
+ * 有解码就有编码, 对应{@link NettyEncoder}
+ */
 public class NettyDecoder extends LengthFieldBasedFrameDecoder {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
 
@@ -39,9 +43,8 @@ public class NettyDecoder extends LengthFieldBasedFrameDecoder {
             if (null == frame) {
                 return null;
             }
-
+            // 解析字节数组, 其实就是按照消息格式依次解析一定数量的字节数据
             ByteBuffer byteBuffer = frame.nioBuffer();
-
             return RemotingCommand.decode(byteBuffer);
         } catch (Exception e) {
             log.error("decode exception, " + RemotingHelper.parseChannelRemoteAddr(ctx.channel()), e);
@@ -51,7 +54,6 @@ public class NettyDecoder extends LengthFieldBasedFrameDecoder {
                 frame.release();
             }
         }
-
         return null;
     }
 }

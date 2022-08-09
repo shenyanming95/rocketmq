@@ -23,6 +23,11 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import org.apache.rocketmq.store.QueryMessageResult;
 import org.apache.rocketmq.store.SelectMappedBufferResult;
 
+/**
+ * 查询消息时使用:
+ * 1.{@link RequestCode#QUERY_MESSAGE}, 查询消息
+ * 2.{@link RequestCode#VIEW_MESSAGE_BY_ID}, 查询消息
+ */
 public class QueryMessageProcessor extends AsyncNettyRequestProcessor implements NettyRequestProcessor {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
 

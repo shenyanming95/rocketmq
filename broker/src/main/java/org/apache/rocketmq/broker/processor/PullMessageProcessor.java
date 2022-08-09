@@ -50,6 +50,9 @@ import org.apache.rocketmq.store.stats.BrokerStatsManager;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+/**
+ * broker 主动推消息给 consumer 使用
+ */
 public class PullMessageProcessor extends AsyncNettyRequestProcessor implements NettyRequestProcessor {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private final BrokerController brokerController;

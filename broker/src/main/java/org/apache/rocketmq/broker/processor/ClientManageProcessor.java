@@ -27,6 +27,13 @@ import org.apache.rocketmq.remoting.netty.AsyncNettyRequestProcessor;
 import org.apache.rocketmq.remoting.netty.NettyRequestProcessor;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
+/**
+ * 处理 broker 与其建立TCP连接的client之间的管理消息, 比方说：
+ *
+ * - {@link RequestCode#HEART_BEAT}, 心跳包消息
+ * - {@link RequestCode#UNREGISTER_CLIENT}, 断开TCP连接消息
+ * - {@link RequestCode#CHECK_CLIENT_CONFIG}, 校验client配置消息
+ */
 public class ClientManageProcessor extends AsyncNettyRequestProcessor implements NettyRequestProcessor {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private final BrokerController brokerController;

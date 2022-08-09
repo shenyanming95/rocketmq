@@ -24,6 +24,18 @@ import org.apache.rocketmq.store.MessageExtBrokerInner;
 import org.apache.rocketmq.store.PutMessageResult;
 import org.apache.rocketmq.store.stats.BrokerStatsManager;
 
+/**
+ * Request-Reply消息使用
+ * 1.{@link RequestCode#SEND_REPLY_MESSAGE}
+ * 2.{@link RequestCode#SEND_REPLY_MESSAGE_V2}
+ *
+ * <Pre>
+ * 在以往的消息中间件的使用中, Producer 和 Consumer 只负责发送消息和消费消息, 彼此之间不会通信.
+ * 而 “ Request-Reply ”模式允许 Producer 发出消息后, 以同步或者异步的形式等待 Consumer 消费这条消息并返回一个响应消息, 从而达到类似 RPC 的调用效果.
+ * 在整个“ Request-Reply ”调用过程中（简称RR调用）Producer 首先发出一条消息, 消息经由 Broker 被 Consumer 获取并消费.
+ * Consumer 消费完这条消息后, 会将针对该消息的响应作为另外一条消息发送出来, 最终回到 Producer.
+ * </Pre>
+ */
 public class ReplyMessageProcessor extends AbstractSendMessageProcessor implements NettyRequestProcessor {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
 
