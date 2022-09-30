@@ -743,8 +743,18 @@ public class MappedFile extends ReferenceResource {
                 }
             }
 
-            // prevent gc, 有待商榷：
+            // prevent gc(并不是prevent gc, 而是prevent full-gc)
             // https://stackoverflow.com/questions/53284031/why-thread-sleep0-can-prevent-gc-in-rocketmq
+            // 首先, 作者的意图是想通过下面这几行代码让jvm能执行垃圾回收线程. 通过学习jvm可得, 并不是随时随地都可以执行垃圾回收线程
+            // 必须要让程序进入到一个safePoint点才可以, 因此这几行代码就是让程序能够进入到safePoint点, 那么问题就变成为啥可以进入呢?
+            // HotSpot虚拟机为了避免safePoint太多带来负担, 因此对于循环做了一层优化:
+            // 1.如果循环次数少, 不会设置safePoint, 规定使用int类型或者范围更小的数据类型作为循环计数值不设置safePoint, 这种循环称为“可数循环”
+            // 2.如果循环次数多, 即使用long类型或者范围更大的数据类型作为循环计数值则会设置safePoint, 这种循环称为“不可数循环”
+            // 如果只能在循环结束后才能进入safePoint, 那么其它先进入safePoint的线程就得等待这个循环执行完, 从而影响到整个GC线程的运行.
+            //
+            // 这几行的效果, 其实等价于将上面731行的 int i 改为 long i, 将其变为不可数循环. 而使用sleep(0)也能生效, 是因为一个线程在执行
+            // native方法, 它其实是在运行jvm管理之外的代码, 所以jvm进入safePoint无需关注它, 本质上正在执行native方法的线程就已经进入了safePoint
+            // 安全点.
             if (j % 1000 == 0) {
                 log.info("j={}, costTime={}", j, System.currentTimeMillis() - time);
                 time = System.currentTimeMillis();
