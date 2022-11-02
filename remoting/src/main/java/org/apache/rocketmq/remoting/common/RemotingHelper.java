@@ -32,7 +32,6 @@ public class RemotingHelper {
                 sb.append(elment.toString());
             }
         }
-
         return sb.toString();
     }
 

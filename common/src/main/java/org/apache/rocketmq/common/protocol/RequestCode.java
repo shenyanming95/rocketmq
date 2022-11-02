@@ -1,6 +1,11 @@
 package org.apache.rocketmq.common.protocol;
 
+/**
+ * RocketMQ每个请求都会定义一个Code.
+ * 用来标识当前请求的操作
+ */
 public class RequestCode {
+
 
     public static final int SEND_MESSAGE = 10;
 
@@ -70,7 +75,11 @@ public class RequestCode {
 
     public static final int CONSUMER_SEND_MSG_BACK = 36;
 
+    /**
+     * 提交or回滚事务的请求码
+     */
     public static final int END_TRANSACTION = 37;
+
     public static final int GET_CONSUMER_LIST_BY_GROUP = 38;
 
     public static final int CHECK_TRANSACTION_STATE = 39;
