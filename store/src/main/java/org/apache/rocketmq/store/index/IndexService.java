@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * {@link IndexFile}的处理类, 这一类型的索引一般用于运维搜索消息
+ */
 public class IndexService {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
     /**
@@ -303,6 +306,10 @@ public class IndexService {
                 case MessageSysFlag.TRANSACTION_ROLLBACK_TYPE:
                     return;
             }
+
+            /*
+             * RocketMQ 会为每条 message 的 uniqKey 和用户自定义的 key 生成索引.
+             */
 
             // 如果消息自带了唯一键, 为其创建一条索引
             if (req.getUniqKey() != null) {

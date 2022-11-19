@@ -1591,6 +1591,9 @@ public class DefaultMessageStore implements MessageStore {
         }
     }
 
+    /**
+     * 清除过期无用的CommitLog文件
+     */
     class CleanCommitLogService {
 
         private final static int MAX_MANUAL_DELETE_FILE_TIMES = 20;
@@ -1762,6 +1765,9 @@ public class DefaultMessageStore implements MessageStore {
         }
     }
 
+    /**
+     * 清除过期无用的ConsumeQueue文件
+     */
     class CleanConsumeQueueService {
         private long lastPhysicalMinOffset = 0;
 
@@ -1805,7 +1811,7 @@ public class DefaultMessageStore implements MessageStore {
     }
 
     /**
-     * consumerqueue文件刷盘线程
+     * consumerQueue文件刷盘线程
      */
     class FlushConsumeQueueService extends ServiceThread {
         private static final int RETRY_TIMES_OVER = 3;
@@ -1877,8 +1883,7 @@ public class DefaultMessageStore implements MessageStore {
     }
 
     /**
-     * 用来将commitlog数据同步到consumerqueue和indexFile中, 这个线程是在
-     * RocketMQ运行时不断执行的.
+     * 用来将commitlog数据同步到consumerQueue和indexFile中
      */
     class ReputMessageService extends ServiceThread {
 

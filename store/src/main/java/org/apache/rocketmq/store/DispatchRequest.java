@@ -50,7 +50,7 @@ public class DispatchRequest {
     private final boolean success;
 
     /**
-     * 即{@link MessageConst#PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX}
+     * 即{@link MessageConst#PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX}对应的值
      */
     private final String uniqKey;
 

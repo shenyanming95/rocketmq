@@ -15,6 +15,9 @@ public class TransactionMQProducer extends DefaultMQProducer {
 
     private ExecutorService executorService;
 
+    /**
+     * 用户必须自定义实现, 处理Producer和Broker之间事务消息的交互
+     */
     private TransactionListener transactionListener;
 
     public TransactionMQProducer() {
@@ -49,8 +52,8 @@ public class TransactionMQProducer extends DefaultMQProducer {
     }
 
     /**
-     * This method will be removed in the version 5.0.0, method <code>sendMessageInTransaction(Message,Object)</code>}
-     * is recommended.
+     * This method will be removed in the version 5.0.0,
+     * {@link #sendMessageInTransaction(Message,Object)}is recommended.
      */
     @Override
     @Deprecated

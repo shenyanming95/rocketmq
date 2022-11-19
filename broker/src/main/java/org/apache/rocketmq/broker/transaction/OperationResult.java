@@ -3,6 +3,10 @@ package org.apache.rocketmq.broker.transaction;
 import org.apache.rocketmq.common.message.MessageExt;
 
 public class OperationResult {
+
+    /**
+     * 预提交（Half）消息, 用于事务消息,
+     */
     private MessageExt prepareMessage;
 
     private int responseCode;

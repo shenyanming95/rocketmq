@@ -678,12 +678,12 @@ public class DefaultMQProducer extends ClientConfig implements MQProducer {
     }
 
     /**
-     * This method is used to send transactional messages.
+     * 用于发送事务消息
      *
-     * @param msg Transactional message to send.
-     * @param arg Argument used along with local transaction executor.
-     * @return Transaction result.
-     * @throws MQClientException
+     * @param msg 准备发送给broker的事务消息
+     * @param arg 与本地事务执行器一起使用的参数
+     * @return 事务执行结果
+     * @throws MQClientException e
      */
     @Override
     public TransactionSendResult sendMessageInTransaction(Message msg, Object arg) throws MQClientException {
