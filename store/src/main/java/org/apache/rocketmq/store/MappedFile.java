@@ -96,8 +96,10 @@ public class MappedFile extends ReferenceResource {
     /**
      * 这两个参数是搭配使用的, 通过{@link TransientStorePool}来获取{@link ByteBuffer}.
      * 对象池{@link TransientStorePool} 维护了许多直接缓冲区(rocketMQ通过JNA执行OS系统调用, 做了优化).
-     * 当用户开启了对象池配置, 这两个参数就会生效, 那么数据就会先被保存到这里(称为commit, 即调用了{@link #commit(int)}),
-     * 然后在重刷到{@link FileChannel}中.
+     * 当用户开启了对象池配置{@link MessageStoreConfig#transientStorePoolEnable}, 这两个参数就会生效, 数据就会先被保存到这里(称为commit,
+     * 即调用了{@link #commit(int)}), 然后在重刷到{@link FileChannel}中.
+     * 显然, 这是为防止频繁使用os page cache导致broker busy, 通过{@link TransientStorePool}减轻os page cache的压力, 写数据的时候先写入堆外内存，再由线程
+     * 定时将堆外内存刷到page cache, 最后由 os 将 page cache 刷到磁盘。
      * <p>
      * 注：数据写到这里不会被刷新到磁盘, 所以这个 writeBuffer 只是一个暂存区, 它需要将数据转存到 fileChannel 或者 mappedByteBuffer.
      */

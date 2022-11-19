@@ -275,7 +275,7 @@ public class ScheduleMessageService extends ConfigManager {
 
         /**
          * consumer queue 的偏移量, 所有延迟等级, 一开始的偏移量都为0.
-         * 在rocketMQ启动一段时间后, 如果使用过延迟消息, 那么对于的延迟等级队列就有相应的offset被记录到磁盘.
+         * 在rocketMQ启动一段时间后, 如果使用过延迟消息, 那么对应的延迟等级队列就有相应的offset被记录到磁盘.
          * 此时的偏移量就是磁盘记录的值
          */
         private final long offset;

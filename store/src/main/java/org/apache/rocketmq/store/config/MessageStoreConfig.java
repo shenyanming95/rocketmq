@@ -28,7 +28,7 @@ public class MessageStoreConfig {
     private int mappedFileSizeCommitLog = 1024 * 1024 * 1024;
 
     /**
-     * consumerqueue 文件大小, 默认是30M
+     * consumerqueue 文件大小, 默认大概是5.72M
      */
     private int mappedFileSizeConsumeQueue = 300000 * ConsumeQueue.CQ_STORE_UNIT_SIZE;
 
