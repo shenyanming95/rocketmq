@@ -22,7 +22,18 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Remote storage implementation
+ * 远程模式存储的Consumer消费的偏移量.
+ * 数据存储的路径为: {$rootPath}/config/consumerOffset.json, 存储格式为:
+ * <pre>
+ *     {
+ *         "offsetTable":{
+ *             "test@benchmark_consumer_61":{0:5280,1:5312,2:5312,3:5312}
+ *         }
+ *    }
+ *    其中, offsetTable中的key格式是topic@group, value格式queueID:offset.
+ * </pre>
+ *
+ * @see org.apache.rocketmq.broker.offset.ConsumerOffsetManager
  */
 public class RemoteBrokerOffsetStore implements OffsetStore {
     private final static InternalLogger log = ClientLogger.getLog();

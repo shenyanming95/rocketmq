@@ -2,6 +2,8 @@ package org.apache.rocketmq.broker.offset;
 
 import org.apache.rocketmq.broker.BrokerController;
 import org.apache.rocketmq.broker.BrokerPathConfigHelper;
+import org.apache.rocketmq.client.consumer.store.LocalFileOffsetStore;
+import org.apache.rocketmq.client.consumer.store.RemoteBrokerOffsetStore;
 import org.apache.rocketmq.common.ConfigManager;
 import org.apache.rocketmq.common.UtilAll;
 import org.apache.rocketmq.common.constant.LoggerName;
@@ -14,6 +16,21 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * Consumer消费偏移量管理服务.
+ * RocketMQ 对 offset 的管理分为本地模式和远程模式:
+ * <p>
+ *     1.本地模式是以文本文件的形式存储在客户端, 对应的数据结构为: {@link LocalFileOffsetStore}
+ *     2.远程模式是将数据保存到broker, 也就是这个类负责, 对应的数据结构为: {@link RemoteBrokerOffsetStore}
+ *     note: 不管哪种模式, 保存的offset指的是下一条消息的offset, 而不是消费完最后一条消息的offset.
+ * </p>
+ * 同时, rocketMQ具有两种模式的消息消费格式：
+ * <p>
+ *     1.消费模式为广播模式时，offset使用本地模式存储，每条消息会被所有的消费者消费，每个消费者管理自己的消费进度，各个消费者之间不存在消费进度的交集；
+ *     2.当消费模式为集群消费时，则使用远程模式管理offset，在客户端使用RemoteBrokerOffsetStore
+ * </p>
+ *
+ */
 public class ConsumerOffsetManager extends ConfigManager {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private static final String TOPIC_GROUP_SEPARATOR = "@";

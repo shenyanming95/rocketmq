@@ -21,7 +21,18 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Local storage implementation
+ * 本地模式存储的Consumer消费的偏移量.
+ * 数据保存的路径为：{$storeDir}/.rockertmq_offset/{$clientID}/{$group}/offsets.json, 其中{$clientID}和{$group}分别表示消费者的id和分组.
+ * 存储的格式为:
+ * <pre>
+ *     {
+ *         "offsetTable":{
+ *            {"brokerName":"topic","queueId":1,"topic":"test"}:0
+ *         }
+ *     }
+ * </pre>
+ *
+ * @see org.apache.rocketmq.broker.offset.ConsumerOffsetManager
  */
 public class LocalFileOffsetStore implements OffsetStore {
     public final static String LOCAL_OFFSET_STORE_DIR = System.getProperty("rocketmq.client.localOffsetStoreDir", System.getProperty("user.home") + File.separator + ".rocketmq_offsets");
