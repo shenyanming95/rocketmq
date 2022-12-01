@@ -27,8 +27,8 @@ import java.util.concurrent.*;
 
 /**
  * 每个 broker 有且仅有一个 commitlog 文件, 所有 topic 的消息都会存入到这个 commitlog 文件中, 它的存储方式很有规律：
- * 文件名长度为20位, 左边补0. 比如：00000000000000000000代表了第一个文件,起始偏移量为0, 文件大小为1G=1073741824;
- * 当第一个文件写满了, 第二个文件名为00000000001073741824, 起始偏移量为1073741824.
+ * 文件名长度为20位, 左边补0. 比如：00000000000000000000代表了第一个文件, 起始偏移量为0, 文件大小为1G=1073741824;
+ * 当第一个文件写满了, 第二个文件名为00000000001073741824, 起始偏移量为1073741824. 这样根据物理偏移量就能快速定位到消息.
  * <p>
  * 这个类中有3种刷盘实现：
  * 1.性能最高, 安全性最低, {@link CommitRealTimeService}, 它直接把消息写到{@link FileChannel}内就返回;
@@ -1918,7 +1918,11 @@ public class CommitLog {
      */
     @SuppressWarnings("Java8MapApi")
     class DefaultAppendMessageCallback implements AppendMessageCallback {
-        // 文件末尾最小定长为空
+        /**
+         * commitlog 文件最少会空闲8个字节：
+         * - 高4字节, 用来存储当前文件的剩余空间
+         * - 低4字节, 用来存储魔数, 也即{@link #BLANK_MAGIC_CODE}
+         */
         private static final int END_FILE_MIN_BLANK_LENGTH = 4 + 4;
 
         /**

@@ -54,14 +54,14 @@ public class MappedFileQueue {
     private volatile long storeTimestamp = 0;
 
     /**
-     * 已经刷盘的最终位置, 它是绝对值, 比如存在多个 MappedFile,
-     * 它会把每个{@link MappedFile#getFileFromOffset()}也计算进去.
+     * 已经刷盘的最终位置, 表示在该指针之前的所有数据都已经持久化到磁盘中.
+     * 它是一个绝对值, 会把每个{@link MappedFile#getFileFromOffset()}计算进去.
      */
     private long flushedWhere = 0;
 
     /**
-     * 已经提交的最终位置, 它是绝对值, 比如存在多个 MappedFile,
-     * 它会把每个{@link MappedFile#getFileFromOffset()}也计算进去.
+     * 已经提交的最终位置, 内存中 ByteBuffer 的当前写指针, 大于等于{@link #flushedWhere}.
+     * 它是一个绝对值, 会把每个{@link MappedFile#getFileFromOffset()}计算进去.
      */
     private long committedWhere = 0;
 
