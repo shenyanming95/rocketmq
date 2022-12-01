@@ -3,7 +3,7 @@ package org.apache.rocketmq.tools.parse.commitlog;
 import java.net.InetSocketAddress;
 
 /**
- * rocketMQ的commit log消息条目的数据结构
+ * RocketMQ 的消息格式
  *
  * @author shenyanming
  * Create on 2021/08/03 20:06
@@ -17,13 +17,13 @@ public class CommitLogMessage {
     private int flag;                       //网络通信层标记
     private long queueOffset;               //消息在ConsumerQueue中的偏移量
     private long physicalOffset;            //消息存储在commitLog的绝对偏移量
-    private int sysFlag;                    //系统标志
+    private int sysFlag;                    //系统标志, 例如是否压缩、是否事务消息等
     private String bornTimeStamp;           //消息在来源方生成的时间戳
     private InetSocketAddress bornHost;     //消息来源方主机地址
     private String storeTimeStamp;          //消息在Broker的存储时间
     private InetSocketAddress storeHost;    //消息在Broker的主机地址
     private int reconsumeTimes;             //消息重试消费次数
-    private long preparedTransactionOffset; //事务消息相关
+    private long preparedTransactionOffset; //事务消息物理偏移量
     private int bodyLength;                 //消息体的大小
     private byte[] body;                    //消息体
     private byte topicLength;               //主题名大小

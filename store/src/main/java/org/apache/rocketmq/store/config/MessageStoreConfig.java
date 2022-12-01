@@ -326,7 +326,7 @@ public class MessageStoreConfig {
     private boolean diskFallRecorded = true;
 
     /**
-     * putMessage锁占用超过该时间, 表示 PageCache忙
+     * putMessage锁占用超过该时间, 表示 PageCache 繁忙
      */
     private long osPageCacheBusyTimeOutMills = 1000;
 

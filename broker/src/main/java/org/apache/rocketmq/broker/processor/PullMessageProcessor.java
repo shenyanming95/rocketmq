@@ -51,7 +51,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * broker 主动推消息给 consumer 使用
+ * 处理 Consumer 发来的 pull 请求, 用来拉取消息
  */
 public class PullMessageProcessor extends AsyncNettyRequestProcessor implements NettyRequestProcessor {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
