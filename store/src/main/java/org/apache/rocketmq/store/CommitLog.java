@@ -1870,10 +1870,11 @@ public class CommitLog {
                 // 这边的 requestsRead, 就是之前调用 putRequest() 添加的请求.
                 if (!this.requestsRead.isEmpty()) {
                     for (GroupCommitRequest req : this.requestsRead) {
-                        // 判断当前刷入的位置是否大于等于下一个消息的偏移量, 如果大于那就没必要刷盘了, for循环结束;
-                        // 如果小于, rocketMQ选择最多两次刷盘
+                        // commitlog 当前已flush的位置如果大于等于这条消息需要刷盘的位置, 那就说明已经刷过了, 不用再flush了.
+                        // 需要刷新两次, 是因为消息有可能存在于下一个mappedFile中. 比如说：现在有2条消息写入了page cache, 但这2条消息一个落在前CommitLog的尾部,
+                        // 另外一个落在新CommitLog的头部，此时就需要检测到这两个消息的分布，然后依次将两个CommitLog数据落盘
                         boolean flushOK = CommitLog.this.mappedFileQueue.getFlushedWhere() >= req.getNextOffset();
-                        for (int i = 0; i < 2 && !flushOK; i++) {
+                            for (int i = 0; i < 2 && !flushOK; i++) {
                             CommitLog.this.mappedFileQueue.flush(0);
                             flushOK = CommitLog.this.mappedFileQueue.getFlushedWhere() >= req.getNextOffset();
                         }
