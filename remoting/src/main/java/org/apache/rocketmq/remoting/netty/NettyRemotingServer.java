@@ -45,11 +45,26 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
     private static final String HANDSHAKE_HANDLER_NAME = "handshakeHandler";
     private static final String TLS_HANDLER_NAME = "sslHandler";
     private static final String FILE_REGION_ENCODER_NAME = "fileRegionEncoder";
+
     private final ServerBootstrap serverBootstrap;
+
+    /**
+     * Reactor模型用于处理I/O读写请求的事件循环组
+     */
     private final EventLoopGroup eventLoopGroupSelector;
+
+    /**
+     * Reactor模型用于处理网络连接请求的事件循环组
+     */
     private final EventLoopGroup eventLoopGroupBoss;
+
     private final NettyServerConfig nettyServerConfig;
+
+    /**
+     * 用来处理回调函数的线程池
+     */
     private final ExecutorService publicExecutor;
+
     private final ChannelEventListener channelEventListener;
     private final Timer timer = new Timer("ServerHouseKeepingService", true);
     private DefaultEventExecutorGroup defaultEventExecutorGroup;
@@ -84,6 +99,7 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
             }
         });
 
+        // 创建事件循环组, 优先使用epoll模型.
         if (useEpoll()) {
             this.eventLoopGroupBoss = new EpollEventLoopGroup(1, new ThreadFactory() {
                 private AtomicInteger threadIndex = new AtomicInteger(0);
